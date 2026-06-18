@@ -1,0 +1,10 @@
+[
+    {
+        "batch_id": "CHY-DEMO",
+        "project": "demo",
+        "matrix_composition": "CuAgInGaTe2",
+        "pristine_composition": "CuAgInGaTe2",
+        "material_family": "diamond-like telluride",
+        "notes": "Synthetic demo metadata for testing plots only."
+    }
+]

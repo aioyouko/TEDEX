@@ -1,0 +1,42 @@
+[
+    {
+        "sample_id": "CHY-DEMO-A",
+        "batch_id": "CHY-DEMO",
+        "sample_name": "Demo A",
+        "zem": "",
+        "lfa": "",
+        "processed_file": "data/processed/CHY-DEMO-processed/CHY-DEMO-A.csv",
+        "processed_exists": true,
+        "density": 6.0,
+        "cp_value": 0.30,
+        "matrix_composition": "CuAgInGaTe2",
+        "pristine_composition": "CuAgInGaTe2",
+        "sample_composition": "Cu0.98Ag0.02In0.50Ga0.50Te2",
+        "optimization_type": "demo",
+        "modifier_element": "Ag",
+        "modifier_amount": 0.02,
+        "modifier_unit": "fraction",
+        "modifier_site": "Cu",
+        "notes": "Synthetic processed-data example."
+    },
+    {
+        "sample_id": "CHY-DEMO-B",
+        "batch_id": "CHY-DEMO",
+        "sample_name": "Demo B",
+        "zem": "",
+        "lfa": "",
+        "processed_file": "data/processed/CHY-DEMO-processed/CHY-DEMO-B.csv",
+        "processed_exists": true,
+        "density": 6.1,
+        "cp_value": 0.30,
+        "matrix_composition": "CuAgInGaTe2",
+        "pristine_composition": "CuAgInGaTe2",
+        "sample_composition": "Cu0.94Ag0.06In0.50Ga0.50Te2",
+        "optimization_type": "demo",
+        "modifier_element": "Ag",
+        "modifier_amount": 0.06,
+        "modifier_unit": "fraction",
+        "modifier_site": "Cu",
+        "notes": "Synthetic processed-data example."
+    }
+]

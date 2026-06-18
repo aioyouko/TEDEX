@@ -1,0 +1,35 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "te-analysis-plotting"
+version = "1.0.0"
+description = "Thermoelectric raw-data analysis and publication-style plotting workflow."
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "numpy>=1.23",
+    "pandas>=1.5",
+    "scipy>=1.9",
+    "matplotlib>=3.6",
+    "openpyxl>=3.1",
+]
+
+[project.optional-dependencies]
+notebook = ["jupyterlab>=4"]
+
+[project.scripts]
+te-run-analysis = "run_analysis:main"
+te-plot = "plot_te:main"
+te-sync-metadata = "scripts.sync_lab_metadata:main"
+te-sync-markdown = "scripts.sync_lab_markdown:main"
+te-room-temp-dual = "scripts.plot_room_temp_dual_axis:main"
+te-paper-plots = "scripts.plot_paper_style_te_variants:main"
+
+[tool.setuptools]
+py-modules = ["run_analysis", "te_analysis", "plot_te"]
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["src*", "myplotstyle*", "scripts*"]
