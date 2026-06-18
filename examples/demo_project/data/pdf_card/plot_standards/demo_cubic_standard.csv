@@ -1,0 +1,4 @@
+label,two_theta_deg,intensity,d_angstrom,h,k,l
+Demo cubic standard,28.0,100,3.185,1,1,1
+Demo cubic standard,44.0,75,2.057,2,2,0
+Demo cubic standard,60.0,62,1.541,3,1,1

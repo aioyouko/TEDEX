@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "te-analysis-plotting"
-version = "1.0.0"
+version = "1.1.0"
 description = "Thermoelectric raw-data analysis and publication-style plotting workflow."
 readme = "README.md"
 requires-python = ">=3.10"
@@ -22,13 +22,14 @@ notebook = ["jupyterlab>=4"]
 [project.scripts]
 te-run-analysis = "run_analysis:main"
 te-plot = "plot_te:main"
+te-plot-xrd = "plot_XRD:main"
 te-sync-metadata = "scripts.sync_lab_metadata:main"
 te-sync-markdown = "scripts.sync_lab_markdown:main"
 te-room-temp-dual = "scripts.plot_room_temp_dual_axis:main"
 te-paper-plots = "scripts.plot_paper_style_te_variants:main"
 
 [tool.setuptools]
-py-modules = ["run_analysis", "te_analysis", "plot_te"]
+py-modules = ["run_analysis", "te_analysis", "plot_te", "plot_XRD"]
 
 [tool.setuptools.packages.find]
 where = ["."]

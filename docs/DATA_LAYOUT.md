@@ -5,6 +5,7 @@
 ```text
 data/raw/
 data/lab/
+data/pdf_card/plot_standards/
 data/processed/
 results/
 ```
@@ -18,6 +19,7 @@ Place raw files inside a batch folder:
 ```text
 data/raw/CHY-1051/CHY-1051-A_ZEM.txt
 data/raw/CHY-1051/CHY-1051-A_LFA.csv
+data/raw/CHY-1051/XRD/CHY-1051-A_XRD.xy
 ```
 
 The metadata sync script recognizes:
@@ -26,6 +28,7 @@ The metadata sync script recognizes:
 <sample_id>_ZEM.txt
 <sample_id>_LFA.csv
 <sample_id>_LFA.txt
+XRD/<sample_id>_XRD.xy
 ```
 
 ## Metadata Fields
@@ -72,3 +75,38 @@ Optional SPB-derived columns:
 - `Lattice_Thermal_Conductivity`
 - `Weighted_Mobility_cm2_V-1_s-1`
 - `Quality_Factor_B`
+
+## XRD Files
+
+XRD pattern files are expected under:
+
+```text
+data/raw/<batch_id>/XRD/*.xy
+```
+
+The XRD reader accepts simple two-column text:
+
+```text
+2theta intensity
+10.0 123
+10.02 125
+```
+
+Header lines are ignored. If a header line contains `Wavelength = 1.5406`, that value is captured for metadata, but plotting does not require it.
+
+## PDF-Card Standards For XRD Plotting
+
+Place clean plotting standards under:
+
+```text
+data/pdf_card/plot_standards/
+```
+
+Recommended CSV columns:
+
+```csv
+label,two_theta_deg,intensity,d_angstrom,h,k,l
+Demo cubic standard,28.4,100,3.14,1,1,1
+```
+
+Only `two_theta_deg` and `intensity` are required by the plotter.

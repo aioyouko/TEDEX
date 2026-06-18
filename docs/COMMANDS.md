@@ -87,3 +87,41 @@ Paper-style variants:
 ```bash
 python scripts/plot_paper_style_te_variants.py --samples CHY-1051 --plot-type summary-panels --formats png pdf
 ```
+
+## XRD Plotting
+
+Plot all XRD files in one batch with both raw-count and normalized figures:
+
+```bash
+python plot_XRD.py CHY-1051 --mode both --formats png pdf
+```
+
+Plot one sample:
+
+```bash
+python plot_XRD.py CHY-1051-A --mode normalized --formats png pdf
+```
+
+Plot selected samples from a loaded batch:
+
+```bash
+python plot_XRD.py CHY-1051 --select A C --mode normalized --formats png pdf
+```
+
+Overlay a plotting-ready PDF-card standard:
+
+```bash
+python plot_XRD.py CHY-1051 --pdf-card CuInTe2_PDF_97_023_8958 --formats png pdf
+```
+
+List available PDF-card basenames:
+
+```bash
+python plot_XRD.py --list-pdf-cards
+```
+
+Use separate per-sample figures:
+
+```bash
+python plot_XRD.py CHY-1051 --layout separate --mode both --formats png pdf
+```
