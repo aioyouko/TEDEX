@@ -43,6 +43,18 @@ python ../../plot_XRD.py CHY-DEMO --mode normalized --pdf-card demo_cubic_standa
 
 Outputs are written under `examples/demo_project/results/plots/`.
 
+### Demo Figures
+
+The static images below were generated from the synthetic demo project and are stored in `docs/demo_images/` so they can be displayed directly in this README.
+
+**TE transport summary**
+
+![Synthetic TE transport summary](docs/demo_images/demo_te_summary.png)
+
+**XRD pattern with PDF-card overlay**
+
+![Synthetic XRD pattern with PDF-card overlay](docs/demo_images/demo_xrd_pdf_overlay.png)
+
 If you installed with `pip install -e .`, the equivalent console commands are:
 
 ```bash
