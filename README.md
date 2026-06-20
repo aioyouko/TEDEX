@@ -1,147 +1,124 @@
-# TE Analysis and Plotting Workflow
+# Thermoelectric Analysis Workspace
 
-Version: 1.1.0
+Version: 1.2.0
 
-This folder is a standalone release of the thermoelectric analysis and plotting workflow. It keeps the original project-style entry points:
+This is a GitHub-ready package rebuilt from the current workspace source. It includes the analysis and plotting code, reusable plotting recipes, documentation, and public demo data only. Private lab data and generated outputs are intentionally not included.
 
-- `run_analysis.py`: raw ZEM/LFA files to processed transport CSV, feature JSON, and summary plots.
-- `plot_te.py`: batch, sample, inter-batch, and direct processed-CSV plotting.
-- `plot_XRD.py`: stacked raw or normalized XRD pattern plotting with optional PDF-card overlay.
-- `scripts/plot_room_temp_dual_axis.py`: room-temperature Seebeck/conductivity comparison.
-- `scripts/plot_paper_style_te_variants.py`: compact paper-style plot variants.
-- `scripts/sync_lab_metadata.py` and `scripts/sync_lab_markdown.py`: lab metadata discovery and editing.
+Included:
 
-The release template intentionally does not include private raw data, processed data, or generated results. Those folders are present as empty placeholders. Version 1.1.0 adds XRD plotting only; lattice-parameter fitting is intentionally not included.
+- Root entry scripts: `run_analysis.py`, `plot_te.py`, `plot_XRD.py`, `flexible_plot.py`, `main.py`, `assess_selected_batches.py`, `bayesian_predict_te.py`.
+- Source modules under `src/agents/` and `src/tools/`.
+- Plot style helpers under `myplotstyle/`.
+- Utility scripts under `scripts/`.
+- Reusable configs under `configs/`.
+- Public demo files under `data/demo/`.
+- Empty placeholders for `data/raw/`, `data/processed/`, `data/lab/`, `data/reference/`, `data/pdf_card/`, `results/`, and `outputs/`.
+
+Not included:
+
+- Private raw data.
+- Private processed data.
+- Lab metadata ledgers.
+- Reference PDF/data libraries.
+- Generated results or output artifacts.
+- Local Codex skills and external snapshots.
+- `.env` or API keys.
 
 ## Quick Start
 
 ```bash
-cd te-analysis-plotting-v1.1.0
+cd te-analysis-plotting-v1.2.0
 python3 -m venv .venv
 source .venv/bin/activate
 python -m pip install --upgrade pip
 pip install -e .
 ```
 
-You can also install only the requirements:
+Or install with requirements:
 
 ```bash
 pip install -r requirements.txt
 ```
 
-## Try The Demo
+## Demo Commands
 
-The demo uses small synthetic processed TE CSV files and synthetic XRD `.xy` files, so it tests plotting without private lab data.
-
-```bash
-cd examples/demo_project
-python ../../plot_te.py CHY-DEMO --plot-mode both --formats png pdf --no-show
-python ../../scripts/plot_room_temp_dual_axis.py --workspace . --samples CHY-DEMO --formats png pdf
-python ../../plot_XRD.py CHY-DEMO --mode both --formats png pdf
-python ../../plot_XRD.py CHY-DEMO --mode normalized --pdf-card demo_cubic_standard --formats png pdf
-```
-
-Outputs are written under `examples/demo_project/results/plots/`.
-
-### Demo Figures
-
-The static images below were generated from the synthetic demo project and are stored in `docs/demo_images/` so they can be displayed directly in this README.
-
-**TE transport summary**
-
-![Synthetic TE transport summary](docs/demo_images/demo_te_summary.png)
-
-**XRD pattern with PDF-card overlay**
-
-![Synthetic XRD pattern with PDF-card overlay](docs/demo_images/demo_xrd_pdf_overlay.png)
-
-If you installed with `pip install -e .`, the equivalent console commands are:
+Flexible plotting works immediately with the included demo data:
 
 ```bash
-te-plot CHY-DEMO --plot-mode both --formats png pdf --no-show
-te-room-temp-dual --workspace . --samples CHY-DEMO --formats png pdf
-te-plot-xrd CHY-DEMO --mode both --formats png pdf
+python flexible_plot.py --recipe configs/flexible_plot_demos/temperature_seebeck_line.json --formats png pdf --no-show
+python flexible_plot.py --recipe configs/flexible_plot_demos/pbse_tec_qc_multi_files.json --formats png pdf --no-show
+python flexible_plot.py --recipe configs/flexible_plot_demos/room_temp_dual_axis.json --formats png pdf --no-show
 ```
 
-## Configure Your Own Data
+Direct one-off plotting:
 
-Use this folder as the root of one TE workflow repository.
+```bash
+python flexible_plot.py data/demo/max_cooling_capacity/1.csv \
+  --kind line \
+  --x I \
+  --y Q \
+  --xlabel '$I$ (A)' \
+  --ylabel '$Q_{\mathrm{c}}$ (W)' \
+  --stem quick_qc_demo \
+  --formats png pdf \
+  --no-show
+```
+
+Installed console entry:
+
+```bash
+te-flex-plot --recipe configs/flexible_plot_demos/temperature_seebeck_line.json --formats png pdf --no-show
+```
+
+Generated files are written under `outputs/`, which is ignored by git except for `.gitkeep`.
+
+## Demo Gallery
+
+These README images are copies of public demo figures in `data/demo/`.
+
+| Temperature mobility | Temperature carrier concentration |
+| --- | --- |
+| ![Temperature vs mobility](docs/demo_images/flexible/temperature_vs_mobility.png) | ![Temperature vs carrier concentration](docs/demo_images/flexible/temperature_vs_carrier_concentration.png) |
+
+| Cooling capacity | Maximum cooling temperature |
+| --- | --- |
+| ![Current vs cooling capacity](docs/demo_images/flexible/device_current_vs_cooling_capacity_qc.png) | ![Hot-side temperature vs maximum cooling temperature](docs/demo_images/flexible/device_hot_side_temperature_vs_delta_tmax.png) |
+
+| Voltage and power | COP |
+| --- | --- |
+| ![Current vs voltage and power](docs/demo_images/flexible/device_current_vs_voltage_power_dual.png) | ![Current vs COP](docs/demo_images/flexible/device_current_vs_cop.png) |
+
+| Device efficiency | Composition Hall dual axis |
+| --- | --- |
+| ![Current vs efficiency](docs/demo_images/flexible/device_current_vs_efficiency.png) | ![Composition Hall dual-axis plot](docs/demo_images/flexible/dual_axis_composition_vs_carrier_mobility.png) |
+
+## Using Your Own Data
+
+Place private files locally after cloning:
 
 ```text
-data/
-  raw/
-    CHY-1051/
-      CHY-1051-A_ZEM.txt
-      CHY-1051-A_LFA.csv
-      XRD/
-        CHY-1051-A_XRD.xy
-  lab/
-    batches.json
-    samples.json
-    lab_metadata.md
-  pdf_card/
-    plot_standards/
-  processed/
-results/
+data/raw/
+data/processed/
+data/lab/
+data/reference/
+data/pdf_card/
 ```
 
-Raw file names should follow:
+Those folders are ignored by git in this release. Keep `data/demo/` committed so the examples remain reproducible.
 
-```text
-<sample_id>_ZEM.txt
-<sample_id>_LFA.csv
-<sample_id>_LFA.txt
-<batch_id>/XRD/<sample_id>_XRD.xy
-```
-
-Then run:
+Common entry points:
 
 ```bash
-python scripts/sync_lab_metadata.py
+python run_analysis.py --help
+python plot_te.py --help
+python plot_XRD.py --help
+python flexible_plot.py --help
+python assess_selected_batches.py --help
+python bayesian_predict_te.py --help
 ```
 
-Edit `data/lab/lab_metadata.md` to fill density, heat capacity, sample composition, and notes. Import the edits:
+More details:
 
-```bash
-python scripts/sync_lab_markdown.py
-```
-
-Run analysis:
-
-```bash
-python run_analysis.py CHY-1051
-```
-
-Create publication-style plots from processed CSV:
-
-```bash
-python plot_te.py CHY-1051 --plot-mode both --formats png pdf --no-show
-python plot_te.py CHY-1051-A --seebeck --conductivity --formats png pdf --no-show
-python plot_te.py CHY-1036 CHY-1040 CHY-1051 --inter-batch --plot-mode single --properties seebeck conductivity zt --formats png pdf --no-show
-```
-
-Create XRD plots:
-
-```bash
-python plot_XRD.py CHY-1051 --mode both --formats png pdf
-python plot_XRD.py CHY-1051-A --mode normalized --formats png pdf
-python plot_XRD.py CHY-1051 --pdf-card CuInTe2_PDF_97_023_8958 --formats png pdf
-```
-
-## Data Assumptions
-
-The raw-data parser currently assumes:
-
-- ZEM files are tab-delimited text with two header rows skipped.
-- ZEM columns 0, 1, 4, and 5 map to temperature in Celsius, resistivity in ohm m, Seebeck in V/K, and power factor in W m^-1 K^-2.
-- LFA files are either compact two-column CSV files or instrument exports containing `#Mean` rows.
-- LFA temperature is in Celsius and diffusivity is used with density and heat capacity to compute thermal conductivity.
-- Processed transport CSV files use temperature in K, conductivity in S/m, Seebeck in V/K, thermal conductivity in W m^-1 K^-1, and ZT as dimensionless.
-- XRD `.xy` files are two numeric columns: 2-theta in degrees and intensity counts. Header lines are ignored.
-- XRD PDF-card standards should be CSV files under `data/pdf_card/plot_standards` with at least `two_theta_deg` and `intensity` columns.
-
-See `docs/DATA_LAYOUT.md` and `docs/COMMANDS.md` for more detail.
-
-## GitHub Notes
-
-The `.gitignore` keeps `data/raw`, `data/processed`, and `results` out of version control by default. Commit code, docs, metadata templates, and lightweight examples; keep experimental data in a private location unless you explicitly want to publish it.
+- `docs/PROJECT_STRUCTURE.md`
+- `docs/COMMANDS.md`
+- `docs/FLEXIBLE_PLOTTING.md`
