@@ -1,4 +1,4 @@
-# Thermoelectric Analysis Workspace
+# Data Analysis and Plotting Workspace
 
 Version: 1.2.0
 
@@ -75,6 +75,12 @@ Generated files are written under `outputs/`, which is ignored by git except for
 ## Demo Gallery
 
 These README images are copies of public demo figures in `data/demo/`.
+
+-Demo data from references:
+
+-Liu et al., “Ultralow Chromium Doping Enables All-PbSe Thermoelectric Cooling.”
+-Jiang et al., “High-Entropy-Stabilized Chalcogenides with High Thermoelectric Performance.”
+-Sun, C., Zhao, X., Qiu, P. et al. Flexible thermoelectric device with blade-like structure for ultrahigh output performance
 
 | Temperature mobility | Temperature carrier concentration |
 | --- | --- |
