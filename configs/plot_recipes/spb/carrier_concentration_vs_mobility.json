@@ -1,0 +1,35 @@
+{
+  "name": "spb_carrier_concentration_vs_mobility",
+  "plot": {
+    "kind": "line",
+    "x": {
+      "column": "n_H_cm-3",
+      "label": "$n_{\\mathrm{H}}$ (cm$^{-3}$)"
+    },
+    "series": [
+      {
+        "y": {
+          "column": "mu_H_cm2_V-1_s-1",
+          "label": "$\\mu_{\\mathrm{H}}$ (cm$^2$ V$^{-1}$ s$^{-1}$)"
+        },
+        "property": "mobility",
+        "group_value": "$\\mu_{\\mathrm{H}}$",
+        "marker": "o",
+        "line_width": 1.4
+      }
+    ],
+    "xlabel": "$n_{\\mathrm{H}}$ (cm$^{-3}$)",
+    "ylabel": "$\\mu_{\\mathrm{H}}$ (cm$^2$ V$^{-1}$ s$^{-1}$)",
+    "xscale": "log",
+    "legend": "none",
+    "x_margin": 0.04,
+    "y_margin": 0.08
+  },
+  "output": {
+    "dir": "outputs/figures/flexible",
+    "stem": "spb_carrier_concentration_vs_mobility",
+    "formats": ["png", "pdf"],
+    "normalized_csv": true,
+    "copy_to_data_dir": true
+  }
+}

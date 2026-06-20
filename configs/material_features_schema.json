@@ -1,0 +1,48 @@
+{
+    "description": "Shared metadata fields for lab samples and reference-literature samples.",
+    "required_core_fields": {
+        "matrix_composition": "",
+        "pristine_composition": "",
+        "sample_composition": "",
+        "optimization_type": "",
+        "modifier_species": "",
+        "modifier_element": "",
+        "modifier_elements": [],
+        "modifier_amount": null,
+        "modifier_unit": "",
+        "modifier_site": "",
+        "phase_type": "",
+        "synthesis_route": "",
+        "annealing_condition": "",
+        "notes": ""
+    },
+    "optimization_type_options": [
+        "pristine",
+        "deficiency",
+        "dope",
+        "alloy",
+        "composite",
+        "nanostructure",
+        "defect_engineering",
+        "process_optimization",
+        "other"
+    ],
+    "example": {
+        "matrix_composition": "A1B1C2",
+        "pristine_composition": "A1B1C2",
+        "sample_composition": "A0.98B1C2",
+        "optimization_type": "deficiency",
+        "modifier_species": "A vacancy",
+        "modifier_element": "A",
+        "modifier_elements": [
+            "A"
+        ],
+        "modifier_amount": 0.02,
+        "modifier_unit": "atomic_fraction",
+        "modifier_site": "A site",
+        "phase_type": "single phase",
+        "synthesis_route": "",
+        "annealing_condition": "",
+        "notes": ""
+    }
+}

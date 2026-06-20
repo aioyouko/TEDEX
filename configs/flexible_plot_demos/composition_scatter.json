@@ -1,0 +1,28 @@
+{
+  "name": "Demo composition Hall scatter",
+  "data": [{"path": "data/demo/composition_Hall/nu_muh.csv"}],
+  "plot": {
+    "kind": "scatter",
+    "x": {"column": "x", "label": "Content"},
+    "series": [
+      {
+        "y": {"column": "concentration", "label": "$n_{\\mathrm{H}}$ ($10^{19}$ cm$^{-3}$)"},
+        "property": "carrier_concentration",
+        "group_value": "$n_{\\mathrm{H}}$",
+        "marker": "o"
+      }
+    ],
+    "xlabel": "Content",
+    "ylabel": "$n_{\\mathrm{H}}$ ($10^{19}$ cm$^{-3}$)",
+    "legend": "none",
+    "x_margin": 0.04,
+    "y_margin": 0.08
+  },
+  "output": {
+    "dir": "outputs/figures/flexible_demos",
+    "stem": "demo_composition_hall_scatter",
+    "formats": ["png", "pdf"],
+    "normalized_csv": true,
+    "copy_to_data_dir": true
+  }
+}

@@ -1,0 +1,39 @@
+{
+    "recommended_files": {
+        "articles": "data/reference/articles.json",
+        "samples": "data/reference/samples.json"
+    },
+    "article_record_template": {
+        "reference_id": "REF-YYYY-FIRSTAUTHOR",
+        "title": "",
+        "authors": [],
+        "year": null,
+        "journal": "",
+        "doi": "",
+        "url": "",
+        "article_pdf": "data/reference/articles/REF-YYYY-FIRSTAUTHOR.pdf",
+        "material_family": "",
+        "notes": ""
+    },
+    "sample_record_template": {
+        "sample_id": "REF-YYYY-FIRSTAUTHOR-S01",
+        "reference_id": "REF-YYYY-FIRSTAUTHOR",
+        "sample_name": "",
+        "matrix_composition": "",
+        "pristine_composition": "",
+        "sample_composition": "",
+        "optimization_type": "",
+        "modifier_species": "",
+        "modifier_element": "",
+        "modifier_elements": [],
+        "modifier_amount": null,
+        "modifier_unit": "",
+        "modifier_site": "",
+        "phase_type": "",
+        "synthesis_route": "",
+        "annealing_condition": "",
+        "performance_file": "data/reference/processed/REF-YYYY-FIRSTAUTHOR/S01.csv",
+        "performance_source": "digitized_table_or_figure",
+        "notes": ""
+    }
+}

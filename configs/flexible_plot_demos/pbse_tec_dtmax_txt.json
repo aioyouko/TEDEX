@@ -1,0 +1,29 @@
+{
+  "name": "Demo hot-side temperature vs maximum cooling temperature",
+  "data": [{"path": "data/demo/max_cooling_temp/1.csv"}],
+  "plot": {
+    "kind": "line",
+    "x": {"column": "Th", "label": "$T_{\\mathrm{H}}$ (K)"},
+    "series": [
+      {
+        "y": {"column": "Tm", "label": "$\\Delta T_{\\max}$ (K)"},
+        "property": "delta_tmax",
+        "group_value": "$\\Delta T_{\\max}$",
+        "marker": "o",
+        "line_width": 1.4
+      }
+    ],
+    "xlabel": "$T_{\\mathrm{H}}$ (K)",
+    "ylabel": "$\\Delta T_{\\max}$ (K)",
+    "legend": "none",
+    "x_margin": 0.04,
+    "y_margin": 0.08
+  },
+  "output": {
+    "dir": "outputs/figures/flexible_demos",
+    "stem": "demo_hot_side_temperature_vs_delta_tmax",
+    "formats": ["png", "pdf"],
+    "normalized_csv": true,
+    "copy_to_data_dir": true
+  }
+}

@@ -1,0 +1,35 @@
+{
+  "name": "spb_carrier_concentration_vs_zt",
+  "plot": {
+    "kind": "line",
+    "x": {
+      "column": "n_H_cm-3",
+      "label": "$n_{\\mathrm{H}}$ (cm$^{-3}$)"
+    },
+    "series": [
+      {
+        "y": {
+          "column": "zT",
+          "label": "$zT$"
+        },
+        "property": "zt",
+        "group_value": "$zT$",
+        "marker": "o",
+        "line_width": 1.4
+      }
+    ],
+    "xlabel": "$n_{\\mathrm{H}}$ (cm$^{-3}$)",
+    "ylabel": "$zT$",
+    "xscale": "log",
+    "legend": "none",
+    "x_margin": 0.04,
+    "y_margin": 0.08
+  },
+  "output": {
+    "dir": "outputs/figures/flexible",
+    "stem": "spb_carrier_concentration_vs_zt",
+    "formats": ["png", "pdf"],
+    "normalized_csv": true,
+    "copy_to_data_dir": true
+  }
+}

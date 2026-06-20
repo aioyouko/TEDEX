@@ -1,0 +1,38 @@
+{
+  "name": "temperature_vs_carrier_concentration",
+  "plot": {
+    "kind": "line",
+    "x": {
+      "column": "T_K",
+      "label": "$T$ (K)"
+    },
+    "series": [
+      {
+        "y": {
+          "column": "n_H_cm-3",
+          "label": "$n_{\\mathrm{H}}$ ($10^{19}$ cm$^{-3}$)"
+        },
+        "property": "carrier_concentration",
+        "group_value": "$n_{\\mathrm{H}}$",
+        "marker": "o",
+        "line_width": 1.4
+      }
+    ],
+    "xlabel": "$T$ (K)",
+    "x_major": 100,
+    "x_minor": 50,
+    "ylabel": "$n_{\\mathrm{H}}$ ($10^{19}$ cm$^{-3}$)",
+    "yscale": "log",
+    "y_tick_format": "plain",
+    "legend": "none",
+    "x_margin": 0.04,
+    "y_margin": 0.08
+  },
+  "output": {
+    "dir": "outputs/figures/flexible",
+    "stem": "temperature_vs_carrier_concentration",
+    "formats": ["png", "pdf"],
+    "normalized_csv": true,
+    "copy_to_data_dir": true
+  }
+}

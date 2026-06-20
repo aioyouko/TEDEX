@@ -1,0 +1,35 @@
+{
+  "name": "spb_carrier_concentration_vs_seebeck",
+  "plot": {
+    "kind": "line",
+    "x": {
+      "column": "n_H_cm-3",
+      "label": "$n_{\\mathrm{H}}$ (cm$^{-3}$)"
+    },
+    "series": [
+      {
+        "y": {
+          "column": "Seebeck_uV_K",
+          "label": "$S$ ($\\mu$V K$^{-1}$)"
+        },
+        "property": "seebeck",
+        "group_value": "$S$",
+        "marker": "o",
+        "line_width": 1.4
+      }
+    ],
+    "xlabel": "$n_{\\mathrm{H}}$ (cm$^{-3}$)",
+    "ylabel": "$S$ ($\\mu$V K$^{-1}$)",
+    "xscale": "log",
+    "legend": "none",
+    "x_margin": 0.04,
+    "y_margin": 0.08
+  },
+  "output": {
+    "dir": "outputs/figures/flexible",
+    "stem": "spb_carrier_concentration_vs_seebeck",
+    "formats": ["png", "pdf"],
+    "normalized_csv": true,
+    "copy_to_data_dir": true
+  }
+}

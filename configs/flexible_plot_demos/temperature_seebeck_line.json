@@ -1,0 +1,30 @@
+{
+  "name": "Demo temperature vs mobility line plot",
+  "data": [{"path": "data/demo/temperature_vs_mobility/1.csv"}],
+  "plot": {
+    "kind": "line",
+    "x": {"column": "x", "label": "$T$ (K)"},
+    "series": [
+      {
+        "y": {"column": "y", "label": "$\\mu_{\\mathrm{H}}$ (cm$^2$ V$^{-1}$ s$^{-1}$)"},
+        "property": "mobility",
+        "group_value": "Demo sample",
+        "marker": "o",
+        "line_width": 1.4
+      }
+    ],
+    "xlabel": "$T$ (K)",
+    "ylabel": "$\\mu_{\\mathrm{H}}$ (cm$^2$ V$^{-1}$ s$^{-1}$)",
+    "x_major": 100,
+    "x_minor": 50,
+    "legend": "none",
+    "show_title": false
+  },
+  "output": {
+    "dir": "outputs/figures/flexible_demos",
+    "stem": "demo_temperature_vs_mobility",
+    "formats": ["png", "pdf"],
+    "normalized_csv": true,
+    "copy_to_data_dir": true
+  }
+}

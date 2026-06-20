@@ -1,0 +1,49 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "te-analysis-plotting"
+version = "1.2.0"
+description = "Thermoelectric analysis, plotting, and demo workflow package."
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "numpy>=1.23",
+    "pandas>=1.5",
+    "scipy>=1.9",
+    "matplotlib>=3.6",
+    "openpyxl>=3.1",
+    "argcomplete>=3.0",
+    "openai>=1.0",
+    "python-dotenv>=1.0",
+    "scikit-learn>=1.3",
+]
+
+[project.optional-dependencies]
+notebook = ["jupyterlab>=4"]
+
+[project.scripts]
+te-plot-xrd = "plot_XRD:main"
+te-flex-plot = "flexible_plot:main"
+te-assess-batches = "assess_selected_batches:main"
+te-bayes-predict = "bayesian_predict_te:main"
+te-sync-metadata = "scripts.sync_lab_metadata:main"
+te-sync-markdown = "scripts.sync_lab_markdown:main"
+te-paper-plots = "scripts.plot_paper_style_te_variants:main"
+
+[tool.setuptools]
+py-modules = [
+    "run_analysis",
+    "te_analysis",
+    "plot_te",
+    "plot_XRD",
+    "flexible_plot",
+    "main",
+    "assess_selected_batches",
+    "bayesian_predict_te",
+]
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["src*", "myplotstyle*", "scripts*"]

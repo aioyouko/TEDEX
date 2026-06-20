@@ -1,0 +1,41 @@
+{
+  "name": "Demo device voltage and power dual-line plot",
+  "data": [{"path": "data/demo/device power geenration/1.csv"}],
+  "plot": {
+    "kind": "dual_line",
+    "x": {"column": "I", "label": "$I$ (mA)"},
+    "series": [
+      {
+        "y": {"column": "V", "label": "Voltage (mV)"},
+        "property": "voltage",
+        "group_value": "Voltage",
+        "legend_label": "Voltage",
+        "color": "#d62728",
+        "marker": "o",
+        "line_width": 1.4
+      },
+      {
+        "y": {"column": "P", "label": "Power (mW)"},
+        "property": "power",
+        "group_value": "Power",
+        "legend_label": "Power",
+        "color": "#1f77b4",
+        "marker": "s",
+        "line_width": 1.4
+      }
+    ],
+    "xlabel": "$I$ (mA)",
+    "ylabel": "Voltage (mV)",
+    "right_ylabel": "Power (mW)",
+    "legend": "outside",
+    "x_margin": 0.04,
+    "y_margin": 0.08
+  },
+  "output": {
+    "dir": "outputs/figures/flexible_demos",
+    "stem": "demo_device_voltage_power_dual",
+    "formats": ["png", "pdf"],
+    "normalized_csv": true,
+    "copy_to_data_dir": true
+  }
+}

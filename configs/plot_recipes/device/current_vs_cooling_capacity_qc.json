@@ -1,0 +1,34 @@
+{
+  "name": "device_current_vs_cooling_capacity_qc",
+  "plot": {
+    "kind": "line",
+    "x": {
+      "column": "I_A",
+      "label": "$I$ (A)"
+    },
+    "series": [
+      {
+        "y": {
+          "column": "Qc_W",
+          "label": "$Q_{\\mathrm{c}}$ (W)"
+        },
+        "property": "qc",
+        "group_value": "$Q_{\\mathrm{c}}$",
+        "marker": "o",
+        "line_width": 1.4
+      }
+    ],
+    "xlabel": "$I$ (A)",
+    "ylabel": "$Q_{\\mathrm{c}}$ (W)",
+    "legend": "none",
+    "x_margin": 0.04,
+    "y_margin": 0.08
+  },
+  "output": {
+    "dir": "outputs/figures/flexible",
+    "stem": "device_current_vs_cooling_capacity_qc",
+    "formats": ["png", "pdf"],
+    "normalized_csv": true,
+    "copy_to_data_dir": true
+  }
+}

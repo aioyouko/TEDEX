@@ -1,0 +1,49 @@
+{
+  "name": "iv_power",
+  "plot": {
+    "kind": "dual_line",
+    "x": {
+      "column": "I_A",
+      "label": "$I$ (A)"
+    },
+    "series": [
+      {
+        "y": {
+          "column": "Voltage_mV",
+          "label": "Voltage (mV)"
+        },
+        "property": "voltage",
+        "group_value": "Voltage",
+        "legend_label": "Voltage",
+        "color": "#d62728",
+        "marker": "o",
+        "line_width": 1.4
+      },
+      {
+        "y": {
+          "column": "Power_mW",
+          "label": "Power (mW)"
+        },
+        "property": "power",
+        "group_value": "Power",
+        "legend_label": "Power",
+        "color": "#1f77b4",
+        "marker": "s",
+        "line_width": 1.4
+      }
+    ],
+    "xlabel": "$I$ (A)",
+    "ylabel": "Voltage (mV)",
+    "right_ylabel": "Power (mW)",
+    "legend_loc": "best",
+    "x_margin": 0.04,
+    "y_margin": 0.08
+  },
+  "output": {
+    "dir": "outputs/figures/flexible",
+    "stem": "iv_power",
+    "formats": ["png", "pdf"],
+    "normalized_csv": true,
+    "copy_to_data_dir": true
+  }
+}

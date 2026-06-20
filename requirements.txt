@@ -1,0 +1,10 @@
+pandas
+numpy
+scipy
+matplotlib
+openpyxl
+argcomplete
+jupyterlab
+openai
+python-dotenv
+scikit-learn

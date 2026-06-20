@@ -1,0 +1,36 @@
+{
+  "name": "temperature_vs_cp_over_t",
+  "plot": {
+    "kind": "line",
+    "x": {
+      "column": "T_K",
+      "label": "$T$ (K)"
+    },
+    "series": [
+      {
+        "y": {
+          "column": "Cp_over_T_J_mol-1_K-2",
+          "label": "$C_p/T$ (J mol$^{-1}$ K$^{-2}$)"
+        },
+        "property": "cp_over_t",
+        "group_value": "$C_p/T$",
+        "marker": "o",
+        "line_width": 1.4
+      }
+    ],
+    "xlabel": "$T$ (K)",
+    "x_major": 100,
+    "x_minor": 50,
+    "ylabel": "$C_p/T$ (J mol$^{-1}$ K$^{-2}$)",
+    "legend": "none",
+    "x_margin": 0.04,
+    "y_margin": 0.08
+  },
+  "output": {
+    "dir": "outputs/figures/flexible",
+    "stem": "temperature_vs_cp_over_t",
+    "formats": ["png", "pdf"],
+    "normalized_csv": true,
+    "copy_to_data_dir": true
+  }
+}

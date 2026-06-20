@@ -1,0 +1,38 @@
+{
+    "recommended_files": {
+        "batches": "data/lab/batches.json",
+        "samples": "data/lab/samples.json"
+    },
+    "batch_record_template": {
+        "batch_id": "BATCH-ID",
+        "project": "",
+        "matrix_composition": "",
+        "pristine_composition": "",
+        "material_family": "",
+        "notes": ""
+    },
+    "sample_record_template": {
+        "sample_id": "BATCH-ID-A",
+        "batch_id": "BATCH-ID",
+        "sample_name": "",
+        "zem": "data/raw/BATCH-ID/BATCH-ID-A_ZEM.txt",
+        "lfa": "data/raw/BATCH-ID/BATCH-ID-A_LFA.csv",
+        "processed_file": "data/processed/BATCH-ID-processed/Sample_name.csv",
+        "density": null,
+        "cp_value": null,
+        "matrix_composition": "",
+        "pristine_composition": "",
+        "sample_composition": "",
+        "optimization_type": "",
+        "modifier_species": "",
+        "modifier_element": "",
+        "modifier_elements": [],
+        "modifier_amount": null,
+        "modifier_unit": "",
+        "modifier_site": "",
+        "phase_type": "",
+        "synthesis_route": "",
+        "annealing_condition": "",
+        "notes": ""
+    }
+}

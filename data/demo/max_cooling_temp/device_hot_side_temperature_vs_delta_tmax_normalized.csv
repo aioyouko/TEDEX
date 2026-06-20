@@ -1,0 +1,8 @@
+x,y,property,group,legend_label,label,condition,source,x_source_column,y_source_column,series_order,color,marker,linestyle,line_width,marker_size,alpha
+303.1522186,38.59606733,delta_tmax,$\Delta T_{\max}$,$\Delta T_{\max}$,,,1.csv,Th,Tm,0,,o,,1.4,,
+313.1336858,40.7775243,delta_tmax,$\Delta T_{\max}$,$\Delta T_{\max}$,,,1.csv,Th,Tm,0,,o,,1.4,,
+323.0368965,43.28335941,delta_tmax,$\Delta T_{\max}$,$\Delta T_{\max}$,,,1.csv,Th,Tm,0,,o,,1.4,,
+333.0179915,45.60904648,delta_tmax,$\Delta T_{\max}$,$\Delta T_{\max}$,,,1.csv,Th,Tm,0,,o,,1.4,,
+342.8435041,48.2229146,delta_tmax,$\Delta T_{\max}$,$\Delta T_{\max}$,,,1.csv,Th,Tm,0,,o,,1.4,,
+352.6696681,50.58438004,delta_tmax,$\Delta T_{\max}$,$\Delta T_{\max}$,,,1.csv,Th,Tm,0,,o,,1.4,,
+362.9596016,53.23514314,delta_tmax,$\Delta T_{\max}$,$\Delta T_{\max}$,,,1.csv,Th,Tm,0,,o,,1.4,,

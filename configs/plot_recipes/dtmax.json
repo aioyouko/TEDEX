@@ -1,0 +1,34 @@
+{
+  "name": "dtmax",
+  "plot": {
+    "kind": "line",
+    "x": {
+      "column": "T_H_K",
+      "label": "$T_{\\mathrm{H}}$ (K)"
+    },
+    "series": [
+      {
+        "y": {
+          "column": "DeltaTmax_K",
+          "label": "$\\Delta T_{\\max}$ (K)"
+        },
+        "property": "delta_tmax",
+        "group_value": "$\\Delta T_{\\max}$",
+        "marker": "o",
+        "line_width": 1.4
+      }
+    ],
+    "xlabel": "$T_{\\mathrm{H}}$ (K)",
+    "ylabel": "$\\Delta T_{\\max}$ (K)",
+    "legend": "none",
+    "x_margin": 0.04,
+    "y_margin": 0.08
+  },
+  "output": {
+    "dir": "outputs/figures/flexible",
+    "stem": "dtmax",
+    "formats": ["png", "pdf"],
+    "normalized_csv": true,
+    "copy_to_data_dir": true
+  }
+}
