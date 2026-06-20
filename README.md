@@ -4,6 +4,10 @@ Version: 1.2.0
 
 This is a GitHub-ready package rebuilt from the current workspace source. It includes the analysis and plotting code, reusable plotting recipes, documentation, and public demo data only. Private lab data and generated outputs are intentionally not included.
 
+School of Materials Science and Engineering, Nanyang Technological University, Singapore
+
+Department of Chemistry, Northwestern Universisy, Evanston, IL, USA
+
 Included:
 
 - Root entry scripts: `run_analysis.py`, `plot_te.py`, `plot_XRD.py`, `flexible_plot.py`, `main.py`, `assess_selected_batches.py`, `bayesian_predict_te.py`.
