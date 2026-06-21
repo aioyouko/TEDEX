@@ -1,0 +1,5 @@
+ID,Temperature_K,Seebeck_microV_K,EC_S_per_m,batch,nominal Cu
+CHY-DEMO-A,300,137.99,64837.0,demo batch,0.0
+CHY-DEMO-B,300,167.53,50723.0,demo batch,0.03
+CHY-DEMO-C,300,190.16,41932.0,demo batch,0.06
+CHY-DEMO-D,300,213.62,29598.0,demo batch,0.1

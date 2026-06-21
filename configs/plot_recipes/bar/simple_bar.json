@@ -1,0 +1,35 @@
+{
+  "name": "simple_bar",
+  "plot": {
+    "kind": "bar",
+    "x": {
+      "column": "Category",
+      "label": "Category"
+    },
+    "series": [
+      {
+        "y": {
+          "column": "Value",
+          "label": "Value"
+        },
+        "property": "value",
+        "group_value": "Value",
+        "legend_label": "Value"
+      }
+    ],
+    "xlabel": "Category",
+    "ylabel": "Value",
+    "legend": "none",
+    "bar_width": 0.68,
+    "bar_labels": true,
+    "bar_label_format": "{:.3g}",
+    "y_margin": 0.14
+  },
+  "output": {
+    "dir": "outputs/figures/flexible",
+    "stem": "simple_bar",
+    "formats": ["png", "pdf"],
+    "normalized_csv": true,
+    "copy_to_data_dir": true
+  }
+}

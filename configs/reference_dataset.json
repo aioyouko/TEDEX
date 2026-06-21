@@ -1,0 +1,10 @@
+{
+    "recommended_files": {
+        "articles": "data/reference/articles.json",
+        "samples": "data/reference/samples.json",
+        "processed_data_folder": "data/reference/processed",
+        "features_folder": "data/reference/features"
+    },
+    "articles": [],
+    "samples": []
+}

@@ -1,0 +1,39 @@
+{
+  "name": "te_temperature_vs_zt",
+  "plot": {
+    "kind": "line",
+    "x": {
+      "column": "Temperature",
+      "label": "$T$ (K)"
+    },
+    "group": {
+      "semantic": "sample"
+    },
+    "series": [
+      {
+        "y": {
+          "column": "ZT",
+          "label": "$ZT$"
+        },
+        "property": "zt",
+        "marker": "o",
+        "line_width": 1.4
+      }
+    ],
+    "xlabel": "$T$ (K)",
+    "x_major": 100,
+    "x_minor": 50,
+    "ylabel": "$ZT$",
+    "legend": "inside",
+    "legend_loc": "best",
+    "x_margin": 0.04,
+    "y_margin": 0.08
+  },
+  "output": {
+    "dir": "outputs/figures/te",
+    "stem": "te_temperature_vs_zt",
+    "formats": ["png", "pdf"],
+    "normalized_csv": true,
+    "copy_to_data_dir": true
+  }
+}

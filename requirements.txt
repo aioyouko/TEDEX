@@ -1,10 +1,14 @@
+#1. Required modules
+python
 pandas
 numpy
 scipy
-matplotlib
+Matplotlib
 openpyxl
 argcomplete
+
+#2. Workspace
 jupyterlab
+
+#3 Agent
 openai
-python-dotenv
-scikit-learn

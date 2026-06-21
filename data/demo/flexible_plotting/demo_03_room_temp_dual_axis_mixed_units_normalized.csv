@@ -1,0 +1,9 @@
+x,x_category,y,property,group,legend_label,label,condition,source,x_source_column,y_source_column,series_order,color,marker,linestyle,line_width,marker_size,alpha
+300.0,300,648.37,conductivity,CHY-DEMO-A,CHY-DEMO-A,,,room_temp_snapshot_mixed_units.csv,Temperature_K,EC_S_per_m,1,,,,,,
+300.0,300,507.23,conductivity,CHY-DEMO-B,CHY-DEMO-A,,,room_temp_snapshot_mixed_units.csv,Temperature_K,EC_S_per_m,1,,,,,,
+300.0,300,419.32,conductivity,CHY-DEMO-C,CHY-DEMO-A,,,room_temp_snapshot_mixed_units.csv,Temperature_K,EC_S_per_m,1,,,,,,
+300.0,300,295.98,conductivity,CHY-DEMO-D,CHY-DEMO-A,,,room_temp_snapshot_mixed_units.csv,Temperature_K,EC_S_per_m,1,,,,,,
+300.0,300,137.99,seebeck,CHY-DEMO-A,CHY-DEMO-A,,,room_temp_snapshot_mixed_units.csv,Temperature_K,Seebeck_microV_K,0,,,,,,
+300.0,300,167.53,seebeck,CHY-DEMO-B,CHY-DEMO-A,,,room_temp_snapshot_mixed_units.csv,Temperature_K,Seebeck_microV_K,0,,,,,,
+300.0,300,190.16,seebeck,CHY-DEMO-C,CHY-DEMO-A,,,room_temp_snapshot_mixed_units.csv,Temperature_K,Seebeck_microV_K,0,,,,,,
+300.0,300,213.62,seebeck,CHY-DEMO-D,CHY-DEMO-A,,,room_temp_snapshot_mixed_units.csv,Temperature_K,Seebeck_microV_K,0,,,,,,

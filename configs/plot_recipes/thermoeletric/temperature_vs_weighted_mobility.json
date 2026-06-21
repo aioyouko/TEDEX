@@ -1,0 +1,39 @@
+{
+  "name": "te_temperature_vs_weighted_mobility",
+  "plot": {
+    "kind": "line",
+    "x": {
+      "column": "Temperature",
+      "label": "$T$ (K)"
+    },
+    "group": {
+      "semantic": "sample"
+    },
+    "series": [
+      {
+        "y": {
+          "column": "Weighted_Mobility_cm2_V-1_s-1",
+          "label": "$\\mu_{\\mathrm{w}}$ (cm$^2$ V$^{-1}$ s$^{-1}$)"
+        },
+        "property": "weighted_mobility",
+        "marker": "o",
+        "line_width": 1.4
+      }
+    ],
+    "xlabel": "$T$ (K)",
+    "x_major": 100,
+    "x_minor": 50,
+    "ylabel": "$\\mu_{\\mathrm{w}}$ (cm$^2$ V$^{-1}$ s$^{-1}$)",
+    "legend": "inside",
+    "legend_loc": "best",
+    "x_margin": 0.04,
+    "y_margin": 0.08
+  },
+  "output": {
+    "dir": "outputs/figures/te",
+    "stem": "te_temperature_vs_weighted_mobility",
+    "formats": ["png", "pdf"],
+    "normalized_csv": true,
+    "copy_to_data_dir": true
+  }
+}

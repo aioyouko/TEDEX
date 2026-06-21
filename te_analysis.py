@@ -185,7 +185,7 @@ def filter_sample_files(
     if unmatched:
         message = (
             f"No sample matched in {batch_id}: {', '.join(unmatched)}. "
-            "Try a full id such as CHY-1001-B, a suffix such as B, "
+            "Try a full id such as CHY-1054-B, a suffix such as B, "
             "or a sample_name from data/lab/samples.json."
         )
         if strict:

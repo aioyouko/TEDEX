@@ -24,9 +24,19 @@ The categorized recipes are the preferred names. Short recipe files in
 - `temperature/temperature_vs_mobility.json`: `$T$` vs `$\mu_{\mathrm{H}}$`
 - `temperature/temperature_vs_cp_over_t.json`: `$T$` vs `$C_p/T$`
 
+## Thermoelectric Properties
+
+- `thermoeletric/temperature_vs_te_summary.json`: `$T$` vs standard 2x3 TE summary properties
+- `thermoeletric/temperature_vs_<property>.json`: `$T$` vs one processed TE property using `plot_te.py` labels
+
 ## Lattice
 
 - `lattice/composition_vs_lattice_parameter.json`: composition/content vs lattice parameter
+
+## Bar Charts
+
+- `bar/simple_bar.json`: categorical x vs one value column
+- `bar/grouped_bar.json`: categorical x vs two or more side-by-side value columns
 
 ## Dual Axis
 
@@ -62,3 +72,6 @@ overrides are also available:
 For dual-axis recipes, use `--right-ylim`, `--right-yscale`,
 `--right-y-major`, `--right-y-minor`, and `--right-y-tick-format` for the
 right axis.
+
+For bar recipes, use `plot.x_order` in JSON to set the category order. In
+direct CLI mode, repeat `--y` and `--label` to make grouped bars.

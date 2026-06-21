@@ -2,7 +2,7 @@
 Assess selected thermoelectric batches from existing extracted features.
 
 Usage:
-    python assess_selected_batches.py CHY-1001 CHY-1002
+    python assess_selected_batches.py CHY-1040 CHY-1048
     python assess_selected_batches.py --all
 
 The script is intentionally local and deterministic:
@@ -34,7 +34,7 @@ except ImportError:  # pragma: no cover - pandas is already in requirements.txt
 
 
 WORKSPACE = Path(__file__).resolve().parent
-DEFAULT_SELECTED_BATCHES = []
+DEFAULT_SELECTED_BATCHES = ["CHY-1040", "CHY-1048"]
 FEATURE_ROOT = WORKSPACE / "data" / "processed"
 REFERENCE_TABLES = [
     WORKSPACE / "data" / "extracted_te_review" / "article_level_extraction_20.csv",
@@ -950,7 +950,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "batches",
         nargs="*",
-        help="Batch IDs to assess, e.g. CHY-1001 CHY-1002.",
+        help="Batch IDs to assess, e.g. CHY-1040 CHY-1048.",
     )
     parser.add_argument(
         "--all",

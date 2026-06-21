@@ -421,8 +421,8 @@ def get_processed_path_aliases(path_like):
     Return possible filesystem paths for a direct processed CSV/dir selector.
 
     This accepts both the project layout, e.g.
-    data/processed/CHY-1001-processed/sample_A.csv, and the shorter form
-    data/processed/CHY-1001/sample_A.csv.
+    data/processed/CHY-1040-processed/Zn_dope_0.02.csv, and the shorter form
+    data/processed/CHY-1040/Zn_dope_0.02.csv.
     """
     raw_path = Path(path_like)
     candidates = [raw_path]
@@ -926,10 +926,10 @@ def parse_args():
         "batches",
         nargs="*",
         help=(
-            "Batch/sample/path selectors. Examples: CHY-1001 for all samples, "
-            "CHY-1001-A for one sample, CHY-1001-sample_A for one named "
-            "sample, CHY-1001/sample_A for one named sample, or a direct CSV/dir "
-            "such as data/processed/CHY-1001/sample_A.csv."
+            "Batch/sample/path selectors. Examples: CHY-1046 for all samples, "
+            "CHY-1040-A for one sample, CHY-1040-Zn_dope_0.02 for one named "
+            "sample, CHY-1046/Na_dope for one named sample, or a direct CSV/dir "
+            "such as data/processed/CHY-1040/Zn_dope_0.02.csv."
         ),
     )
     parser.add_argument(
@@ -1069,10 +1069,10 @@ def parse_args():
 if __name__ == "__main__":
     
     # Select whole batches or individual samples:
-    # "CHY-1001" means all samples in CHY-1001.
-    # "CHY-1001-A" means only sample A from CHY-1001.
-    # "CHY-1001/sample_name" or "CHY-1001:sample_name" means one named sample.
-    my_targets = []
+    # "CHY-1046" means all samples in CHY-1046.
+    # "CHY-1040-A" means only sample A from CHY-1040.
+    # "CHY-1046/Na_dope" or "CHY-1046:Na_dope" means one named sample.
+    my_targets = ["CHY-1048"]
     inter_batch = False  # set True to compare all my_targets in one plot
     
     args = parse_args()

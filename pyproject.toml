@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "te-analysis-plotting"
-version = "1.2.0"
+version = "1.2.1"
 description = "Thermoelectric analysis, plotting, and demo workflow package."
 readme = "README.md"
 requires-python = ">=3.10"

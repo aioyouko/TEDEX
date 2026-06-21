@@ -1,0 +1,168 @@
+{
+    "CHY-1038": {
+        "batch_metadata": {
+            "matrix_composition": "Cu0.8Ag0.2In0.5Ga0.5Te2",
+            "pristine_composition": "Cu0.8Ag0.2In0.5Ga0.5Te2",
+            "material_family": "Cu-Ag-In-Ga-Te",
+            "notes": "Matrix composition inferred from existing CHY-1038 analysis report."
+        },
+        "CdSe_0.01": {
+            "zem": "data/raw/CHY-1038/CHY-1038-A_ZEM.txt",
+            "lfa": "data/raw/CHY-1038/CHY-1038-A_LFA.csv",
+            "density": 5.941,
+            "cp_value": 0.238,
+            "sample_id": "CHY-1038-A",
+            "matrix_composition": "Cu0.8Ag0.2In0.5Ga0.5Te2",
+            "pristine_composition": "Cu0.8Ag0.2In0.5Ga0.5Te2",
+            "sample_composition": "Cu0.8Ag0.2In0.5Ga0.5Te2 + 0.01 CdSe",
+            "optimization_type": "composite",
+            "modifier_species": "CdSe",
+            "modifier_element": "",
+            "modifier_elements": [
+                "Cd",
+                "Se"
+            ],
+            "modifier_amount": 0.01,
+            "modifier_unit": "nominal_fraction",
+            "modifier_site": "",
+            "phase_type": "",
+            "notes": "Confirm whether CdSe is a composite addition or substitutional dopant."
+        },
+      "CdSe_0.02": {
+            "zem": "data/raw/CHY-1038/CHY-1038-B_ZEM.txt",
+            "lfa": "data/raw/CHY-1038/CHY-1038-B_LFA.csv",
+            "density": 5.979,
+            "cp_value": 0.238,
+            "sample_id": "CHY-1038-B",
+            "matrix_composition": "Cu0.8Ag0.2In0.5Ga0.5Te2",
+            "pristine_composition": "Cu0.8Ag0.2In0.5Ga0.5Te2",
+            "sample_composition": "Cu0.8Ag0.2In0.5Ga0.5Te2 + 0.02 CdSe",
+            "optimization_type": "composite",
+            "modifier_species": "CdSe",
+            "modifier_element": "",
+            "modifier_elements": [
+                "Cd",
+                "Se"
+            ],
+            "modifier_amount": 0.02,
+            "modifier_unit": "nominal_fraction",
+            "modifier_site": "",
+            "phase_type": "",
+            "notes": "Confirm whether CdSe is a composite addition or substitutional dopant."
+        },
+        "CdSe_0.03": {
+            "zem": "data/raw/CHY-1038/CHY-1038-C_ZEM.txt",
+            "lfa": "data/raw/CHY-1038/CHY-1038-C_LFA.csv",
+            "density": 5.943,
+            "cp_value": 0.2378,
+            "sample_id": "CHY-1038-C",
+            "matrix_composition": "Cu0.8Ag0.2In0.5Ga0.5Te2",
+            "pristine_composition": "Cu0.8Ag0.2In0.5Ga0.5Te2",
+            "sample_composition": "Cu0.8Ag0.2In0.5Ga0.5Te2 + 0.03 CdSe",
+            "optimization_type": "composite",
+            "modifier_species": "CdSe",
+            "modifier_element": "",
+            "modifier_elements": [
+                "Cd",
+                "Se"
+            ],
+            "modifier_amount": 0.03,
+            "modifier_unit": "nominal_fraction",
+            "modifier_site": "",
+            "phase_type": "",
+            "notes": "Confirm whether CdSe is a composite addition or substitutional dopant."
+        }
+    },
+    "CHY-1040": {
+        "batch_metadata": {
+            "matrix_composition": "Cu0.8Ag0.2In0.5Ga0.5Te2",
+            "pristine_composition": "Cu0.8Ag0.2In0.5Ga0.5Te2",
+            "material_family": "Cu-Ag-In-Ga-Te",
+            "notes": "Matrix composition inferred from existing CHY-1040 analysis report."
+        },
+        "Cu_deficicency_0.02": {
+            "zem": "data/raw/CHY-1040/CHY-1040-A_ZEM.txt",
+            "lfa": "data/raw/CHY-1040/CHY-1040-A_LFA.csv",
+            "density": 6.01,
+            "cp_value": 0.237,
+            "sample_id": "CHY-1040-A",
+            "matrix_composition": "Cu0.8Ag0.2In0.5Ga0.5Te2",
+            "pristine_composition": "Cu0.8Ag0.2In0.5Ga0.5Te2",
+            "sample_composition": "Cu0.78Ag0.2In0.5Ga0.5Te2",
+            "optimization_type": "deficiency",
+            "modifier_species": "Cu vacancy",
+            "modifier_element": "Cu",
+            "modifier_elements": [
+                "Cu"
+            ],
+            "modifier_amount": 0.02,
+            "modifier_unit": "nominal_cation_fraction",
+            "modifier_site": "Cu site",
+            "phase_type": "",
+            "notes": "Original sample key keeps typo for backward compatibility; preferred spelling is Cu_deficiency_0.02."
+        },
+      "Cu_deficiency_0.04": {
+            "zem": "data/raw/CHY-1040/CHY-1040-B_ZEM.txt",
+            "lfa": "data/raw/CHY-1040/CHY-1040-B_LFA.csv",
+            "density": 5.991,
+            "cp_value": 0.2366,
+            "sample_id": "CHY-1040-B",
+            "matrix_composition": "Cu0.8Ag0.2In0.5Ga0.5Te2",
+            "pristine_composition": "Cu0.8Ag0.2In0.5Ga0.5Te2",
+            "sample_composition": "Cu0.76Ag0.2In0.5Ga0.5Te2",
+            "optimization_type": "deficiency",
+            "modifier_species": "Cu vacancy",
+            "modifier_element": "Cu",
+            "modifier_elements": [
+                "Cu"
+            ],
+            "modifier_amount": 0.04,
+            "modifier_unit": "nominal_cation_fraction",
+            "modifier_site": "Cu site",
+            "phase_type": "",
+            "notes": ""
+        },
+        "Zn_dope_0.02": {
+            "zem": "data/raw/CHY-1040/CHY-1040-C_ZEM.txt",
+            "lfa": "data/raw/CHY-1040/CHY-1040-C_LFA.csv",
+            "density": 6.017,
+            "cp_value": 0.2379,
+            "sample_id": "CHY-1040-C",
+            "matrix_composition": "Cu0.8Ag0.2In0.5Ga0.5Te2",
+            "pristine_composition": "Cu0.8Ag0.2In0.5Ga0.5Te2",
+            "sample_composition": "Cu0.8Ag0.2In0.5Ga0.5Te2 + 0.02 Zn",
+            "optimization_type": "dope",
+            "modifier_species": "Zn",
+            "modifier_element": "Zn",
+            "modifier_elements": [
+                "Zn"
+            ],
+            "modifier_amount": 0.02,
+            "modifier_unit": "nominal_fraction",
+            "modifier_site": "unknown",
+            "phase_type": "",
+            "notes": "Dopant site and exact charge-compensated formula need confirmation."
+        },
+        "Zn_dope_0.04": {
+            "zem": "data/raw/CHY-1040/CHY-1040-D_ZEM.txt",
+            "lfa": "data/raw/CHY-1040/CHY-1040-D_LFA.csv",
+            "density": 6.005,
+            "cp_value": 0.2382,
+            "sample_id": "CHY-1040-D",
+            "matrix_composition": "Cu0.8Ag0.2In0.5Ga0.5Te2",
+            "pristine_composition": "Cu0.8Ag0.2In0.5Ga0.5Te2",
+            "sample_composition": "Cu0.8Ag0.2In0.5Ga0.5Te2 + 0.04 Zn",
+            "optimization_type": "dope",
+            "modifier_species": "Zn",
+            "modifier_element": "Zn",
+            "modifier_elements": [
+                "Zn"
+            ],
+            "modifier_amount": 0.04,
+            "modifier_unit": "nominal_fraction",
+            "modifier_site": "unknown",
+            "phase_type": "",
+            "notes": "Dopant site and exact charge-compensated formula need confirmation."
+        }
+    }
+}

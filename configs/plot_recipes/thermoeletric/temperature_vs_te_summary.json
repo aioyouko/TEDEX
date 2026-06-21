@@ -1,0 +1,72 @@
+{
+  "name": "te_temperature_summary",
+  "plot": {
+    "kind": "multi_panel",
+    "x": {
+      "column": "Temperature",
+      "label": "$T$ (K)"
+    },
+    "group": {
+      "semantic": "sample"
+    },
+    "series": [
+      {
+        "y": {
+          "column": "Seebeck",
+          "scale": 1000000.0,
+          "label": "$S$ ($\\mu$V K$^{-1}$)"
+        },
+        "property": "seebeck"
+      },
+      {
+        "y": {
+          "column": "Conductivity",
+          "scale": 0.01,
+          "label": "$\\sigma$ (S cm$^{-1}$)"
+        },
+        "property": "conductivity"
+      },
+      {
+        "y": {
+          "column": "Power_Factor",
+          "scale": 10000.0,
+          "label": "$PF$ ($\\mu$W cm$^{-1}$ K$^{-2}$)"
+        },
+        "property": "power_factor"
+      },
+      {
+        "y": {
+          "column": "Thermal_Conductivity",
+          "label": "$\\kappa_{\\mathrm{tot}}$ (W m$^{-1}$ K$^{-1}$)"
+        },
+        "property": "thermal_conductivity"
+      },
+      {
+        "y": {
+          "column": "Lattice_Thermal_Conductivity",
+          "label": "$\\kappa_{\\mathrm{L}}$ (W m$^{-1}$ K$^{-1}$)"
+        },
+        "property": "lattice_thermal_conductivity"
+      },
+      {
+        "y": {
+          "column": "ZT",
+          "label": "$ZT$"
+        },
+        "property": "zt"
+      }
+    ],
+    "xlabel": "$T$ (K)",
+    "x_major": 100,
+    "x_minor": 50,
+    "x_margin": 0.04,
+    "y_margin": 0.08
+  },
+  "output": {
+    "dir": "outputs/figures/te",
+    "stem": "te_temperature_summary",
+    "formats": ["png", "pdf"],
+    "normalized_csv": true,
+    "copy_to_data_dir": true
+  }
+}

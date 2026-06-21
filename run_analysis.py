@@ -25,7 +25,7 @@ from scripts.sync_lab_metadata import (
 PROJECT_ROOT = Path(__file__).resolve().parent
 LAB_MARKDOWN_PATH = PROJECT_ROOT / "data" / "lab" / "lab_metadata.md"
 LAB_MARKDOWN_SYNC_SCRIPT = PROJECT_ROOT / "scripts" / "sync_lab_markdown.py"
-DEFAULT_TARGET_BATCHES = []
+DEFAULT_TARGET_BATCHES = ["CHY-1048"]
 
 
 def load_json(file_path, default):
@@ -127,10 +127,10 @@ def normalize_batch_id(selector):
 
 def parse_batch_sample_selector(selector):
     """
-    Split selectors like CHY-1001-B, 1001-B, CHY-1001/B, or CHY-1001:B.
+    Split selectors like CHY-1054-B, 1054-B, CHY-1054/B, or CHY-1054:B.
 
     Returns (batch_id, sample_selector). sample_selector is None for a whole
-    batch selector such as CHY-1001.
+    batch selector such as CHY-1054.
     """
     raw = str(selector or "").strip()
     if not raw:
@@ -343,8 +343,8 @@ def parse_args():
         "batches",
         nargs="*",
         help=(
-            "Batch ids to analyze. Examples: CHY-1001, 1001, CHY-1001 CHY-1002. "
-            "If omitted, no batch is selected unless --all is used."
+            "Batch ids to analyze. Examples: CHY-1048, 1048, CHY-1038 CHY-1040. "
+            f"If omitted, defaults to {' '.join(DEFAULT_TARGET_BATCHES)}."
         ),
     )
     parser.add_argument(
@@ -360,8 +360,8 @@ def parse_args():
         default=[],
         help=(
             "Analyze only selected samples within the selected batch. Examples: "
-            "--sample B, --samples B C, or --sample CHY-1001-B. Positional "
-            "sample selectors such as CHY-1001-B also work."
+            "--sample B, --samples B C, or --sample CHY-1054-B. Positional "
+            "sample selectors such as CHY-1054-B also work."
         ),
     )
     parser.add_argument(

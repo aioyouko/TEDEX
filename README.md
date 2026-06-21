@@ -1,60 +1,120 @@
-# Data Analysis and Plotting Workspace
+# TEDEX
 
-Version: 1.2.0
+TEDEX is a lightweight thermoelectric analysis and plotting toolkit. It keeps
+the lab-style plotting defaults in one place, while letting you make quick
+publication-style figures from processed TE transport tables, device curves,
+XRD data, and loosely structured CSV/TXT/XLSX files.
 
-This is a GitHub-ready package rebuilt from the current workspace source. It includes the analysis and plotting code, reusable plotting recipes, documentation, and public demo data only. Private lab data and generated outputs are intentionally not included.
+Current public package: **v1.2.1**.
 
-School of Materials Science and Engineering, Nanyang Technological University, Singapore
+This public release includes source code, docs, reusable plotting recipes, and
+demo files under `data/demo/`. Private raw data, processed lab data, lab
+metadata, results, and generated outputs are not included.
 
-Department of Chemistry, Northwestern Universisy, Evanston, IL, USA
+## What's New in v1.2.1
 
-Included:
+- Added bar chart support to `flexible_plot.py` through `bar` and
+  `grouped_bar` plot kinds.
+- Added reusable bar recipes:
+  `configs/plot_recipes/bar/simple_bar.json` and
+  `configs/plot_recipes/bar/grouped_bar.json`.
+- Added thermoelectric property recipes under
+  `configs/plot_recipes/thermoeletric/` for Seebeck, conductivity, power
+  factor, thermal conductivity, Lorenz number, weighted mobility, zT, and a
+  multi-panel TE summary. The folder keeps the existing `thermoeletric`
+  spelling for compatibility.
+- Added demo outputs for bar charts and TE property plots in `data/demo/`.
 
-- Root entry scripts: `run_analysis.py`, `plot_te.py`, `plot_XRD.py`, `flexible_plot.py`, `main.py`, `assess_selected_batches.py`, `bayesian_predict_te.py`.
-- Source modules under `src/agents/` and `src/tools/`.
-- Plot style helpers under `myplotstyle/`.
-- Utility scripts under `scripts/`.
-- Reusable configs under `configs/`.
-- Public demo files under `data/demo/`.
-- Empty placeholders for `data/raw/`, `data/processed/`, `data/lab/`, `data/reference/`, `data/pdf_card/`, `results/`, and `outputs/`.
+## Demo Gallery
 
-Not included:
+| Grouped bar | TE Seebeck | TE conductivity |
+| --- | --- | --- |
+| ![Grouped bar demo](data/demo/flexible_plotting/demo_08_composition_grouped_bar.png) | ![TE Seebeck demo](data/demo/thermoelectric_property/te_temperature_vs_seebeck.png) | ![TE conductivity demo](data/demo/thermoelectric_property/te_temperature_vs_conductivity.png) |
 
-- Private raw data.
-- Private processed data.
-- Lab metadata ledgers.
-- Reference PDF/data libraries.
-- Generated results or output artifacts.
-- Local Codex skills and external snapshots.
-- `.env` or API keys.
+| Sound velocity bars | TE zT | Device voltage/power |
+| --- | --- | --- |
+| ![Sound velocity grouped bar demo](data/demo/sound%20velocity/sound_velocity_grouped_bar.png) | ![TE zT demo](data/demo/thermoelectric_property/te_temperature_vs_zt.png) | ![Device voltage and power demo](data/demo/device%20power%20geenration/device_current_vs_voltage_power_dual.png) |
 
-## Quick Start
+Demo references:
+
+- `data/demo/COP/`, `data/demo/max_cooling_capacity/`, and
+  `data/demo/device_efficiency/`: Liu et al., "Ultralow Chromium Doping
+  Enables All-PbSe Thermoelectric Cooling."
+- `data/demo/flexible_plotting/`, `data/demo/thermoelectric_property/`, and
+  `data/demo/sound velocity/`: Jiang et al., "High-Entropy-Stabilized
+  Chalcogenides with High Thermoelectric Performance."
+- `data/demo/device power geenration/`: Sun, C., Zhao, X., Qiu, P. et al.,
+  "Flexible thermoelectric device with blade-like structure for ultrahigh
+  output performance."
+
+## Install
+
+Use Python 3.10 or newer.
 
 ```bash
-cd te-analysis-plotting-v1.2.0
-python3 -m venv .venv
+git clone https://github.com/aioyouko/TEDEX.git
+cd TEDEX
+
+python -m venv .venv
 source .venv/bin/activate
-python -m pip install --upgrade pip
-pip install -e .
-```
-
-Or install with requirements:
-
-```bash
 pip install -r requirements.txt
 ```
 
-## Demo Commands
-
-Flexible plotting works immediately with the included demo data:
+For editable command-line entry points:
 
 ```bash
-python flexible_plot.py --recipe configs/flexible_plot_demos/temperature_seebeck_line.json --formats png pdf --no-show
-python flexible_plot.py --recipe configs/flexible_plot_demos/pbse_tec_qc_multi_files.json --formats png pdf --no-show
-python flexible_plot.py --recipe configs/flexible_plot_demos/room_temp_dual_axis.json --formats png pdf --no-show
+pip install -e .
 ```
 
-Direct one-off plotting:
+## Quick Examples
+
+Run a grouped bar chart from the included demo table:
+
+```bash
+python flexible_plot.py data/demo/flexible_plotting/composition_grouped_bar_summary.csv \
+  --recipe configs/plot_recipes/bar/grouped_bar.json \
+  --x Composition \
+  --y zT_500K \
+  --y zT_700K \
+  --label "500 K" \
+  --label "700 K" \
+  --ylabel "zT" \
+  --stem quick_grouped_bar \
+  --formats png pdf \
+  --no-copy-to-data-dir \
+  --no-show
+```
+
+Run a single thermoelectric property plot from demo TE data:
+
+```bash
+python flexible_plot.py \
+  --recipe configs/plot_recipes/thermoeletric/temperature_vs_seebeck.json \
+  data/demo/thermoelectric_property/1.csv \
+  --stem quick_te_seebeck \
+  --formats png pdf \
+  --no-copy-to-data-dir \
+  --no-show
+```
+
+Compare the same TE property across multiple demo samples:
+
+```bash
+python flexible_plot.py \
+  --recipe configs/plot_recipes/thermoeletric/temperature_vs_zt.json \
+  data/demo/thermoelectric_property/1.csv \
+  data/demo/thermoelectric_property/2.csv \
+  data/demo/thermoelectric_property/3.csv \
+  --label "Sample 1" \
+  --label "Sample 2" \
+  --label "Sample 3" \
+  --stem quick_te_zt_compare \
+  --formats png pdf \
+  --no-copy-to-data-dir \
+  --no-show
+```
+
+Create a direct plot without a recipe:
 
 ```bash
 python flexible_plot.py data/demo/max_cooling_capacity/1.csv \
@@ -68,58 +128,31 @@ python flexible_plot.py data/demo/max_cooling_capacity/1.csv \
   --no-show
 ```
 
-Installed console entry:
+Installed entry-point equivalent:
 
 ```bash
-te-flex-plot --recipe configs/flexible_plot_demos/temperature_seebeck_line.json --formats png pdf --no-show
+te-flex-plot data/demo/max_cooling_capacity/1.csv --kind line --x I --y Q --no-show
 ```
 
-Generated files are written under `outputs/`, which is ignored by git except for `.gitkeep`.
+## Recipe Map
 
-## Demo Gallery
+- `configs/plot_recipes/bar/`: simple and grouped categorical bar charts.
+- `configs/plot_recipes/thermoeletric/`: processed TE property plots and
+  summary panels.
+- `configs/plot_recipes/device/`: device efficiency, COP, cooling capacity,
+  maximum cooling temperature, and voltage/power plots.
+- `configs/plot_recipes/temperature/`: temperature-dependent transport plots.
+- `configs/plot_recipes/spb/`: carrier concentration trends for SPB-style
+  comparisons.
+- `configs/plot_recipes/dual_axis/`: two-axis composition or temperature plots.
+- `configs/plot_recipes/lattice/`: composition versus lattice parameter.
 
-These README images are copies of public demo figures in `data/demo/`.
+Each saved figure also writes a normalized CSV by default, so the plotted x/y
+columns, labels, groups, and source files are auditable.
 
--Demo data from references:
-
--Liu et al., “Ultralow Chromium Doping Enables All-PbSe Thermoelectric Cooling.”
--Jiang et al., “High-Entropy-Stabilized Chalcogenides with High Thermoelectric Performance.”
--Sun, C., Zhao, X., Qiu, P. et al. Flexible thermoelectric device with blade-like structure for ultrahigh output performance
-
-| Temperature mobility | Temperature carrier concentration |
-| --- | --- |
-| ![Temperature vs mobility](docs/demo_images/flexible/temperature_vs_mobility.png) | ![Temperature vs carrier concentration](docs/demo_images/flexible/temperature_vs_carrier_concentration.png) |
-
-| Cooling capacity | Maximum cooling temperature |
-| --- | --- |
-| ![Current vs cooling capacity](docs/demo_images/flexible/device_current_vs_cooling_capacity_qc.png) | ![Hot-side temperature vs maximum cooling temperature](docs/demo_images/flexible/device_hot_side_temperature_vs_delta_tmax.png) |
-
-| Voltage and power | COP |
-| --- | --- |
-| ![Current vs voltage and power](docs/demo_images/flexible/device_current_vs_voltage_power_dual.png) | ![Current vs COP](docs/demo_images/flexible/device_current_vs_cop.png) |
-
-| Device efficiency | Composition Hall dual axis |
-| --- | --- |
-| ![Current vs efficiency](docs/demo_images/flexible/device_current_vs_efficiency.png) | ![Composition Hall dual-axis plot](docs/demo_images/flexible/dual_axis_composition_vs_carrier_mobility.png) |
-
-## Using Your Own Data
-
-Place private files locally after cloning:
-
-```text
-data/raw/
-data/processed/
-data/lab/
-data/reference/
-data/pdf_card/
-```
-
-Those folders are ignored by git in this release. Keep `data/demo/` committed so the examples remain reproducible.
-
-Common entry points:
+## Entry Points
 
 ```bash
-python run_analysis.py --help
 python plot_te.py --help
 python plot_XRD.py --help
 python flexible_plot.py --help
@@ -127,8 +160,51 @@ python assess_selected_batches.py --help
 python bayesian_predict_te.py --help
 ```
 
-More details:
+After `pip install -e .`, the package also provides:
 
-- `docs/PROJECT_STRUCTURE.md`
-- `docs/COMMANDS.md`
-- `docs/FLEXIBLE_PLOTTING.md`
+```bash
+te-flex-plot --help
+te-plot-xrd --help
+te-assess-batches --help
+te-bayes-predict --help
+```
+
+## Repository Layout
+
+```text
+.
+├── src/                    # Reusable Python source
+├── myplotstyle/             # Matplotlib style helpers
+├── scripts/                 # Supporting CLI utilities
+├── configs/plot_recipes/    # Reusable plotting recipes
+├── data/demo/               # Public demo inputs and generated examples
+├── docs/                    # Command notes and workflow docs
+├── outputs/                 # Local generated figures, ignored by release
+└── results/                 # Local generated analysis outputs, ignored by release
+```
+
+## Release Note
+
+To publish this package to GitHub as a new release, see
+`TEDEX_SYNC_RELEASE.md`. In short: sync this v1.2.1 folder into a fresh clone of
+`aioyouko/TEDEX`, commit it, tag `v1.2.1`, push `main`, and push the tag.
+
+## Acknowledgements
+
+Documentation updates, release-check workflow notes, and selected code
+maintenance for this public package were assisted by OpenAI Codex, with final
+review and responsibility by Heyang Chen.
+
+## Copyright And Contact
+
+Copyright (c) 2026 Heyang Chen. All rights reserved unless a separate license
+file is added to this repository.
+
+For questions, collaborations, or citation details, contact:
+
+- Heyang Chen
+- heyang.chen@ntu.edu.sg
+- heyang.chen@northwestern.edu
+- School of Materials Science and Engineering, Nanyang Technological
+  University, Singapore
+- Department of Chemistry, Northwestern University, Evanston, IL, USA

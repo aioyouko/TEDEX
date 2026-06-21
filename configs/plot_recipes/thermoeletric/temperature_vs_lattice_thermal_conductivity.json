@@ -1,0 +1,39 @@
+{
+  "name": "te_temperature_vs_lattice_thermal_conductivity",
+  "plot": {
+    "kind": "line",
+    "x": {
+      "column": "Temperature",
+      "label": "$T$ (K)"
+    },
+    "group": {
+      "semantic": "sample"
+    },
+    "series": [
+      {
+        "y": {
+          "column": "Lattice_Thermal_Conductivity",
+          "label": "$\\kappa_{\\mathrm{L}}$ (W m$^{-1}$ K$^{-1}$)"
+        },
+        "property": "lattice_thermal_conductivity",
+        "marker": "o",
+        "line_width": 1.4
+      }
+    ],
+    "xlabel": "$T$ (K)",
+    "x_major": 100,
+    "x_minor": 50,
+    "ylabel": "$\\kappa_{\\mathrm{L}}$ (W m$^{-1}$ K$^{-1}$)",
+    "legend": "inside",
+    "legend_loc": "best",
+    "x_margin": 0.04,
+    "y_margin": 0.08
+  },
+  "output": {
+    "dir": "outputs/figures/te",
+    "stem": "te_temperature_vs_lattice_thermal_conductivity",
+    "formats": ["png", "pdf"],
+    "normalized_csv": true,
+    "copy_to_data_dir": true
+  }
+}

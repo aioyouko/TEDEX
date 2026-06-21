@@ -48,6 +48,7 @@ from src.tools.plot import (  # noqa: E402
 SINGLE_TICK_LABEL_SIZE = 10
 SUMMARY_TICK_LABEL_SIZE = 9
 TICK_FORMAT_CHOICES = ("auto", "plain", "scientific")
+BAR_PLOT_KINDS = {"bar", "grouped_bar"}
 
 
 SEMANTIC_ALIASES = {
@@ -252,6 +253,10 @@ def transform_values(series: pd.Series, selector: Any) -> pd.Series:
     return values * selector_scale(selector) + selector_offset(selector)
 
 
+def categorical_x_enabled(plot: dict[str, Any]) -> bool:
+    return bool(plot.get("categorical_x", str(plot.get("kind", "line")) in BAR_PLOT_KINDS))
+
+
 def resolve_path(path: str | Path, workspace: Path) -> Path:
     raw_path = Path(path).expanduser()
     if raw_path.is_absolute():
@@ -373,6 +378,7 @@ def first_defined(*values: Any, default: Any = None) -> Any:
 def build_normalized_table(recipe: dict[str, Any], workspace: Path) -> tuple[pd.DataFrame, dict[str, Any]]:
     """Build one long table: x, y, property, group, label, source."""
     plot = recipe.get("plot", {})
+    categorical_x = categorical_x_enabled(plot)
     fallback_raw = load_recipe_data(recipe, workspace) if recipe.get("data") or recipe.get("sources") else None
     global_x_selector = plot.get("x")
     if global_x_selector is None:
@@ -397,6 +403,13 @@ def build_normalized_table(recipe: dict[str, Any], workspace: Path) -> tuple[pd.
         x_selector = spec.get("x", global_x_selector)
         x_semantic = x_selector.get("semantic") if isinstance(x_selector, dict) else None
         x_col = resolve_column(raw, x_selector, semantic=x_semantic, role="x")
+        x_raw = raw[x_col]
+        if categorical_x:
+            x_values = pd.to_numeric(x_raw, errors="coerce")
+            x_category_values = x_raw.astype("string")
+        else:
+            x_values = transform_values(x_raw, x_selector)
+            x_category_values = x_values.map(lambda value: plain_number_label(float(value)) if pd.notna(value) else "")
 
         y_selector = series_y_selector(spec)
         semantic = y_selector.get("semantic") if isinstance(y_selector, dict) else spec.get("semantic")
@@ -438,7 +451,8 @@ def build_normalized_table(recipe: dict[str, Any], workspace: Path) -> tuple[pd.
 
         working = pd.DataFrame(
             {
-                "x": transform_values(raw[x_col], x_selector),
+                "x": x_values,
+                "x_category": x_category_values,
                 "y": transform_values(raw[y_col], y_selector),
                 "property": property_name,
                 "group": group_values.astype(str),
@@ -460,13 +474,26 @@ def build_normalized_table(recipe: dict[str, Any], workspace: Path) -> tuple[pd.
     normalized.loc[:, object_columns] = normalized.loc[:, object_columns].mask(
         normalized.loc[:, object_columns] == ""
     )
-    normalized = normalized.dropna(subset=["x", "y"])
+    drop_subset = ["x_category", "y"] if categorical_x else ["x", "y"]
+    normalized = normalized.dropna(subset=drop_subset)
 
-    order = plot.get("order")
-    if order:
-        normalized["group"] = pd.Categorical(normalized["group"], categories=order, ordered=True)
+    x_categories: list[str] = []
+    if categorical_x:
+        x_categories = [str(value) for value in as_list(first_defined(plot.get("x_order"), plot.get("category_order")))]
+        seen_x_categories = set(x_categories)
+        for category in unique_in_order(normalized["x_category"]):
+            if category not in seen_x_categories:
+                x_categories.append(category)
+                seen_x_categories.add(category)
+        normalized["x_category"] = pd.Categorical(normalized["x_category"].astype(str), categories=x_categories, ordered=True)
+        normalized["x"] = normalized["x_category"].cat.codes.astype(float)
+        normalized["x_category"] = normalized["x_category"].astype(str)
+
+    group_order = plot.get("group_order", plot.get("order"))
+    if group_order:
+        normalized["group"] = pd.Categorical(normalized["group"], categories=group_order, ordered=True)
     normalized = normalized.sort_values(["property", "series_order", "group", "x"], kind="mergesort")
-    if order:
+    if group_order:
         normalized["group"] = normalized["group"].astype(str)
 
     metadata = {
@@ -474,6 +501,8 @@ def build_normalized_table(recipe: dict[str, Any], workspace: Path) -> tuple[pd.
         "property_labels": property_labels,
         "kind": plot.get("kind", "line"),
         "title": plot.get("title", recipe.get("name", "")),
+        "categorical_x": categorical_x,
+        "x_categories": x_categories,
     }
     return normalized, metadata
 
@@ -864,6 +893,155 @@ def plot_multi_panel(normalized: pd.DataFrame, metadata: dict[str, Any], recipe:
     return fig, axes
 
 
+def aggregate_bar_values(values: pd.Series, mode: str) -> float:
+    clean_values = pd.to_numeric(values, errors="coerce").dropna()
+    if clean_values.empty:
+        return np.nan
+    if mode == "first":
+        return float(clean_values.iloc[0])
+    if mode == "sum":
+        return float(clean_values.sum())
+    if mode == "median":
+        return float(clean_values.median())
+    if mode == "min":
+        return float(clean_values.min())
+    if mode == "max":
+        return float(clean_values.max())
+    return float(clean_values.mean())
+
+
+def bar_group_label(row: pd.Series, property_names: list[str], property_labels: dict[str, str]) -> str:
+    legend_label = row.get("legend_label")
+    group_label = str(legend_label) if pd.notna(legend_label) else str(row["group"])
+    if len(property_names) <= 1:
+        return group_label
+    property_label = property_labels.get(str(row["property"]), str(row["property"]))
+    return f"{group_label} - {property_label}"
+
+
+def plot_bar(normalized: pd.DataFrame, metadata: dict[str, Any], recipe: dict[str, Any]) -> tuple[plt.Figure, plt.Axes]:
+    plot = recipe.get("plot", {})
+    apply_plot_style(mode=plot.get("style_mode", "single"))
+
+    fig, ax = plt.subplots(figsize=recipe_figure_size(plot))
+    property_names = unique_properties_by_series_order(normalized)
+    property_labels = metadata.get("property_labels", {})
+    working = normalized.copy()
+    working["bar_group"] = working.apply(lambda row: bar_group_label(row, property_names, property_labels), axis=1)
+
+    if metadata.get("categorical_x"):
+        categories = metadata.get("x_categories") or unique_in_order(working["x_category"])
+        category_labels = [str(category) for category in categories]
+        category_mask = working["x_category"].astype(str)
+    else:
+        categories = unique_in_order(working["x"])
+        category_labels = [plain_number_label(float(category)) for category in categories]
+        category_mask = working["x"]
+
+    group_names = unique_in_order(working["bar_group"])
+    group_count = max(len(group_names), 1)
+    positions = np.arange(len(categories), dtype=float)
+    total_width = float(plot.get("bar_width", 0.72))
+    single_width = total_width / group_count
+    offsets = (np.arange(group_count) - (group_count - 1) / 2.0) * single_width
+    aggregate_mode = str(plot.get("bar_aggregate", "mean"))
+    style_iterators = get_style_cycles()
+    bar_containers = []
+
+    for group_index, group in enumerate(group_names):
+        group_df = working[working["bar_group"] == group]
+        default_color, _ = next_style(style_iterators)
+        color = optional_style(group_df, "color") or default_color
+        alpha = optional_number(optional_style(group_df, "alpha"))
+        if alpha is None:
+            alpha = float(plot.get("bar_alpha", 0.86))
+
+        values = []
+        for category in categories:
+            if metadata.get("categorical_x"):
+                category_df = group_df[category_mask.loc[group_df.index] == str(category)]
+            else:
+                category_df = group_df[category_mask.loc[group_df.index] == category]
+            values.append(aggregate_bar_values(category_df["y"], aggregate_mode))
+
+        container = ax.bar(
+            positions + offsets[group_index],
+            values,
+            width=single_width * float(plot.get("bar_fill", 0.92)),
+            color=color,
+            alpha=alpha,
+            label=group,
+            edgecolor=plot.get("bar_edgecolor", "none"),
+            linewidth=float(plot.get("bar_linewidth", 0.0)),
+            zorder=3,
+        )
+        bar_containers.append((container, values))
+
+    if plot.get("bar_labels", False):
+        label_format = plot.get("bar_label_format", "{:.2g}")
+        for container, values in bar_containers:
+            for patch, value in zip(container.patches, values):
+                if not np.isfinite(value):
+                    continue
+                label = label_format.format(value)
+                offset = 3 if value >= 0 else -3
+                va = "bottom" if value >= 0 else "top"
+                ax.annotate(
+                    label,
+                    (patch.get_x() + patch.get_width() / 2.0, value),
+                    xytext=(0, offset),
+                    textcoords="offset points",
+                    ha="center",
+                    va=va,
+                    fontsize=float(plot.get("bar_label_font_size", 7.5)),
+                    clip_on=False,
+                )
+
+    ax.set_xticks(positions)
+    xtick_rotation = plot.get("xtick_rotation", 0)
+    xtick_ha = plot.get("xtick_ha") or ("right" if xtick_rotation else "center")
+    ax.set_xticklabels(category_labels, rotation=xtick_rotation, ha=xtick_ha)
+    ax.set_xlabel(plot.get("xlabel", metadata["x_label"]))
+    first_property = property_names[0]
+    ax.set_ylabel(plot.get("ylabel", property_labels.get(first_property, first_property)))
+    if metadata.get("title") and plot.get("show_title", False):
+        ax.set_title(metadata["title"])
+    ax.margins(x=float(plot.get("x_margin", 0.04)), y=float(plot.get("y_margin", 0.10)))
+    ax.xaxis.set_minor_locator(ticker.NullLocator())
+    add_text_annotations(ax, plot)
+    apply_subplot_aspect(ax, recipe_subplot_aspect(plot))
+
+    legend_mode = plot.get("legend", "none" if len(group_names) <= 1 else "inside")
+    if legend_mode == "outside":
+        style_axis(ax, categorical_x=True, legend=False)
+        apply_axis_options(ax, plot)
+        handles, labels = ax.get_legend_handles_labels()
+        if handles:
+            fig.legend(
+                handles,
+                labels,
+                loc="upper center",
+                bbox_to_anchor=(0.5, 0.98),
+                ncol=min(len(labels), 4),
+                fontsize=plot.get("legend_font_size", DEFAULT_LEGEND_FONT_SIZE),
+                frameon=False,
+                title=plot.get("legend_title"),
+            )
+        fig.tight_layout(rect=(0, 0, 1, 0.90))
+    else:
+        style_axis(
+            ax,
+            categorical_x=True,
+            legend=legend_mode != "none",
+            legend_loc=plot.get("legend_loc", "best"),
+            legend_font_size=plot.get("legend_font_size", DEFAULT_LEGEND_FONT_SIZE),
+            legend_title=plot.get("legend_title"),
+        )
+        apply_axis_options(ax, plot)
+        fig.tight_layout()
+    return fig, ax
+
+
 def plot_dual_axis(normalized: pd.DataFrame, metadata: dict[str, Any], recipe: dict[str, Any]) -> tuple[plt.Figure, tuple[plt.Axes, plt.Axes]]:
     plot = recipe.get("plot", {})
     apply_plot_style(mode=plot.get("style_mode", "single"))
@@ -1063,6 +1241,8 @@ def plot_dual_line(normalized: pd.DataFrame, metadata: dict[str, Any], recipe: d
 
 
 PLOTTERS = {
+    "bar": plot_bar,
+    "grouped_bar": plot_bar,
     "line": plot_line_or_scatter,
     "scatter": lambda normalized, metadata, recipe: plot_line_or_scatter(
         normalized,
@@ -1336,6 +1516,22 @@ def selector_with_column(selector: Any, column: str, label: str | None = None) -
     return updated
 
 
+def expand_series_for_bar_overrides(series: list[Any], values: list[str] | None, plot_kind: str) -> None:
+    if not values or plot_kind not in BAR_PLOT_KINDS or len(values) <= len(series) or not series:
+        return
+
+    original_count = len(series)
+    for index in range(original_count, len(values)):
+        template = copy.deepcopy(series[index % original_count])
+        if not isinstance(template, dict):
+            template = {"column": template}
+        # Explicit template styles are meaningful for the original slots, but
+        # cloned extra bars should fall back to the normal style cycle.
+        for style_key in ("color", "marker", "linestyle", "line_width", "marker_size", "alpha"):
+            template.pop(style_key, None)
+        series.append(template)
+
+
 def update_series_values(series: list[Any], values: list[Any] | None, key: str, option_name: str) -> None:
     if not values:
         return
@@ -1349,7 +1545,13 @@ def update_series_values(series: list[Any], values: list[Any] | None, key: str, 
                 spec[key] = value
 
 
-def update_series_y_columns(series: list[Any], values: list[str] | None, ylabel: str | None = None) -> None:
+def update_series_y_columns(
+    series: list[Any],
+    values: list[str] | None,
+    ylabel: str | None = None,
+    *,
+    default_legend_from_y: bool = False,
+) -> None:
     if not values:
         return
     mapped_values = mapped_series_option(series, values, "--y", preference=("template", "source"))
@@ -1357,6 +1559,9 @@ def update_series_y_columns(series: list[Any], values: list[str] | None, ylabel:
         if not isinstance(series[index], dict):
             series[index] = {"column": series[index]}
         series[index]["y"] = selector_with_column(series[index].get("y", series[index]), value, ylabel)
+        if default_legend_from_y:
+            series[index]["group_value"] = {"value": value}
+            series[index]["legend_label"] = {"value": value}
 
 
 def update_series_x_columns(series: list[Any], values: list[str] | None, xlabel: str | None = None) -> None:
@@ -1451,13 +1656,22 @@ def override_recipe_from_cli(
         plot["series"] = series
         plot.pop("y", None)
 
+    plot_kind = str(plot.get("kind", "line"))
+    if series and option_present(argv, "--y") and args.y:
+        expand_series_for_bar_overrides(series, args.y, plot_kind)
+
     if option_present(argv, "--x") and args.x:
         plot["x"] = selector_with_column(plot.get("x"), args.x[0], args.xlabel if option_present(argv, "--xlabel") else None)
         if series:
             update_series_x_columns(series, args.x, args.xlabel if option_present(argv, "--xlabel") else None)
     if option_present(argv, "--y") and args.y:
         if series:
-            update_series_y_columns(series, args.y, args.ylabel if option_present(argv, "--ylabel") else None)
+            update_series_y_columns(
+                series,
+                args.y,
+                args.ylabel if option_present(argv, "--ylabel") else None,
+                default_legend_from_y=plot_kind in BAR_PLOT_KINDS and not option_present(argv, "--label", "--series-label"),
+            )
         else:
             plot["y"] = selector_with_column(plot.get("y"), args.y[0], args.ylabel if option_present(argv, "--ylabel") else None)
 

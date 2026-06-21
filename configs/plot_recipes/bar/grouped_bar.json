@@ -1,0 +1,44 @@
+{
+  "name": "grouped_bar",
+  "plot": {
+    "kind": "grouped_bar",
+    "x": {
+      "column": "Category",
+      "label": "Category"
+    },
+    "series": [
+      {
+        "y": {
+          "column": "Series A",
+          "label": "Value"
+        },
+        "property": "value",
+        "group_value": "Series A",
+        "legend_label": "Series A"
+      },
+      {
+        "y": {
+          "column": "Series B",
+          "label": "Value"
+        },
+        "property": "value",
+        "group_value": "Series B",
+        "legend_label": "Series B"
+      }
+    ],
+    "xlabel": "Category",
+    "ylabel": "Value",
+    "legend": "inside",
+    "legend_loc": "best",
+    "bar_width": 0.72,
+    "bar_labels": false,
+    "y_margin": 0.10
+  },
+  "output": {
+    "dir": "outputs/figures/flexible",
+    "stem": "grouped_bar",
+    "formats": ["png", "pdf"],
+    "normalized_csv": true,
+    "copy_to_data_dir": true
+  }
+}

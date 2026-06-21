@@ -1,0 +1,39 @@
+{
+  "name": "te_temperature_vs_lorenz_number",
+  "plot": {
+    "kind": "line",
+    "x": {
+      "column": "Temperature",
+      "label": "$T$ (K)"
+    },
+    "group": {
+      "semantic": "sample"
+    },
+    "series": [
+      {
+        "y": {
+          "column": "Lorenz_Number_1e-8_WOhmK-2",
+          "label": "$L$ ($10^{-8}$ W $\\Omega$ K$^{-2}$)"
+        },
+        "property": "lorenz_number",
+        "marker": "o",
+        "line_width": 1.4
+      }
+    ],
+    "xlabel": "$T$ (K)",
+    "x_major": 100,
+    "x_minor": 50,
+    "ylabel": "$L$ ($10^{-8}$ W $\\Omega$ K$^{-2}$)",
+    "legend": "inside",
+    "legend_loc": "best",
+    "x_margin": 0.04,
+    "y_margin": 0.08
+  },
+  "output": {
+    "dir": "outputs/figures/te",
+    "stem": "te_temperature_vs_lorenz_number",
+    "formats": ["png", "pdf"],
+    "normalized_csv": true,
+    "copy_to_data_dir": true
+  }
+}

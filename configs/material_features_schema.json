@@ -28,18 +28,18 @@
         "other"
     ],
     "example": {
-        "matrix_composition": "A1B1C2",
-        "pristine_composition": "A1B1C2",
-        "sample_composition": "A0.98B1C2",
+        "matrix_composition": "Cu0.8Ag0.2In0.5Ga0.5Te2",
+        "pristine_composition": "Cu0.8Ag0.2In0.5Ga0.5Te2",
+        "sample_composition": "Cu0.78Ag0.2In0.5Ga0.5Te2",
         "optimization_type": "deficiency",
-        "modifier_species": "A vacancy",
-        "modifier_element": "A",
+        "modifier_species": "Cu vacancy",
+        "modifier_element": "Cu",
         "modifier_elements": [
-            "A"
+            "Cu"
         ],
         "modifier_amount": 0.02,
         "modifier_unit": "atomic_fraction",
-        "modifier_site": "A site",
+        "modifier_site": "Cu site",
         "phase_type": "single phase",
         "synthesis_route": "",
         "annealing_condition": "",

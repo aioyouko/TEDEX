@@ -1,0 +1,5 @@
+x,x_category,y,property,group,legend_label,label,condition,source,x_source_column,y_source_column,series_order,color,marker,linestyle,line_width,marker_size,alpha
+0.0,x = 0.00,0.52,value,700 K,700 K,,,composition_grouped_bar_summary.csv,Composition,zT_700K,0,,,,,,
+1.0,x = 0.03,0.68,value,700 K,700 K,,,composition_grouped_bar_summary.csv,Composition,zT_700K,0,,,,,,
+2.0,x = 0.06,0.81,value,700 K,700 K,,,composition_grouped_bar_summary.csv,Composition,zT_700K,0,,,,,,
+3.0,x = 0.10,0.74,value,700 K,700 K,,,composition_grouped_bar_summary.csv,Composition,zT_700K,0,,,,,,
