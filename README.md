@@ -27,23 +27,37 @@ metadata, results, and generated outputs are not included.
 
 ## Demo Gallery
 
-| Grouped bar | TE Seebeck | TE conductivity |
+The gallery below combines public demo figures from the v1.2.0 and v1.2.1
+release packages.
+
+| Temperature mobility | Temperature carrier concentration | Composition Hall dual axis |
 | --- | --- | --- |
-| ![Grouped bar demo](data/demo/flexible_plotting/demo_08_composition_grouped_bar.png) | ![TE Seebeck demo](data/demo/thermoelectric_property/te_temperature_vs_seebeck.png) | ![TE conductivity demo](data/demo/thermoelectric_property/te_temperature_vs_conductivity.png) |
+| ![Temperature vs mobility](data/demo/temperature_vs_mobility/temperature_vs_mobility.png) | ![Temperature vs carrier concentration](data/demo/temperature_vs_carrier_concentration/temperature_vs_carrier_concentration.png) | ![Composition Hall dual-axis plot](data/demo/composition_Hall/dual_axis_composition_vs_carrier_mobility.png) |
 
-| Sound velocity bars | TE zT | Device voltage/power |
+| Cooling capacity | Maximum cooling temperature | COP |
 | --- | --- | --- |
-| ![Sound velocity grouped bar demo](data/demo/sound%20velocity/sound_velocity_grouped_bar.png) | ![TE zT demo](data/demo/thermoelectric_property/te_temperature_vs_zt.png) | ![Device voltage and power demo](data/demo/device%20power%20geenration/device_current_vs_voltage_power_dual.png) |
+| ![Current vs cooling capacity](data/demo/max_cooling_capacity/device_current_vs_cooling_capacity_qc.png) | ![Hot-side temperature vs maximum cooling temperature](data/demo/max_cooling_temp/device_hot_side_temperature_vs_delta_tmax.png) | ![Current vs COP](data/demo/COP/device_current_vs_cop.png) |
 
-Demo references:
+| Device efficiency | Device voltage/power | Composition grouped bar |
+| --- | --- | --- |
+| ![Current vs efficiency](data/demo/device_efficiency/device_current_vs_efficiency.png) | ![Current vs voltage and power](data/demo/device%20power%20geenration/device_current_vs_voltage_power_dual.png) | ![Composition grouped bar demo](data/demo/flexible_plotting/demo_08_composition_grouped_bar.png) |
 
-- Liu et al., "Ultralow Chromium Doping
-  Enables All-PbSe Thermoelectric Cooling."
-- Jiang et al., "High-Entropy-Stabilized
-  Chalcogenides with High Thermoelectric Performance."
-- Sun, C., Zhao, X., Qiu, P. et al.,
-  "Flexible thermoelectric device with blade-like structure for ultrahigh
-  output performance."
+| TE Seebeck | TE conductivity | TE zT |
+| --- | --- | --- |
+| ![TE Seebeck demo](data/demo/thermoelectric_property/te_temperature_vs_seebeck.png) | ![TE conductivity demo](data/demo/thermoelectric_property/te_temperature_vs_conductivity.png) | ![TE zT demo](data/demo/thermoelectric_property/te_temperature_vs_zt.png) |
+
+| Sound velocity bars | Simple bar template | Flexible multi-panel |
+| --- | --- | --- |
+| ![Sound velocity grouped bar demo](data/demo/sound%20velocity/sound_velocity_grouped_bar.png) | ![Simple bar template demo](data/demo/flexible_plotting/check_simple_bar_template.png) | ![Flexible multi-panel demo](data/demo/flexible_plotting/demo_02_messy_te_multi_panel.png) |
+
+Demo references for the public example datasets:
+
+- Liu et al., "Ultralow Chromium Doping Enables All-PbSe Thermoelectric
+  Cooling."
+- Jiang et al., "High-Entropy-Stabilized Chalcogenides with High
+  Thermoelectric Performance."
+- Sun, C., Zhao, X., Qiu, P. et al., "Flexible thermoelectric device with
+  blade-like structure for ultrahigh output performance."
 
 ## Install
 
