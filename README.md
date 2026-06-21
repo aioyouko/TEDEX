@@ -37,13 +37,11 @@ metadata, results, and generated outputs are not included.
 
 Demo references:
 
-- `data/demo/COP/`, `data/demo/max_cooling_capacity/`, and
-  `data/demo/device_efficiency/`: Liu et al., "Ultralow Chromium Doping
+- Liu et al., "Ultralow Chromium Doping
   Enables All-PbSe Thermoelectric Cooling."
-- `data/demo/flexible_plotting/`, `data/demo/thermoelectric_property/`, and
-  `data/demo/sound velocity/`: Jiang et al., "High-Entropy-Stabilized
+- Jiang et al., "High-Entropy-Stabilized
   Chalcogenides with High Thermoelectric Performance."
-- `data/demo/device power geenration/`: Sun, C., Zhao, X., Qiu, P. et al.,
+- Sun, C., Zhao, X., Qiu, P. et al.,
   "Flexible thermoelectric device with blade-like structure for ultrahigh
   output performance."
 
