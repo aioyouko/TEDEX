@@ -525,7 +525,8 @@ def optional_number(value: Any) -> float | None:
 def optional_style(group_df: pd.DataFrame, key: str) -> Any:
     if key not in group_df.columns:
         return None
-    values = group_df[key].replace("", np.nan).dropna()
+    values = group_df[key].dropna()
+    values = values[values.astype(str) != ""]
     if values.empty:
         return None
     return values.iloc[0]
@@ -570,8 +571,32 @@ def log_plain_formatter(axis: ticker.Axis) -> ticker.FuncFormatter:
     return ticker.FuncFormatter(formatter)
 
 
+def log_decade_formatter(axis: ticker.Axis) -> ticker.FuncFormatter:
+    def formatter(value: float, _position: int | None = None) -> str:
+        if value <= 0 or not np.isfinite(value):
+            return ""
+        low, high = sorted(axis.get_view_interval())
+        if low <= 0 or high <= 0:
+            return ""
+        if value < low * (1 - 1e-10) or value > high * (1 + 1e-10):
+            return ""
+        exponent = round(math.log10(value))
+        if abs(value / (10**exponent) - 1.0) > 1e-8:
+            return ""
+        return rf"$10^{{{int(exponent)}}}$"
+
+    return ticker.FuncFormatter(formatter)
+
+
 def apply_tick_format(axis: ticker.Axis, mode: str | None, *, scale: str) -> None:
     if mode in (None, "auto"):
+        return
+
+    if mode == "decade":
+        if scale == "log":
+            axis.set_major_locator(ticker.LogLocator(base=10.0, subs=(1.0,)))
+            axis.set_major_formatter(log_decade_formatter(axis))
+            axis.set_minor_formatter(ticker.NullFormatter())
         return
 
     if mode == "plain":
@@ -618,6 +643,16 @@ def apply_axis_options(ax: plt.Axes, plot: dict[str, Any]) -> None:
         ax.xaxis.set_minor_locator(ticker.LogLocator(base=10.0, subs=np.arange(2, 10) * 0.1))
     if ax.get_yscale() == "log" and plot.get("y_minor") is None:
         ax.yaxis.set_minor_locator(ticker.LogLocator(base=10.0, subs=np.arange(2, 10) * 0.1))
+    if ax.get_xscale() == "log" and plot.get("x_log_ticks") == "decade":
+        ax.xaxis.set_major_locator(ticker.LogLocator(base=10.0, subs=(1.0,)))
+        ax.xaxis.set_minor_locator(ticker.LogLocator(base=10.0, subs=np.arange(2, 10) * 0.1))
+        ax.xaxis.set_minor_formatter(ticker.NullFormatter())
+        plot = {**plot, "x_tick_format": "decade"}
+    if ax.get_yscale() == "log" and plot.get("y_log_ticks") == "decade":
+        ax.yaxis.set_major_locator(ticker.LogLocator(base=10.0, subs=(1.0,)))
+        ax.yaxis.set_minor_locator(ticker.LogLocator(base=10.0, subs=np.arange(2, 10) * 0.1))
+        ax.yaxis.set_minor_formatter(ticker.NullFormatter())
+        plot = {**plot, "y_tick_format": "decade"}
 
     apply_tick_format(ax.xaxis, plot.get("x_tick_format"), scale=ax.get_xscale())
     apply_tick_format(ax.yaxis, plot.get("y_tick_format"), scale=ax.get_yscale())

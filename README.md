@@ -5,30 +5,28 @@ the lab-style plotting defaults in one place, while letting you make quick
 publication-style figures from processed TE transport tables, device curves,
 XRD data, and loosely structured CSV/TXT/XLSX files.
 
-Current public package: **v1.2.1**.
+Current public package: **v1.3.0**.
 
 This public release includes source code, docs, reusable plotting recipes, and
 demo files under `data/demo/`. Private raw data, processed lab data, lab
 metadata, results, and generated outputs are not included.
 
-## What's New in v1.2.1
+## What's New in v1.3.0
 
-- Added bar chart support to `flexible_plot.py` through `bar` and
-  `grouped_bar` plot kinds.
-- Added reusable bar recipes:
-  `configs/plot_recipes/bar/simple_bar.json` and
-  `configs/plot_recipes/bar/grouped_bar.json`.
-- Added thermoelectric property recipes under
-  `configs/plot_recipes/thermoeletric/` for Seebeck, conductivity, power
-  factor, thermal conductivity, Lorenz number, weighted mobility, zT, and a
-  multi-panel TE summary. The folder keeps the existing `thermoeletric`
-  spelling for compatibility.
-- Added demo outputs for bar charts and TE property plots in `data/demo/`.
+- Added SPB effective-mass fitting from Hall carrier concentration and
+  Seebeck data.
+- Added SPB performance fitting for grouped `nH-S-PF-ZT` data, including
+  power factor and zT curves.
+- Added conductivity-axis SPB fitting for datasets without measured Hall
+  carrier concentration. Conductivity defaults to S/m, and the model can fit
+  or use a fixed weighted `u0`.
+- Added reusable SPB recipes and public demo inputs/figures under
+  `configs/plot_recipes/spb/` and `data/demo/spb_fitting/`.
 
 ## Demo Gallery
 
-The gallery below combines public demo figures from the v1.2.0 and v1.2.1
-release packages.
+The gallery below combines public demo figures from the v1.2.0, v1.2.1, and
+v1.3.0 release packages.
 
 | Temperature mobility | Temperature carrier concentration | Composition Hall dual axis |
 | --- | --- | --- |
@@ -45,6 +43,14 @@ release packages.
 | TE Seebeck | TE conductivity | TE zT |
 | --- | --- | --- |
 | ![TE Seebeck demo](data/demo/thermoelectric_property/te_temperature_vs_seebeck.png) | ![TE conductivity demo](data/demo/thermoelectric_property/te_temperature_vs_conductivity.png) | ![TE zT demo](data/demo/thermoelectric_property/te_temperature_vs_zt.png) |
+
+| SPB Pisarenko view | SPB PF view | SPB conductivity view |
+| --- | --- | --- |
+| ![SPB Pisarenko fit demo](data/demo/spb_fitting/Ag2Se/pisarenko_fit.png) | ![SPB power factor fit demo](data/demo/spb_fitting/Ag2Se/pf_fit.png) | ![SPB conductivity-axis PF fit demo](data/demo/spb_fitting/Cu2SSeTe/conductivity_pf_fit.png) |
+
+| SPB zT view | SPB conductivity Seebeck | SPB conductivity zT |
+| --- | --- | --- |
+| ![SPB zT fit demo](data/demo/spb_fitting/Ag2Se/zt_fit.png) | ![SPB conductivity-axis Seebeck fit demo](data/demo/spb_fitting/Cu2SSeTe/conductivity_seebeck_fit.png) | ![SPB conductivity-axis zT fit demo](data/demo/spb_fitting/Cu2SSeTe/conductivity_zt_fit.png) |
 
 | Sound velocity bars | Simple bar template | Flexible multi-panel |
 | --- | --- | --- |
@@ -126,6 +132,52 @@ python flexible_plot.py \
   --no-show
 ```
 
+Fit SPB effective mass from grouped Hall carrier concentration and Seebeck
+data:
+
+```bash
+python src/tools/SPB/effective_mass_fit.py \
+  data/demo/spb_fitting/Ag2Se/Ag2Se_series.csv \
+  -g curve_id \
+  --T-column T \
+  --x nH \
+  --y S \
+  --formats png pdf \
+  --no-show
+```
+
+Fit SPB performance curves from `nH-S-PF-ZT` data:
+
+```bash
+python src/tools/SPB/performance_fit.py \
+  data/demo/spb_fitting/Ag2Se/Ag2Se_series.csv \
+  -g curve_id \
+  --T-column T \
+  --x nH \
+  --y S \
+  --pf PF \
+  --zt ZT \
+  --kL 0.5 \
+  --formats png pdf \
+  --no-show
+```
+
+Fit SPB curves on conductivity when Hall carrier concentration is unavailable:
+
+```bash
+python src/tools/SPB/conductivity_fit.py \
+  data/demo/spb_fitting/Cu2SSeTe/900K.csv \
+  --T 900 \
+  --x conductivity \
+  --y S \
+  --pf PF \
+  --zt ZT \
+  --kL 0.5 \
+  --legend outside \
+  --formats png pdf \
+  --no-show
+```
+
 Create a direct plot without a recipe:
 
 ```bash
@@ -154,8 +206,8 @@ te-flex-plot data/demo/max_cooling_capacity/1.csv --kind line --x I --y Q --no-s
 - `configs/plot_recipes/device/`: device efficiency, COP, cooling capacity,
   maximum cooling temperature, and voltage/power plots.
 - `configs/plot_recipes/temperature/`: temperature-dependent transport plots.
-- `configs/plot_recipes/spb/`: carrier concentration trends for SPB-style
-  comparisons.
+- `configs/plot_recipes/spb/`: carrier concentration and conductivity-axis
+  SPB fitting plots.
 - `configs/plot_recipes/dual_axis/`: two-axis composition or temperature plots.
 - `configs/plot_recipes/lattice/`: composition versus lattice parameter.
 
@@ -170,6 +222,9 @@ python plot_XRD.py --help
 python flexible_plot.py --help
 python assess_selected_batches.py --help
 python bayesian_predict_te.py --help
+python src/tools/SPB/effective_mass_fit.py --help
+python src/tools/SPB/performance_fit.py --help
+python src/tools/SPB/conductivity_fit.py --help
 ```
 
 After `pip install -e .`, the package also provides:
@@ -179,6 +234,9 @@ te-flex-plot --help
 te-plot-xrd --help
 te-assess-batches --help
 te-bayes-predict --help
+te-spb-effective-mass --help
+te-spb-performance --help
+te-spb-conductivity --help
 ```
 
 ## Repository Layout
@@ -198,8 +256,8 @@ te-bayes-predict --help
 ## Release Note
 
 To publish this package to GitHub as a new release, see
-`TEDEX_SYNC_RELEASE.md`. In short: sync this v1.2.1 folder into a fresh clone of
-`aioyouko/TEDEX`, commit it, tag `v1.2.1`, push `main`, and push the tag.
+`TEDEX_SYNC_RELEASE.md`. In short: sync this v1.3.0 folder into a fresh clone of
+`aioyouko/TEDEX`, commit it, tag `v1.3.0`, push `main`, and push the tag.
 
 ## Acknowledgements
 

@@ -69,7 +69,7 @@ TE_PLOT_SPECS = {
         'column': 'Seebeck',
         'scale': 1e6,
         'title': 'Seebeck Coefficient',
-        'ylabel': r'$S$ ($\mu$V K$^{-1}$)',
+        'ylabel': '$S$ (\u00b5V K$^{-1}$)',
     },
     'conductivity': {
         'column': 'Conductivity',

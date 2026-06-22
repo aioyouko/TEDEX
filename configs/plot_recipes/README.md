@@ -13,6 +13,9 @@ The categorized recipes are the preferred names. Short recipe files in
 
 ## SPB Fitting
 
+- `spb/pisarenko_fit.json`: Hall-Pisarenko fitting curve plus measured `$|S|$` points
+- `spb/pf_fit.json`: SPB power-factor model curve plus measured `$PF$` points
+- `spb/zt_fit.json`: SPB `$zT$` model curve plus measured `$zT$` points
 - `spb/carrier_concentration_vs_seebeck.json`: `$n_{\mathrm{H}}$` vs `$S$`
 - `spb/carrier_concentration_vs_mobility.json`: `$n_{\mathrm{H}}$` vs `$\mu_{\mathrm{H}}$`
 - `spb/carrier_concentration_vs_power_factor.json`: `$n_{\mathrm{H}}$` vs `$PF$`

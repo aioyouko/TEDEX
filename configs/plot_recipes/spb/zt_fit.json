@@ -1,0 +1,48 @@
+{
+  "name": "spb_zt_fit",
+  "plot": {
+    "kind": "line",
+    "x": {
+      "column": "nH_cm-3",
+      "label": "$n_{\\mathrm{H}}$ (cm$^{-3}$)"
+    },
+    "series": [
+      {
+        "y": {
+          "column": "ZT_model",
+          "label": "$zT$"
+        },
+        "property": "zt",
+        "group_value": "SPB zT model",
+        "marker": "None",
+        "linestyle": "-",
+        "line_width": 1.4
+      },
+      {
+        "y": {
+          "column": "ZT",
+          "label": "$zT$"
+        },
+        "property": "zt",
+        "group_value": "zT data",
+        "color": "black",
+        "marker": "o",
+        "linestyle": "none",
+        "line_width": 0.0
+      }
+    ],
+    "xlabel": "$n_{\\mathrm{H}}$ (cm$^{-3}$)",
+    "ylabel": "$zT$",
+    "xscale": "log",
+    "x_log_ticks": "decade",
+    "legend": "inside",
+    "legend_loc": "best",
+    "x_margin": 0.04,
+    "y_margin": 0.08
+  },
+  "output": {
+    "dir": "results/spb_fitting",
+    "stem": "zt_fit",
+    "formats": ["png", "pdf"]
+  }
+}

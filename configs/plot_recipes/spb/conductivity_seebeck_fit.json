@@ -1,0 +1,48 @@
+{
+  "name": "spb_conductivity_seebeck_fit",
+  "plot": {
+    "kind": "line",
+    "x": {
+      "column": "Conductivity_S_cm-1",
+      "label": "$\\sigma$ (S cm$^{-1}$)"
+    },
+    "series": [
+      {
+        "y": {
+          "column": "Seebeck_model_abs_uV_K",
+          "label": "$|S|$ (\u00b5V K$^{-1}$)"
+        },
+        "property": "seebeck",
+        "group_value": "SPB S model",
+        "marker": "None",
+        "linestyle": "-",
+        "line_width": 1.4
+      },
+      {
+        "y": {
+          "column": "Seebeck_abs_uV_K",
+          "label": "$|S|$ (\u00b5V K$^{-1}$)"
+        },
+        "property": "seebeck",
+        "group_value": "S data",
+        "color": "black",
+        "marker": "o",
+        "linestyle": "none",
+        "line_width": 0.0
+      }
+    ],
+    "xlabel": "$\\sigma$ (S cm$^{-1}$)",
+    "ylabel": "$|S|$ (\u00b5V K$^{-1}$)",
+    "xscale": "log",
+    "x_log_ticks": "decade",
+    "legend": "inside",
+    "legend_loc": "best",
+    "x_margin": 0.04,
+    "y_margin": 0.08
+  },
+  "output": {
+    "dir": "results/spb_fitting",
+    "stem": "conductivity_seebeck_fit",
+    "formats": ["png", "pdf"]
+  }
+}

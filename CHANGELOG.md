@@ -1,5 +1,18 @@
 # Changelog
 
+## 1.3.0
+
+- Added SPB effective-mass fitting from Hall carrier concentration and
+  Seebeck data.
+- Added SPB performance fitting for Seebeck, power factor, and zT curves from
+  grouped `nH-S-PF-ZT` tables.
+- Added conductivity-axis SPB fitting for data without measured Hall carrier
+  concentration, including weighted `u0` fitting, fixed `u0`, `kL`, and
+  legend parameter summaries.
+- Added SPB plot recipes under `configs/plot_recipes/spb/`.
+- Added public SPB demo inputs and gallery figures under
+  `data/demo/spb_fitting/`.
+
 ## 1.2.1
 
 - Added bar and grouped-bar support to `flexible_plot.py`.

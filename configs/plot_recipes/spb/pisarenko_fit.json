@@ -1,0 +1,48 @@
+{
+  "name": "spb_pisarenko_fit",
+  "plot": {
+    "kind": "line",
+    "x": {
+      "column": "nH_cm-3",
+      "label": "$n_{\\mathrm{H}}$ (cm$^{-3}$)"
+    },
+    "series": [
+      {
+        "y": {
+          "column": "Seebeck_abs_uV_K",
+          "label": "$|S|$ (\u00b5V K$^{-1}$)"
+        },
+        "property": "seebeck",
+        "group_value": "SPB fit",
+        "marker": "None",
+        "linestyle": "-",
+        "line_width": 1.4
+      },
+      {
+        "y": {
+          "column": "Seebeck_abs_uV_K",
+          "label": "$|S|$ (\u00b5V K$^{-1}$)"
+        },
+        "property": "seebeck",
+        "group_value": "data",
+        "color": "black",
+        "marker": "o",
+        "linestyle": "none",
+        "line_width": 0.0
+      }
+    ],
+    "xlabel": "$n_{\\mathrm{H}}$ (cm$^{-3}$)",
+    "ylabel": "$|S|$ (\u00b5V K$^{-1}$)",
+    "xscale": "log",
+    "x_log_ticks": "decade",
+    "legend": "inside",
+    "legend_loc": "best",
+    "x_margin": 0.04,
+    "y_margin": 0.08
+  },
+  "output": {
+    "dir": "results/spb_fitting",
+    "stem": "pisarenko_fit",
+    "formats": ["png", "pdf"]
+  }
+}

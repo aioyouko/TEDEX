@@ -1,0 +1,48 @@
+{
+  "name": "spb_conductivity_power_factor_fit",
+  "plot": {
+    "kind": "line",
+    "x": {
+      "column": "Conductivity_S_cm-1",
+      "label": "$\\sigma$ (S cm$^{-1}$)"
+    },
+    "series": [
+      {
+        "y": {
+          "column": "Power_Factor_model_uW_cm-1_K-2",
+          "label": "$PF$ (\u00b5W cm$^{-1}$ K$^{-2}$)"
+        },
+        "property": "power_factor",
+        "group_value": "SPB PF model",
+        "marker": "None",
+        "linestyle": "-",
+        "line_width": 1.4
+      },
+      {
+        "y": {
+          "column": "Power_Factor_uW_cm-1_K-2",
+          "label": "$PF$ (\u00b5W cm$^{-1}$ K$^{-2}$)"
+        },
+        "property": "power_factor",
+        "group_value": "PF data",
+        "color": "black",
+        "marker": "o",
+        "linestyle": "none",
+        "line_width": 0.0
+      }
+    ],
+    "xlabel": "$\\sigma$ (S cm$^{-1}$)",
+    "ylabel": "$PF$ (\u00b5W cm$^{-1}$ K$^{-2}$)",
+    "xscale": "log",
+    "x_log_ticks": "decade",
+    "legend": "inside",
+    "legend_loc": "best",
+    "x_margin": 0.04,
+    "y_margin": 0.08
+  },
+  "output": {
+    "dir": "results/spb_fitting",
+    "stem": "conductivity_pf_fit",
+    "formats": ["png", "pdf"]
+  }
+}

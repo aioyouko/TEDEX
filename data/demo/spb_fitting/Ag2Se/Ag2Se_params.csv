@@ -1,0 +1,3 @@
+curve_id,material,T,m,u0,kL,lambda,use_hall_factor,mobility_model,rho,vl,Nv,Xi
+Ag2Se,Ag2Se,300,0.25,2000,0.4,0,TRUE,,,,,
+Ag2STe,Ag2STe,300,0.2,750,0.2,0,TRUE,,,,,

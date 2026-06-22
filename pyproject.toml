@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "te-analysis-plotting"
-version = "1.2.1"
+version = "1.3.0"
 description = "Thermoelectric analysis, plotting, and demo workflow package."
 readme = "README.md"
 requires-python = ">=3.10"
@@ -31,6 +31,9 @@ te-bayes-predict = "bayesian_predict_te:main"
 te-sync-metadata = "scripts.sync_lab_metadata:main"
 te-sync-markdown = "scripts.sync_lab_markdown:main"
 te-paper-plots = "scripts.plot_paper_style_te_variants:main"
+te-spb-effective-mass = "src.tools.SPB.effective_mass_fit:main"
+te-spb-performance = "src.tools.SPB.performance_fit:main"
+te-spb-conductivity = "src.tools.SPB.conductivity_fit:main"
 
 [tool.setuptools]
 py-modules = [
