@@ -46,11 +46,11 @@ v1.3.0 release packages.
 
 | SPB Pisarenko view | SPB PF view | SPB conductivity view |
 | --- | --- | --- |
-| ![SPB Pisarenko fit demo](data/demo/spb_fitting/Ag2Se/pisarenko_fit.pdf) | ![SPB power factor fit demo](data/demo/spb_fitting/Ag2Se/pf_fit.pdf) | ![SPB conductivity-axis PF fit demo](data/demo/spb_fitting/Cu2SSeTe/conductivity_pf_fit.pdf) |
+| ![SPB Pisarenko fit demo](data/demo/spb_fitting/Ag2Se/pisarenko_fit.png) | ![SPB power factor fit demo](data/demo/spb_fitting/Ag2Se/pf_fit.png) | ![SPB conductivity-axis PF fit demo](data/demo/spb_fitting/Cu2SSeTe/conductivity_pf_fit.png) |
 
 | SPB zT view | SPB conductivity Seebeck | SPB conductivity zT |
 | --- | --- | --- |
-| ![SPB zT fit demo](data/demo/spb_fitting/Ag2Se/zt_fit.pdf) | ![SPB conductivity-axis Seebeck fit demo](data/demo/spb_fitting/Cu2SSeTe/conductivity_seebeck_fit.pdf) | ![SPB conductivity-axis zT fit demo](data/demo/spb_fitting/Cu2SSeTe/conductivity_zt_fit.pdf) |
+| ![SPB zT fit demo](data/demo/spb_fitting/Ag2Se/zt_fit.png) | ![SPB conductivity-axis Seebeck fit demo](data/demo/spb_fitting/Cu2SSeTe/conductivity_seebeck_fit.png) | ![SPB conductivity-axis zT fit demo](data/demo/spb_fitting/Cu2SSeTe/conductivity_zt_fit.png) |
 
 | Sound velocity bars | Simple bar template | Flexible multi-panel |
 | --- | --- | --- |
