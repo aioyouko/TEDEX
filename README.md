@@ -58,12 +58,14 @@ v1.3.0 release packages.
 
 Demo references for the public example datasets:
 
-- Liu et al., "Ultralow Chromium Doping Enables All-PbSe Thermoelectric
-  Cooling."
-- Jiang et al., "High-Entropy-Stabilized Chalcogenides with High
-  Thermoelectric Performance."
-- Sun, C., Zhao, X., Qiu, P. et al., "Flexible thermoelectric device with
-  blade-like structure for ultrahigh output performance."
+- Liu et al., "Ultralow Chromium Doping Enables All-PbSe Thermoelectric Cooling."
+- Jiang et al., "High-Entropy-Stabilized Chalcogenides with High Thermoelectric Performance."
+- Sun et al., "Flexible thermoelectric device with blade-like structure for ultrahigh output performance."
+- Zhao et al., "Are Cu2Te‐Based Compounds Excellent Thermoelectric Materials?"
+- Zhao et al., "Enhanced Thermoelectric Performance through Tuning Bonding Energy in Cu2Se1–xSx Liquid-like Materials."
+- Yang et al., “Ductile Ag20S7Te3 with Excellent Shape‐conformability and High Thermoelectric Performance.”
+- Liang et al., “Flexible Thermoelectrics: from Silver Chalcogenides to Full-inorganic Devices.”
+
 
 ## Install
 
