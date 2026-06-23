@@ -1,0 +1,26 @@
+\chapter{Assessment and Prediction}
+
+\section{Scope}
+
+This chapter will document deterministic batch assessment, AI-assisted
+interpretation, and local Bayesian prediction for follow-up sample selection.
+
+\section{Command Slot}
+
+\begin{lstlisting}[language=bash,caption={Assessment and prediction command slot.}]
+# TODO: replace with selected batches.
+python main.py assess CHY-1040 CHY-1048
+python main.py bayes --source lab --target ZT_max --top 10
+\end{lstlisting}
+
+\section{Planned Content}
+
+\begin{itemize}[leftmargin=*]
+  \item What features are extracted from processed TE data.
+  \item How deterministic scoring differs from model-assisted assessment.
+  \item How Bayesian prediction ranks candidates.
+  \item How to record evidence sources in the final recommendation.
+\end{itemize}
+
+\slotbox{Result slot}{Paste a representative ranked-candidate table and link to
+the corresponding report under \code{results/bayesian_predictions/}.}

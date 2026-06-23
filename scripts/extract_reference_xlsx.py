@@ -18,7 +18,7 @@ if str(WORKSPACE) not in sys.path:
     sys.path.insert(0, str(WORKSPACE))
 
 try:
-    from src.tools.SPB.lattice_cal import (
+    from src.tools.spb.lattice_cal import (
         QUALITY_FACTOR_COLUMN,
         WEIGHTED_MOBILITY_COLUMN,
         calculate_generalized_fermi_level,

@@ -1,0 +1,74 @@
+{
+  "name": "Demo PbSe TEC Qc from split CSV/TXT files",
+  "plot": {
+    "kind": "line",
+    "x": {
+      "column": "I_A",
+      "label": "$I$ (A)"
+    },
+    "series": [
+      {
+        "source": "data/demo/flexible_plotting/pbse_tec_qc_split/dt0.csv",
+        "y": {
+          "column": "Qc_W",
+          "label": "$Q_{\\mathrm{C}}$ (W)"
+        },
+        "property": "qc",
+        "group_value": "$\\Delta T$=0 K",
+        "color": "#ff0000",
+        "marker": "*",
+        "marker_size": 8.0,
+        "line_width": 1.4
+      },
+      {
+        "source": {
+          "path": "data/demo/flexible_plotting/pbse_tec_qc_split/dt5.txt",
+          "sep": "\\s+"
+        },
+        "y": {
+          "column": "Qc_W",
+          "label": "$Q_{\\mathrm{C}}$ (W)"
+        },
+        "property": "qc",
+        "group_value": "$\\Delta T$=5 K",
+        "color": "#4fa3f7",
+        "marker": "o",
+        "marker_size": 5.0,
+        "line_width": 1.4
+      },
+      {
+        "source": "data/demo/flexible_plotting/pbse_tec_qc_split/dt10.csv",
+        "y": {
+          "column": "Qc_W",
+          "label": "$Q_{\\mathrm{C}}$ (W)"
+        },
+        "property": "qc",
+        "group_value": "$\\Delta T$=10 K",
+        "color": "#b14cff",
+        "marker": "^",
+        "marker_size": 5.5,
+        "line_width": 1.4
+      }
+    ],
+    "xlabel": "$I$ (A)",
+    "ylabel": "$Q_{\\mathrm{C}}$ (W)",
+    "xlim": [0, 20.5],
+    "ylim": [0, 8],
+    "x_major": 5,
+    "x_minor": 2.5,
+    "y_major": 2,
+    "y_minor": 1,
+    "legend_loc": "lower right",
+    "legend_title": "$T_{\\mathrm{H}}$=300 K",
+    "legend_font_size": 7.5,
+    "x_margin": 0.02,
+    "y_margin": 0.02
+  },
+  "output": {
+    "dir": "outputs/figures/flexible_demos",
+    "stem": "demo_07_pbse_tec_qc_multi_files",
+    "formats": ["png", "pdf"],
+    "normalized_csv": true,
+    "copy_to_data_dir": true
+  }
+}

@@ -1,0 +1,39 @@
+{
+  "name": "Demo flexible literature-style scatter",
+  "data": [
+    {
+      "path": "data/demo/flexible_plotting/literature_comparison_loose.csv"
+    }
+  ],
+  "plot": {
+    "kind": "scatter",
+    "x": {
+      "column": "Ag fraction x",
+      "label": "Ag fraction, $x$"
+    },
+    "group": {
+      "column": "Source class"
+    },
+    "label": {
+      "column": "Material name"
+    },
+    "series": [
+      {
+        "semantic": "zt",
+        "property": "zt",
+        "label": "$ZT_{\\mathrm{max}}$"
+      }
+    ],
+    "xlabel": "Ag fraction, $x$",
+    "ylabel": "$ZT_{\\mathrm{max}}$",
+    "annotate": true,
+    "y_margin": 0.14
+  },
+  "output": {
+    "dir": "outputs/figures/flexible_demos",
+    "stem": "demo_04_loose_literature_scatter",
+    "formats": ["png", "pdf"],
+    "normalized_csv": true,
+    "copy_to_data_dir": true
+  }
+}

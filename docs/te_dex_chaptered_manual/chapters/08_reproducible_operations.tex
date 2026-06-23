@@ -1,0 +1,37 @@
+\chapter{Reproducible Operations}
+
+\section{End-to-End Protocol}
+
+\begin{enumerate}[leftmargin=*]
+  \item Place original instrument files under \code{data/raw/<batch_id>/}.
+  \item Run metadata synchronization.
+  \item Fill missing density, heat-capacity, composition, and notes fields.
+  \item Run raw TE analysis.
+  \item Generate TE and XRD figures.
+  \item Run optional SPB, assessment, and prediction workflows.
+  \item Archive the exact commands, output paths, and figure files used in any
+  report.
+\end{enumerate}
+
+\section{Command Slot}
+
+\begin{lstlisting}[language=bash,caption={End-to-end workflow command slot.}]
+python scripts/sync_lab_metadata.py
+python scripts/sync_lab_markdown.py export
+# TODO: edit data/lab/lab_metadata.md
+python scripts/sync_lab_markdown.py
+python main.py analyze CHY-1048
+python main.py plot-te CHY-1048 --seebeck --no-show
+python main.py plot-xrd CHY-1048 --no-show
+python main.py assess CHY-1048
+\end{lstlisting}
+
+\section{Output Log Slot}
+
+\begin{lstlisting}[caption={End-to-end output log slot.}]
+# TODO: paste final output paths here.
+# Processed CSV:
+# TE figure:
+# XRD figure:
+# Assessment report:
+\end{lstlisting}

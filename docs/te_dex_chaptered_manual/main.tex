@@ -1,0 +1,176 @@
+\documentclass[11pt]{report}
+
+\usepackage[a4paper,margin=1in]{geometry}
+\usepackage{times}
+\usepackage{microtype}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage{svg}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{enumitem}
+\usepackage{xcolor}
+\usepackage{xurl}
+\usepackage{listings}
+\usepackage[hidelinks]{hyperref}
+
+\definecolor{linkblue}{RGB}{0,76,151}
+\definecolor{codebg}{RGB}{248,248,248}
+\definecolor{codeframe}{RGB}{210,210,210}
+\definecolor{slotbg}{RGB}{252,252,252}
+\definecolor{slotline}{RGB}{180,180,180}
+
+\hypersetup{
+  colorlinks=true,
+  linkcolor=linkblue,
+  urlcolor=linkblue,
+  citecolor=linkblue
+}
+
+\lstdefinestyle{bashstyle}{
+  basicstyle=\ttfamily\small,
+  backgroundcolor=\color{codebg},
+  frame=single,
+  rulecolor=\color{codeframe},
+  breaklines=true,
+  columns=fullflexible,
+  keepspaces=true,
+  showstringspaces=false,
+  xleftmargin=0.4em,
+  xrightmargin=0.4em,
+  aboveskip=0.55em,
+  belowskip=0.55em
+}
+\lstset{style=bashstyle}
+\svgsetup{inkscapelatex=false}
+
+\ExplSyntaxOn
+\NewDocumentCommand{\code}{m}
+  {
+    \group_begin:
+    \ttfamily
+    \tl_set:Nx \l_tmpa_tl { \detokenize{#1} }
+    \tl_replace_all:Nnn \l_tmpa_tl { - } { -\kern0pt{} }
+    \tl_use:N \l_tmpa_tl
+    \group_end:
+  }
+\ExplSyntaxOff
+\newcommand{\todo}[1]{\noindent\textbf{TODO.} #1}
+\newcommand{\slotbox}[2]{%
+  \noindent\fcolorbox{slotline}{slotbg}{%
+    \begin{minipage}{0.96\linewidth}
+      \vspace{0.4em}
+      \textbf{#1.} #2
+      \vspace{0.4em}
+    \end{minipage}
+  }%
+}
+\newcommand{\figureslot}[2]{%
+  \begin{figure}[htbp]
+    \centering
+    \IfFileExists{#1}{%
+      \includegraphics[width=0.85\linewidth]{#1}%
+    }{%
+      \fcolorbox{slotline}{slotbg}{%
+        \begin{minipage}[c][1.45in][c]{0.82\linewidth}
+          \centering
+          \textbf{Missing figure}\\[0.4em]
+          \small Expected file:\\
+          \nolinkurl{#1}
+        \end{minipage}
+      }%
+    }%
+    \caption{#2}
+  \end{figure}
+}
+\newcommand{\figurepanel}[2]{%
+  \begin{minipage}[t]{0.48\linewidth}
+    \centering
+    \IfFileExists{#1}{%
+      \includegraphics[width=\linewidth]{#1}%
+    }{%
+      \fcolorbox{slotline}{slotbg}{%
+        \begin{minipage}[c][1.35in][c]{0.92\linewidth}
+          \centering
+          \textbf{Missing figure}\\[0.35em]
+          \small\nolinkurl{#1}
+        \end{minipage}
+      }%
+    }%
+    \par\vspace{0.35em}
+    {\small #2}
+  \end{minipage}%
+}
+\newcommand{\svgfigurepanel}[2]{%
+  \begin{minipage}[t]{0.48\linewidth}
+    \centering
+    \IfFileExists{#1}{%
+      \ifnum\pdfshellescape=1
+        \includesvg[width=\linewidth]{#1}%
+      \else
+        \fcolorbox{slotline}{slotbg}{%
+          \begin{minipage}[c][1.35in][c]{0.92\linewidth}
+            \centering
+            \textbf{SVG requires shell escape}\\[0.35em]
+            \small\nolinkurl{#1}
+          \end{minipage}
+        }%
+      \fi
+    }{%
+      \fcolorbox{slotline}{slotbg}{%
+        \begin{minipage}[c][1.35in][c]{0.92\linewidth}
+          \centering
+          \textbf{Missing SVG}\\[0.35em]
+          \small\nolinkurl{#1}
+        \end{minipage}
+      }%
+    }%
+    \par\vspace{0.35em}
+    {\small #2}
+  \end{minipage}%
+}
+\newcommand{\twofigureslot}[5]{%
+  \begin{figure}[htbp]
+    \centering
+    \figurepanel{#1}{#2}
+    \hfill
+    \figurepanel{#3}{#4}
+    \caption{#5}
+  \end{figure}
+}
+\newcommand{\twosvgfigureslot}[5]{%
+  \begin{figure}[htbp]
+    \centering
+    \svgfigurepanel{#1}{#2}
+    \hfill
+    \svgfigurepanel{#3}{#4}
+    \caption{#5}
+  \end{figure}
+}
+
+\title{\bfseries TEDEX Technical Manual\\A Chaptered Guide to Thermoelectric Data Analysis}
+\author{Northwestern Thermoelectrics Lab}
+\date{\today}
+
+\begin{document}
+
+\pagenumbering{gobble}
+\maketitle
+\clearpage
+\pagenumbering{roman}
+\tableofcontents
+\clearpage
+\pagenumbering{arabic}
+
+\input{chapters/00_outline}
+\input{chapters/01_introduction}
+\input{chapters/02_workspace_architecture}
+\input{chapters/03_raw_te_analysis}
+\input{chapters/04_spb_fitting}
+\input{chapters/05_plotting_and_figures}
+\input{chapters/06_xrd_analysis}
+\input{chapters/07_assessment_and_prediction}
+\input{chapters/08_reproducible_operations}
+
+\end{document}

@@ -14,7 +14,7 @@
         "y": {
           "column": "Seebeck",
           "scale": 1000000.0,
-          "label": "$S$ ($\\mu$V K$^{-1}$)"
+          "label": "$S$ (\u00b5V K$^{-1}$)"
         },
         "property": "seebeck",
         "marker": "o",
@@ -24,7 +24,7 @@
     "xlabel": "$T$ (K)",
     "x_major": 100,
     "x_minor": 50,
-    "ylabel": "$S$ ($\\mathregular{\\mu}$V K$^{-1}$)",
+    "ylabel": "$S$ (\u00b5V K$^{-1}$)",
     "legend": "inside",
     "legend_loc": "best",
     "x_margin": 0.04,

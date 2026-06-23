@@ -1,7 +1,7 @@
 # Flexible Plot Recipe Index
 
-The categorized recipes are the preferred names. Short recipe files in
-`configs/plot_recipes/*.json` are kept as legacy aliases.
+The categorized recipes are the preferred names. Root-level recipe files are
+reserved for standalone recipes that do not yet have a categorized equivalent.
 
 ## Device
 
@@ -9,7 +9,7 @@ The categorized recipes are the preferred names. Short recipe files in
 - `device/current_vs_cop.json`: `$I$ (A)` vs `COP`
 - `device/hot_side_temperature_vs_delta_tmax.json`: `$T_{\mathrm{H}}$ (K)` vs `$\Delta T_{\max}$ (K)`
 - `device/current_vs_cooling_capacity_qc.json`: `$I$ (A)` vs `$Q_{\mathrm{c}}$ (W)`
-- `device/current_vs_voltage_power_dual.json`: `$I$ (A)` vs `Voltage (mV)` and `Power (mW)`
+- `device/current_vs_voltage_power_dual.json`: `$I$ (mA)` vs `Voltage (mV)` and `Power (mW)`
 
 ## SPB Fitting
 
@@ -30,7 +30,7 @@ The categorized recipes are the preferred names. Short recipe files in
 ## Thermoelectric Properties
 
 - `thermoeletric/temperature_vs_te_summary.json`: `$T$` vs standard 2x3 TE summary properties
-- `thermoeletric/temperature_vs_<property>.json`: `$T$` vs one processed TE property using `plot_te.py` labels
+- `thermoeletric/temperature_vs_<property>.json`: `$T$` vs one processed TE property using `python main.py plot-te` labels
 
 ## Lattice
 
@@ -49,7 +49,7 @@ The categorized recipes are the preferred names. Short recipe files in
 ## Example
 
 ```bash
-python flexible_plot.py data.csv \
+python main.py flexible data.csv \
   --recipe configs/plot_recipes/device/current_vs_cooling_capacity_qc.json \
   --x I_A \
   --y Qc_W

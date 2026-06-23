@@ -1,0 +1,60 @@
+{
+  "name": "Demo PbSe TEC Delta Tmax from TXT",
+  "data": [
+    {
+      "path": "data/demo/flexible_plotting/pbse_tec_dtmax_curve.txt",
+      "sep": "\\s+"
+    }
+  ],
+  "plot": {
+    "kind": "line",
+    "panel_label": "A",
+    "x": {
+      "column": "T_H_K",
+      "label": "$T_{\\mathrm{H}}$ (K)"
+    },
+    "series": [
+      {
+        "y": {
+          "column": "DeltaTmax_K",
+          "label": "$\\Delta T_{\\max}$ (K)"
+        },
+        "property": "delta_tmax",
+        "group_value": "Well-matched all-PbSe-based TEC",
+        "color": "#ff0000",
+        "marker": "*",
+        "marker_size": 9.0,
+        "line_width": 1.6
+      }
+    ],
+    "xlabel": "$T_{\\mathrm{H}}$ (K)",
+    "ylabel": "$\\Delta T_{\\max}$ (K)",
+    "xlim": [295, 370],
+    "ylim": [30, 60],
+    "x_major": 20,
+    "x_minor": 10,
+    "y_major": 10,
+    "y_minor": 5,
+    "legend_loc": "upper left",
+    "legend_font_size": 7.5,
+    "x_margin": 0.02,
+    "y_margin": 0.02,
+    "text": [
+      {
+        "text": "~ 53 K",
+        "x": 330,
+        "y": 52.4,
+        "color": "#ff0000",
+        "fontsize": 11,
+        "fontweight": "bold"
+      }
+    ]
+  },
+  "output": {
+    "dir": "outputs/figures/flexible_demos",
+    "stem": "demo_05_pbse_tec_dtmax_txt",
+    "formats": ["png", "pdf"],
+    "normalized_csv": true,
+    "copy_to_data_dir": true
+  }
+}

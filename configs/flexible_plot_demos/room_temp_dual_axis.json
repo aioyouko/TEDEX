@@ -1,0 +1,43 @@
+{
+  "name": "Demo flexible room-temperature dual-axis plot",
+  "data": [
+    {
+      "path": "data/demo/flexible_plotting/room_temp_snapshot_mixed_units.csv"
+    }
+  ],
+  "plot": {
+    "kind": "dual_axis",
+    "x": {
+      "semantic": "temperature",
+      "label": "Sample"
+    },
+    "group": {
+      "semantic": "sample"
+    },
+    "order": ["CHY-DEMO-A", "CHY-DEMO-B", "CHY-DEMO-C", "CHY-DEMO-D"],
+    "series": [
+      {
+        "semantic": "seebeck",
+        "property": "seebeck",
+        "label": "$S$ (\u00b5V K$^{-1}$)"
+      },
+      {
+        "column": "EC_S_per_m",
+        "property": "conductivity",
+        "label": "$\\sigma$ (S cm$^{-1}$)",
+        "scale": 0.01
+      }
+    ],
+    "xlabel": "Sample",
+    "legend_loc": "upper right",
+    "xtick_rotation": 24,
+    "xtick_ha": "right"
+  },
+  "output": {
+    "dir": "outputs/figures/flexible_demos",
+    "stem": "demo_03_room_temp_dual_axis_mixed_units",
+    "formats": ["png", "pdf"],
+    "normalized_csv": true,
+    "copy_to_data_dir": true
+  }
+}

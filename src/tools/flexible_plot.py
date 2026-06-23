@@ -49,6 +49,11 @@ SINGLE_TICK_LABEL_SIZE = 10
 SUMMARY_TICK_LABEL_SIZE = 9
 TICK_FORMAT_CHOICES = ("auto", "plain", "scientific")
 BAR_PLOT_KINDS = {"bar", "grouped_bar"}
+DEFAULT_LEGEND_FRAME = True
+DEFAULT_LEGEND_EDGE_COLOR = "black"
+DEFAULT_LEGEND_FACE_COLOR = "white"
+DEFAULT_LEGEND_FRAME_ALPHA = 1.0
+DEFAULT_LEGEND_FRAME_LINEWIDTH = 0.8
 
 
 SEMANTIC_ALIASES = {
@@ -373,6 +378,86 @@ def first_defined(*values: Any, default: Any = None) -> Any:
         if value is not None:
             return value
     return default
+
+
+def optional_bool(value: Any, *, default: bool = False) -> bool:
+    if value is None:
+        return default
+    if isinstance(value, bool):
+        return value
+    if isinstance(value, (int, float)):
+        return bool(value)
+
+    normalized = str(value).strip().lower()
+    if normalized in {"1", "true", "yes", "y", "on"}:
+        return True
+    if normalized in {"0", "false", "no", "n", "off"}:
+        return False
+    return default
+
+
+def legend_font_size(plot: dict[str, Any] | None, fallback: float | None = None) -> float:
+    plot = plot or {}
+    value = first_defined(plot.get("legend_font_size"), fallback, default=DEFAULT_LEGEND_FONT_SIZE)
+    return float(value)
+
+
+def legend_frame_enabled(plot: dict[str, Any] | None) -> bool:
+    plot = plot or {}
+    return optional_bool(
+        first_defined(plot.get("legend_frame"), plot.get("legend_box")),
+        default=DEFAULT_LEGEND_FRAME,
+    )
+
+
+def legend_kwargs(
+    plot: dict[str, Any] | None,
+    *,
+    fontsize: float | None = None,
+    loc: str | None = None,
+    title: str | None = None,
+    bbox_to_anchor: Any = None,
+    ncol: int | None = None,
+) -> dict[str, Any]:
+    plot = plot or {}
+    frameon = legend_frame_enabled(plot)
+    kwargs: dict[str, Any] = {
+        "fontsize": legend_font_size(plot, fontsize),
+        "frameon": frameon,
+    }
+    if loc is not None:
+        kwargs["loc"] = loc
+    if bbox_to_anchor is not None:
+        kwargs["bbox_to_anchor"] = bbox_to_anchor
+    if ncol is not None:
+        kwargs["ncol"] = ncol
+
+    legend_title = first_defined(title, plot.get("legend_title"))
+    if legend_title is not None:
+        kwargs["title"] = legend_title
+
+    if frameon:
+        kwargs.update(
+            {
+                "edgecolor": plot.get("legend_edgecolor", DEFAULT_LEGEND_EDGE_COLOR),
+                "facecolor": plot.get("legend_facecolor", DEFAULT_LEGEND_FACE_COLOR),
+                "fancybox": False,
+                "framealpha": float(plot.get("legend_frame_alpha", DEFAULT_LEGEND_FRAME_ALPHA)),
+            }
+        )
+
+    return kwargs
+
+
+def apply_legend_style(legend_object: Any, plot: dict[str, Any] | None) -> None:
+    if legend_object is None:
+        return
+    if legend_object.get_title().get_text():
+        legend_object.get_title().set_fontsize(legend_font_size(plot))
+    if legend_frame_enabled(plot):
+        legend_object.get_frame().set_linewidth(
+            float((plot or {}).get("legend_frame_linewidth", DEFAULT_LEGEND_FRAME_LINEWIDTH))
+        )
 
 
 def build_normalized_table(recipe: dict[str, Any], workspace: Path) -> tuple[pd.DataFrame, dict[str, Any]]:
@@ -709,6 +794,7 @@ def style_axis(
     legend_loc: str = "best",
     legend_font_size: float = DEFAULT_LEGEND_FONT_SIZE,
     legend_title: str | None = None,
+    legend_plot: dict[str, Any] | None = None,
 ) -> None:
     format_te_axis(ax, show_grid=False, tick_labelsize=SINGLE_TICK_LABEL_SIZE)
     if categorical_x:
@@ -717,13 +803,14 @@ def style_axis(
         handles, labels = ax.get_legend_handles_labels()
         if handles:
             legend_object = ax.legend(
-                fontsize=legend_font_size,
-                frameon=False,
-                loc=legend_loc,
-                title=legend_title,
+                **legend_kwargs(
+                    legend_plot,
+                    fontsize=legend_font_size,
+                    loc=legend_loc,
+                    title=legend_title,
+                )
             )
-            if legend_title:
-                legend_object.get_title().set_fontsize(legend_font_size)
+            apply_legend_style(legend_object, legend_plot)
 
 
 def style_colored_y_axis(ax: plt.Axes, color: Any, *, side: str) -> None:
@@ -850,15 +937,17 @@ def plot_line_or_scatter(
         apply_axis_options(ax, plot)
         handles, labels = ax.get_legend_handles_labels()
         if handles:
-            fig.legend(
+            legend_object = fig.legend(
                 handles,
                 labels,
-                loc="upper center",
-                bbox_to_anchor=(0.5, 0.98),
-                ncol=min(len(labels), 4),
-                fontsize=plot.get("legend_font_size", DEFAULT_LEGEND_FONT_SIZE),
-                frameon=False,
+                **legend_kwargs(
+                    plot,
+                    loc="upper center",
+                    bbox_to_anchor=(0.5, 0.98),
+                    ncol=min(len(labels), 4),
+                ),
             )
+            apply_legend_style(legend_object, plot)
         fig.tight_layout(rect=(0, 0, 1, 0.90))
     else:
         style_axis(
@@ -867,6 +956,7 @@ def plot_line_or_scatter(
             legend_loc=plot.get("legend_loc", "best"),
             legend_font_size=plot.get("legend_font_size", DEFAULT_LEGEND_FONT_SIZE),
             legend_title=plot.get("legend_title"),
+            legend_plot=plot,
         )
         apply_axis_options(ax, plot)
         fig.tight_layout()
@@ -913,15 +1003,17 @@ def plot_multi_panel(normalized: pd.DataFrame, metadata: dict[str, Any], recipe:
 
     handles, labels = axes.ravel()[0].get_legend_handles_labels()
     if handles:
-        fig.legend(
+        legend_object = fig.legend(
             handles,
             labels,
-            loc="upper center",
-            bbox_to_anchor=(0.5, 0.985),
-            ncol=min(len(labels), 4),
-            fontsize=DEFAULT_LEGEND_FONT_SIZE,
-            frameon=False,
+            **legend_kwargs(
+                plot,
+                loc="upper center",
+                bbox_to_anchor=(0.5, 0.985),
+                ncol=min(len(labels), 4),
+            ),
         )
+        apply_legend_style(legend_object, plot)
         fig.tight_layout(rect=(0, 0, 1, 0.93))
     else:
         fig.tight_layout()
@@ -1052,16 +1144,17 @@ def plot_bar(normalized: pd.DataFrame, metadata: dict[str, Any], recipe: dict[st
         apply_axis_options(ax, plot)
         handles, labels = ax.get_legend_handles_labels()
         if handles:
-            fig.legend(
+            legend_object = fig.legend(
                 handles,
                 labels,
-                loc="upper center",
-                bbox_to_anchor=(0.5, 0.98),
-                ncol=min(len(labels), 4),
-                fontsize=plot.get("legend_font_size", DEFAULT_LEGEND_FONT_SIZE),
-                frameon=False,
-                title=plot.get("legend_title"),
+                **legend_kwargs(
+                    plot,
+                    loc="upper center",
+                    bbox_to_anchor=(0.5, 0.98),
+                    ncol=min(len(labels), 4),
+                ),
             )
+            apply_legend_style(legend_object, plot)
         fig.tight_layout(rect=(0, 0, 1, 0.90))
     else:
         style_axis(
@@ -1071,6 +1164,7 @@ def plot_bar(normalized: pd.DataFrame, metadata: dict[str, Any], recipe: dict[st
             legend_loc=plot.get("legend_loc", "best"),
             legend_font_size=plot.get("legend_font_size", DEFAULT_LEGEND_FONT_SIZE),
             legend_title=plot.get("legend_title"),
+            legend_plot=plot,
         )
         apply_axis_options(ax, plot)
         fig.tight_layout()
@@ -1138,13 +1232,12 @@ def plot_dual_axis(normalized: pd.DataFrame, metadata: dict[str, Any], recipe: d
 
     handles_left, labels_left = ax_left.get_legend_handles_labels()
     handles_right, labels_right = ax_right.get_legend_handles_labels()
-    ax_left.legend(
+    legend_object = ax_left.legend(
         handles_left + handles_right,
         labels_left + labels_right,
-        fontsize=DEFAULT_LEGEND_FONT_SIZE,
-        frameon=False,
-        loc=plot.get("legend_loc", "best"),
+        **legend_kwargs(plot, loc=plot.get("legend_loc", "best")),
     )
+    apply_legend_style(legend_object, plot)
     fig.tight_layout()
     return fig, (ax_left, ax_right)
 
@@ -1249,26 +1342,25 @@ def plot_dual_line(normalized: pd.DataFrame, metadata: dict[str, Any], recipe: d
             legend_handles.append(handle)
             legend_labels.append(label)
         if legend_mode == "outside":
-            fig.legend(
+            legend_object = fig.legend(
                 legend_handles,
                 legend_labels,
-                loc="upper center",
-                bbox_to_anchor=(0.5, 0.98),
-                ncol=min(len(legend_labels), 4),
-                fontsize=plot.get("legend_font_size", DEFAULT_LEGEND_FONT_SIZE),
-                frameon=False,
-                title=plot.get("legend_title"),
+                **legend_kwargs(
+                    plot,
+                    loc="upper center",
+                    bbox_to_anchor=(0.5, 0.98),
+                    ncol=min(len(legend_labels), 4),
+                ),
             )
+            apply_legend_style(legend_object, plot)
             fig.tight_layout(rect=(0, 0, 1, 0.90))
         else:
-            ax_left.legend(
+            legend_object = ax_left.legend(
                 legend_handles,
                 legend_labels,
-                fontsize=plot.get("legend_font_size", DEFAULT_LEGEND_FONT_SIZE),
-                frameon=False,
-                loc=plot.get("legend_loc", "best"),
-                title=plot.get("legend_title"),
+                **legend_kwargs(plot, loc=plot.get("legend_loc", "best")),
             )
+            apply_legend_style(legend_object, plot)
             fig.tight_layout()
     else:
         fig.tight_layout()

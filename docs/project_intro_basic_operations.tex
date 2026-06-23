@@ -1,0 +1,492 @@
+\documentclass[10pt,twocolumn]{article}
+
+\usepackage[a4paper,margin=0.72in,columnsep=0.23in]{geometry}
+\usepackage{times}
+\usepackage{microtype}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{enumitem}
+\usepackage{xcolor}
+\usepackage{xurl}
+\usepackage{listings}
+\usepackage[hidelinks]{hyperref}
+
+\definecolor{linkblue}{RGB}{0,76,151}
+\definecolor{codebg}{RGB}{248,248,248}
+\definecolor{codeframe}{RGB}{210,210,210}
+\definecolor{slotbg}{RGB}{252,252,252}
+\definecolor{slotline}{RGB}{180,180,180}
+
+\hypersetup{
+  colorlinks=true,
+  linkcolor=linkblue,
+  urlcolor=linkblue,
+  citecolor=linkblue
+}
+
+\lstdefinestyle{bashstyle}{
+  basicstyle=\ttfamily\scriptsize,
+  backgroundcolor=\color{codebg},
+  frame=single,
+  rulecolor=\color{codeframe},
+  breaklines=true,
+  columns=fullflexible,
+  keepspaces=true,
+  showstringspaces=false,
+  xleftmargin=0.4em,
+  xrightmargin=0.4em,
+  aboveskip=0.55em,
+  belowskip=0.55em
+}
+\lstset{style=bashstyle}
+
+\newcommand{\code}[1]{\nolinkurl{#1}}
+\newcommand{\slotbox}[2]{%
+  \noindent\fcolorbox{slotline}{slotbg}{%
+    \begin{minipage}{0.94\linewidth}
+      \vspace{0.35em}
+      \textbf{#1.} #2
+      \vspace{0.35em}
+    \end{minipage}
+  }%
+}
+\newcommand{\imageplaceholder}[1]{%
+  \fcolorbox{slotline}{slotbg}{%
+    \begin{minipage}[c][1.38in][c]{0.90\linewidth}
+      \centering
+      \textbf{Image slot}\\[0.35em]
+      Replace this box with\\
+      \footnotesize
+      \texttt{\string\includegraphics[width=\string\linewidth]\{}%
+      \nolinkurl{#1}%
+      \texttt{\}}
+    \end{minipage}
+  }%
+}
+
+\title{\vspace{-0.6em}\bfseries TEDEX V1.3.0: A Reproducible Workspace for Thermoelectric Data Analysis}
+\author{
+  Heyang Chen\\
+  Nanyang Techological University, Northwestern Thermoelectrics\\
+  \texttt{te\_agent\_workspace}
+}
+\date{\vspace{-0.8em}}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+TEDEX is a Python-based workspace for thermoelectric materials research. It
+organizes raw ZEM/LFA/XRD measurements, sample metadata, processed transport
+tables, publication-style figures, batch assessments, and local optimization
+reports in a single reproducible project layout. This document gives a compact
+system overview and a practical operating guide. It is intentionally formatted
+like a short CS/AI systems paper: the first half describes the architecture and
+dataflow, while the second half provides command-driven operation cards with
+fillable slots for bash commands, terminal output, and generated figures.
+\end{abstract}
+
+\noindent\textbf{Keywords:}
+thermoelectric materials; data pipeline; XRD; transport properties; reproducible
+analysis; Bayesian optimization; scientific plotting
+
+\section{Introduction}
+
+Modern thermoelectric experiments produce heterogeneous data: instrument exports
+from ZEM and LFA, XRD scans, sample ledgers, density and heat-capacity metadata,
+plotting recipes, extracted literature tables, and downstream reports. TEDEX
+provides a lightweight but structured workspace for turning those artifacts into
+traceable analysis products.
+
+The main design principle is simple: runnable entry points stay at the project
+root, reusable implementation lives under \code{src/}, source data lives under
+\code{data/}, and generated artifacts are separated into \code{results/} and
+\code{outputs/}. This keeps interactive lab work fast while preserving enough
+structure for batch reprocessing and paper-figure generation.
+
+\section{System Overview}
+
+Figure~\ref{fig:pipeline} summarizes the intended workflow. Raw experimental
+files are synchronized into metadata ledgers, processed into sample-level CSV
+tables, visualized by dedicated plotting tools, and optionally passed to
+assessment or prediction modules.
+
+\begin{figure}[t]
+  \centering
+  \fcolorbox{slotline}{slotbg}{%
+    \begin{minipage}{0.92\linewidth}
+      \centering
+      \small
+      \textbf{Raw data}\\
+      \code{data/raw/CHY-xxxx/}\\[0.45em]
+      $\downarrow$ metadata sync\\[0.35em]
+      \textbf{Lab ledgers}\\
+      \code{data/lab/*.json}, \code{lab_metadata.md}\\[0.45em]
+      $\downarrow$ TE/XRD analysis\\[0.35em]
+      \textbf{Processed tables and figures}\\
+      \code{data/processed/}, \code{outputs/figures/}\\[0.45em]
+      $\downarrow$ assessment and optimization\\[0.35em]
+      \textbf{Reports}\\
+      \code{results/reports/}, \code{results/assessments/}
+    \end{minipage}
+  }
+  \caption{High-level TEDEX dataflow. Replace this schematic with a polished
+  pipeline diagram if the document is used in a presentation or report.}
+  \label{fig:pipeline}
+\end{figure}
+
+\begin{table}[t]
+  \centering
+  \caption{Top-level project layout.}
+  \label{tab:layout}
+  \begin{tabular}{@{}p{0.27\linewidth}p{0.62\linewidth}@{}}
+    \toprule
+    Path & Role \\
+    \midrule
+    \code{*.py} & Root-level runnable entry scripts. \\
+    \code{src/} & Importable analysis, plotting, XRD, SPB, and agent modules. \\
+    \code{scripts/} & Secondary CLI utilities for synchronization and export. \\
+    \code{data/raw/} & Original instrument exports and unmodified source data. \\
+    \code{data/processed/} & Cleaned transport-property CSV files. \\
+    \code{data/lab/} & Batch ledgers, sample ledgers, and editable metadata. \\
+    \code{configs/} & Plot recipes and reusable runtime configurations. \\
+    \code{results/} & Reports, assessments, prediction tables, and payloads. \\
+    \code{outputs/} & Figures, tables, logs, slide assets, and one-off exports. \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\section{Core Capabilities}
+
+\paragraph{Transport analysis.}
+The raw-data workflow reads paired ZEM/LFA files, calculates transport
+properties, extracts compact sample features, and writes processed CSV outputs.
+The main entry point is \code{python main.py analyze}.
+
+\paragraph{TE plotting.}
+\code{python main.py plot-te} renders single-property plots, combined summary figures, and
+inter-batch comparisons. It supports axis limits, selected property panels,
+multiple output formats, and no-preview batch rendering.
+
+\paragraph{XRD plotting and lattice fitting.}
+\code{python main.py plot-xrd} renders raw or normalized XRD scans, supports selected
+samples and optional PDF-card stick patterns, and writes figures under
+\code{outputs/figures/xrd/}. Lattice fitting utilities live under
+\code{src/tools/xrd_lattice.py}.
+
+\paragraph{Flexible plotting.}
+\code{python main.py flexible} targets loosely structured CSV/TXT/XLSX files. It can
+render line, scatter, bar, grouped-bar, multi-panel, and dual-axis figures from
+direct CLI arguments or reusable JSON recipes.
+
+\paragraph{Assessment and prediction.}
+\code{python main.py assess} summarizes selected batches from extracted
+feature payloads. \code{python main.py bayes} fits local Gaussian-process
+models over lab or reference feature tables and ranks candidate compositions.
+
+\paragraph{Agent-assisted interpretation.}
+The \code{src/agents/} module adds model-assisted interpretation. It requires
+the Python dependencies in \code{requirements.txt} and a private local API key
+configured through \code{.env} or environment variables.
+
+\section{Environment Setup}
+
+All commands should be run from the workspace root:
+
+\begin{lstlisting}[language=bash,caption={Workspace setup.}]
+cd "/Users/chenheyang/Library/CloudStorage/OneDrive-NorthwesternUniversity/02-Northwestern Lab/te_agent_workspace"
+pip install -r requirements.txt
+\end{lstlisting}
+
+Use the following commands to inspect the active interfaces:
+
+\begin{lstlisting}[language=bash,caption={Entrypoint help commands.}]
+python main.py analyze --help
+python main.py plot-te --help
+python main.py plot-xrd --help
+python main.py flexible --help
+python main.py assess --help
+python main.py bayes --help
+\end{lstlisting}
+
+\section{Operating Cards}
+
+Each operating card below is designed to be filled in after an actual run. The
+\emph{Command} block records the exact bash command, the \emph{Terminal output}
+block records the key log lines, and the \emph{Figure slot} shows where to place
+the generated image.
+
+\subsection{Metadata Synchronization}
+
+Purpose: scan raw folders, update \code{data/lab/batches.json} and
+\code{data/lab/samples.json}, and optionally round-trip the editable Markdown
+ledger.
+
+\begin{lstlisting}[language=bash,caption={Command slot: metadata sync.}]
+# TODO: replace with the exact command used in the run.
+python scripts/sync_lab_metadata.py --dry-run
+python scripts/sync_lab_metadata.py
+python scripts/sync_lab_markdown.py export
+# Edit data/lab/lab_metadata.md, then import edits:
+python scripts/sync_lab_markdown.py
+\end{lstlisting}
+
+\begin{lstlisting}[caption={Terminal-output slot: metadata sync.}]
+# TODO: paste the key output lines here.
+# Example:
+# Found batch CHY-1048
+# Updated data/lab/batches.json
+# Updated data/lab/samples.json
+\end{lstlisting}
+
+\slotbox{Notes slot}{Record any manual metadata edits here, such as density,
+\code{cp_value}, composition labels, annealing conditions, or known sample
+issues.}
+
+\subsection{Raw TE Analysis}
+
+Purpose: process ZEM/LFA raw data for one or more batches and write cleaned
+transport-property tables.
+
+\begin{lstlisting}[language=bash,caption={Command slot: TE raw-data analysis.}]
+# Single batch
+python main.py analyze CHY-1048
+
+# Multiple batches
+python main.py analyze CHY-1038 CHY-1040
+
+# Selected samples within one batch
+python main.py analyze CHY-1054 --sample B C
+\end{lstlisting}
+
+\begin{lstlisting}[caption={Terminal-output slot: TE analysis.}]
+# TODO: paste representative log lines here.
+# Example:
+# step1. Data processing
+# Saved processed data to: data/processed/CHY-1048/...
+# step2. SPB-derived transport columns
+# Saved extracted features to: results/...
+\end{lstlisting}
+
+\begin{figure}[t]
+  \centering
+  \imageplaceholder{outputs/figures/te/CHY-1048/example.png}
+  \caption{Figure slot for a representative TE output generated after raw-data
+  analysis.}
+  \label{fig:te-analysis-slot}
+\end{figure}
+
+\subsection{TE Plotting}
+
+Purpose: generate single-property and combined thermoelectric figures.
+
+\begin{lstlisting}[language=bash,caption={Command slot: TE plotting.}]
+# Default single-property output
+python main.py plot-te CHY-1040 --no-show
+
+# Combined summary figure
+python main.py plot-te CHY-1040 --plot-mode combined --no-show
+
+# Inter-batch comparison with fixed axes
+python main.py plot-te CHY-1038 CHY-1040 \
+  --plot-mode combined \
+  --comparison-id CHY1038_vs_CHY1040 \
+  --xlim 300 800 \
+  --no-show
+\end{lstlisting}
+
+\begin{lstlisting}[caption={Terminal-output slot: TE plotting.}]
+# TODO: paste saved-file lines here.
+# Example:
+# Saved: outputs/figures/te/CHY-1040/seebeck.svg
+# Saved: outputs/figures/te/inter-batch/CHY1038_vs_CHY1040/...
+\end{lstlisting}
+
+\begin{figure}[t]
+  \centering
+  \imageplaceholder{outputs/figures/te/CHY-1040/seebeck.png}
+  \caption{Figure slot for a TE property plot, such as Seebeck, conductivity,
+  power factor, or $zT$.}
+  \label{fig:te-plot-slot}
+\end{figure}
+
+\subsection{XRD Plotting}
+
+Purpose: render XRD scans for a batch, selected samples, or a direct XRD folder;
+optionally overlay a cleaned PDF-card standard.
+
+\begin{lstlisting}[language=bash,caption={Command slot: XRD plotting.}]
+# Whole batch
+python main.py plot-xrd CHY-1038 --no-show
+
+# One normalized sample
+python main.py plot-xrd CHY-1038-A --mode normalized --no-show
+
+# Selected suffixes from an XRD folder
+python main.py plot-xrd data/raw/CHY-1038/XRD \
+  --select A C \
+  --no-show
+
+# With a PDF-card standard
+python main.py plot-xrd CHY-1038 \
+  --pdf-card CuInTe2_PDF_97_023_8958 \
+  --no-show
+\end{lstlisting}
+
+\begin{lstlisting}[caption={Terminal-output slot: XRD plotting.}]
+# TODO: paste saved-file lines or selected sample list here.
+# Example:
+# Loaded 3 XRD files
+# Saved: outputs/figures/xrd/CHY-1038/...
+\end{lstlisting}
+
+\begin{figure}[t]
+  \centering
+  \imageplaceholder{outputs/figures/xrd/CHY-1038/example.png}
+  \caption{Figure slot for a stacked or normalized XRD plot.}
+  \label{fig:xrd-slot}
+\end{figure}
+
+\subsection{Flexible Plotting}
+
+Purpose: render figures from ad hoc CSV/TXT/XLSX inputs or reusable JSON
+recipes.
+
+\begin{lstlisting}[language=bash,caption={Command slot: flexible plotting.}]
+# Direct CLI mode
+python main.py flexible \
+  --data data/demo/flexible_plotting/literature_comparison_loose.csv \
+  --kind scatter \
+  --x "Ag fraction x" \
+  --y "Best zT" \
+  --xlabel "Ag fraction, $x$" \
+  --ylabel "$ZT_{\\mathrm{max}}$" \
+  --stem demo_scatter \
+  --formats png pdf \
+  --no-show
+
+# Recipe mode
+python main.py flexible \
+  --recipe configs/flexible_plot_demos/temperature_seebeck_line.json \
+  --no-show
+\end{lstlisting}
+
+\begin{lstlisting}[caption={Terminal-output slot: flexible plotting.}]
+# TODO: paste generated files here.
+# Example:
+# outputs/figures/flexible_cli/demo_scatter.png
+# outputs/figures/flexible_cli/demo_scatter_normalized.csv
+\end{lstlisting}
+
+\begin{figure}[t]
+  \centering
+  \imageplaceholder{outputs/figures/flexible_cli/demo_scatter.png}
+  \caption{Figure slot for a flexible-plotting output.}
+  \label{fig:flexible-slot}
+\end{figure}
+
+\subsection{Assessment and Bayesian Prediction}
+
+Purpose: summarize extracted transport features and rank candidate compositions
+for follow-up measurements.
+
+\begin{lstlisting}[language=bash,caption={Command slot: assessment and prediction.}]
+# Assess selected batches
+python main.py assess CHY-1040 CHY-1048
+
+# Assess every batch with extracted features
+python main.py assess --all
+
+# Local GP prediction on lab data
+python main.py bayes --source lab --target ZT_max --top 10
+
+# Reference-data prediction
+python main.py bayes \
+  --source reference \
+  --reference-id GeSe \
+  --target ZT_max \
+  --pdf
+\end{lstlisting}
+
+\begin{lstlisting}[caption={Terminal-output slot: prediction.}]
+# TODO: paste top candidates or report paths here.
+# Example:
+# Top candidate: ...
+# Report: results/bayesian_predictions/...
+# Figure: outputs/figures/bayesian_predictions/...
+\end{lstlisting}
+
+\section{Recommended End-to-End Protocol}
+
+For a new experimental batch, use the following protocol:
+
+\begin{enumerate}[leftmargin=*]
+  \item Place raw files under \code{data/raw/<batch_id>/}. Keep original
+  instrument exports unchanged.
+  \item Run metadata synchronization and fill missing density, heat capacity,
+  composition, and synthesis annotations.
+  \item Process the raw TE data with \code{python main.py analyze}.
+  \item Render TE figures and inspect axis limits.
+  \item Render XRD figures and, when appropriate, compare with a PDF-card
+  standard.
+  \item Run batch assessment and record the main finding in \code{results/}.
+  \item If enough structured data exists, run a Bayesian prediction pass and
+  use the ranked candidates to plan follow-up samples.
+\end{enumerate}
+
+\begin{lstlisting}[language=bash,caption={End-to-end command template.}]
+python scripts/sync_lab_metadata.py
+python scripts/sync_lab_markdown.py export
+# TODO: edit data/lab/lab_metadata.md
+python scripts/sync_lab_markdown.py
+python main.py analyze CHY-1048
+python main.py plot-te CHY-1048 --seebeck --no-show
+python main.py plot-xrd CHY-1048 --no-show
+python main.py assess CHY-1048
+\end{lstlisting}
+
+\section{Reproducibility Notes}
+
+Generated outputs should be stored in predictable locations. Standard TE plots
+belong under \code{outputs/figures/te/}; XRD plots belong under
+\code{outputs/figures/xrd/}; flexible one-off plots belong under
+\code{outputs/figures/flexible_cli/} or \code{outputs/figures/flexible/};
+assessment reports belong under \code{results/assessments/}; Bayesian reports
+belong under \code{results/bayesian_predictions/}. Private credentials and
+local-only configuration files should remain outside versioned or public
+artifacts.
+
+\section{Editable Example Slots}
+
+Use the following minimal pattern when adding a new operation example. Copy the
+three blocks together so each example records its command, textual output, and
+visual output.
+
+\begin{lstlisting}[language=bash,caption={Generic command slot.}]
+# TODO: paste the exact bash command here.
+python your_script.py --your-option value --no-show
+\end{lstlisting}
+
+\begin{lstlisting}[caption={Generic terminal-output slot.}]
+# TODO: paste only the important output lines here.
+# Keep this short enough to fit in one column.
+\end{lstlisting}
+
+\begin{figure}[t]
+  \centering
+  \imageplaceholder{path/to/generated_figure.png}
+  \caption{Generic output-image slot. Replace the placeholder with an actual
+  figure once the command has been run.}
+  \label{fig:generic-slot}
+\end{figure}
+
+\section{Pointers}
+
+More detailed command references are maintained in
+\code{docs/COMMANDS.md}, \code{docs/FLEXIBLE_PLOTTING.md}, and
+\code{docs/PROJECT_STRUCTURE.md}. When the documentation and script behavior
+disagree, prefer the current \code{--help} output from the corresponding root
+entry point.
+
+\end{document}

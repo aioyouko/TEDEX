@@ -14,7 +14,7 @@ Point-line property versus composition:
 
 Dual-axis point-line plot versus composition:
     python scripts/plot_paper_style_te_variants.py \
-        --samples CHY-1001-A CHY-1001-B CHY-1002-A \
+        --samples CHY-1036-A CHY-1040-A CHY-1040-B CHY-1051 \
         --plot-type composition-dual \
         --temperature 300 \
         --left-property seebeck \
@@ -912,7 +912,7 @@ def default_stem_prefix(args: argparse.Namespace, rows: list[dict[str, Any]]) ->
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    parser.add_argument("--workspace", default=".", help="Path to the release/workspace root.")
+    parser.add_argument("--workspace", default=".", help="Path to te_agent_workspace.")
     parser.add_argument("--samples", nargs="+", required=True, help="Sample IDs, batch IDs, or processed CSV paths.")
     parser.add_argument(
         "--plot-type",

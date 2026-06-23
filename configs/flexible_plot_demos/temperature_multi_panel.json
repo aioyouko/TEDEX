@@ -1,0 +1,55 @@
+{
+  "name": "Demo flexible multi-panel TE plot",
+  "data": [
+    {
+      "path": "data/demo/flexible_plotting/messy_te_temperature_series.csv"
+    }
+  ],
+  "plot": {
+    "kind": "multi_panel",
+    "x": {
+      "semantic": "temperature",
+      "label": "$T$ (K)"
+    },
+    "group": {
+      "semantic": "sample"
+    },
+    "series": [
+      {
+        "semantic": "seebeck",
+        "property": "seebeck",
+        "label": "$S$ (\u00b5V K$^{-1}$)"
+      },
+      {
+        "semantic": "conductivity",
+        "property": "conductivity",
+        "label": "$\\sigma$ (S cm$^{-1}$)"
+      },
+      {
+        "semantic": "power_factor",
+        "property": "power_factor",
+        "label": "$PF$ ($\\mu$W cm$^{-1}$ K$^{-2}$)"
+      },
+      {
+        "semantic": "thermal_conductivity",
+        "property": "thermal_conductivity",
+        "label": "$\\kappa$ (W m$^{-1}$ K$^{-1}$)"
+      },
+      {
+        "semantic": "zt",
+        "property": "zt",
+        "label": "$ZT$"
+      }
+    ],
+    "xlabel": "$T$ (K)",
+    "x_major": 100,
+    "x_minor": 50
+  },
+  "output": {
+    "dir": "outputs/figures/flexible_demos",
+    "stem": "demo_02_messy_te_multi_panel",
+    "formats": ["png", "pdf"],
+    "normalized_csv": true,
+    "copy_to_data_dir": true
+  }
+}

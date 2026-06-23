@@ -1,0 +1,49 @@
+\chapter{Raw TE Analysis}
+
+\section{Workflow Goal}
+
+The raw TE workflow converts paired ZEM/LFA measurements into processed
+transport-property tables. The standard entry point is \code{python main.py analyze}.
+
+\section{Command}
+The first step is to run a scrip (\code{scripts/sync_lab_metadata.py}) to sync sample information into a notebook
+ (\code{data/lab/lab_metadata.md}), which record detailed information of
+experiemnts samples (batch id, comptosition, density, heat capacity, doping elements, etc.). This script will
+ automatically detect the new added samples in \code{\data\raw}, and add new template in markdown. The $density$ and 
+ $heat\ \ capacity$ must be filled before running TE Analysis program. 
+
+\begin{lstlisting}[language=bash,caption={Sync batch information.}]
+  # TODO: sync batch/sample information to \code{data/lab/lab_metadata.md}.
+  python scripts/sync_lab_metadata.py
+  \end{lstlisting}
+
+\begin{lstlisting}[language=bash,caption={Raw TE analysis command slot.}]
+# TODO: replace with the exact batch or sample selector.
+python main.py analyze CHY-1048
+
+# Optional selected-sample analysis.
+python main.py analyze CHY-1054 --sample B C
+\end{lstlisting}
+
+\section{Analysis Output}
+
+\begin{lstlisting}[caption={Raw TE analysis terminal output slot.}]
+# TODO: paste the key processing lines here.
+# Example:
+# step1. Data processing
+# Saved processed data to: data/processed/...
+# Saved extracted features to: results/...
+\end{lstlisting}
+
+Processed data will be located at \code{data/processed}, with extracted raw data, and lattice thermal conductivity ($\kappa_L$), 
+quality factor based on SPB model, and ZT value.
+
+\section{Noitons}
+
+\begin{itemize}[leftmargin=*]
+  \item Required ZEM/LFA file naming and raw folder structure.
+  \item Required metadata: density, \code{cp_value}, sample ID, composition.
+  \item Output CSV columns and extracted feature JSON.
+  \item Common failure modes: missing LFA/ZEM files, missing density, unit
+  mismatch, malformed instrument export.
+\end{itemize}

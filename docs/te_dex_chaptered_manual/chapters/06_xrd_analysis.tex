@@ -1,0 +1,27 @@
+\chapter{XRD Analysis}
+
+\section{Scope}
+
+This chapter will document XRD file layout, normalized/stacked plotting, PDF-card
+overlays, and lattice-parameter fitting.
+
+\section{Command Slot}
+
+\begin{lstlisting}[language=bash,caption={XRD plotting command slot.}]
+# TODO: replace with a real XRD command.
+python main.py plot-xrd CHY-1038 --no-show
+python main.py plot-xrd CHY-1038 --pdf-card CuInTe2_PDF_97_023_8958 --no-show
+\end{lstlisting}
+
+\section{Planned Content}
+
+\begin{itemize}[leftmargin=*]
+  \item Expected XRD raw file naming.
+  \item Normalized versus not-normalized plotting modes.
+  \item PDF-card standard CSV requirements.
+  \item Lattice fitting inputs and outputs.
+  \item Recommended annotations for phase assignment.
+\end{itemize}
+
+\figureslot{outputs/figures/xrd/example.png}
+{Figure slot for a stacked XRD plot.}

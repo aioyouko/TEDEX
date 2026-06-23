@@ -1,0 +1,35 @@
+\chapter{Workspace Architecture}
+
+\section{Repository Layout}
+
+The workspace keeps root-level scripts as user-facing entry points and stores
+implementation details in importable modules under \code{src/}. Source data,
+processed data, reports, and figures are separated to make outputs easy to
+inspect and clean.
+
+\begin{table}[htbp]
+\centering
+\caption{Core workspace directories.}
+\begin{tabular}{@{}p{0.28\linewidth}p{0.58\linewidth}@{}}
+\toprule
+Path & Role \\
+\midrule
+\code{src/} & Reusable Python modules. \\
+\code{src/tools/} & Data parsing, TE plotting, XRD utilities, and SPB fitting. \\
+\code{data/raw/} & Original instrument files and raw batch folders. \\
+\code{data/processed/} & Cleaned transport-property CSV tables. \\
+\code{data/lab/} & Batch/sample ledgers and editable lab metadata. \\
+\code{results/} & Reports, assessment payloads, fitting outputs, predictions. \\
+\code{outputs/} & Figures, one-off exports, tables, and logs. \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{Planned Content}
+
+\begin{itemize}[leftmargin=*]
+  \item Data ownership rules for raw, processed, and generated files.
+  \item Naming conventions for CHY batches and samples.
+  \item Relationship between \code{results/} and \code{outputs/}.
+  \item How external snapshots under \code{external/} should be treated.
+\end{itemize}

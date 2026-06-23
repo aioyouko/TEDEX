@@ -5,7 +5,7 @@ import csv
 from scipy.interpolate import interp1d
 
 try:
-    from src.tools.SPB.lattice_cal import add_lattice_thermal_conductivity
+    from src.tools.spb.lattice_cal import add_lattice_thermal_conductivity
     HAS_LATTICE_CALC = True
 except ImportError:
     HAS_LATTICE_CALC = False

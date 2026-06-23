@@ -1,48 +1,41 @@
-# TEDEX
+# Thermoelectric Analysis Workspace
 
-TEDEX is a lightweight thermoelectric analysis and plotting toolkit. It keeps
-the lab-style plotting defaults in one place, while letting you make quick
-publication-style figures from processed TE transport tables, device curves,
-XRD data, and loosely structured CSV/TXT/XLSX files.
+This workspace keeps one root launcher, `main.py`, while source code, scripts,
+data, configs, reports, and generated artifacts live in dedicated folders.
 
-Current public package: **v1.3.0**.
+## Quick Start
 
-This public release includes source code, docs, reusable plotting recipes, and
-demo files under `data/demo/`. Private raw data, processed lab data, lab
-metadata, results, and generated outputs are not included.
+Install dependencies:
 
-## What's New in v1.3.0
+```bash
+pip install -r requirements.txt
+```
 
-- Added SPB effective-mass fitting from Hall carrier concentration and
-  Seebeck data.
-- Added SPB performance fitting for grouped `nH-S-PF-ZT` data, including
-  power factor and zT curves.
-- Added conductivity-axis SPB fitting for datasets without measured Hall
-  carrier concentration. Conductivity defaults to S/m, and the model can fit
-  or use a fixed weighted `u0`.
-- Added reusable SPB recipes and public demo inputs/figures under
-  `configs/plot_recipes/spb/` and `data/demo/spb_fitting/`.
+Common launcher commands:
 
-## Demo Gallery
+```bash
+python main.py --help
+python main.py analyze --help
+python main.py plot-te --help
+python main.py plot-xrd --help
+python main.py flexible --help
+python main.py spb --help
+python main.py assess --help
+python main.py bayes --help
+```
 
-The gallery below combines public demo figures from the v1.2.0, v1.2.1, and
-v1.3.0 release packages.
+Detailed plotting command notes:
 
-| Temperature mobility | Temperature carrier concentration | Composition Hall dual axis |
-| --- | --- | --- |
-| ![Temperature vs mobility](data/demo/temperature_vs_mobility/temperature_vs_mobility.png) | ![Temperature vs carrier concentration](data/demo/temperature_vs_carrier_concentration/temperature_vs_carrier_concentration.png) | ![Composition Hall dual-axis plot](data/demo/composition_Hall/dual_axis_composition_vs_carrier_mobility.png) |
+- `docs/COMMANDS.md`
+- `docs/FLEXIBLE_PLOTTING.md`
 
-| Cooling capacity | Maximum cooling temperature | COP |
-| --- | --- | --- |
-| ![Current vs cooling capacity](data/demo/max_cooling_capacity/device_current_vs_cooling_capacity_qc.png) | ![Hot-side temperature vs maximum cooling temperature](data/demo/max_cooling_temp/device_hot_side_temperature_vs_delta_tmax.png) | ![Current vs COP](data/demo/COP/device_current_vs_cop.png) |
+Agent-based analysis reads API keys from `.env` through `python-dotenv`.
+Keep `.env` local and private.
 
-| Device efficiency | Device voltage/power | Composition grouped bar |
-| --- | --- | --- |
-| ![Current vs efficiency](data/demo/device_efficiency/device_current_vs_efficiency.png) | ![Current vs voltage and power](data/demo/device%20power%20geenration/device_current_vs_voltage_power_dual.png) | ![Composition grouped bar demo](data/demo/flexible_plotting/demo_08_composition_grouped_bar.png) |
+## SPB Fitting Gallery
 
-| TE Seebeck | TE conductivity | TE zT |
-| --- | --- | --- |
-| ![TE Seebeck demo](data/demo/thermoelectric_property/te_temperature_vs_seebeck.png) | ![TE conductivity demo](data/demo/thermoelectric_property/te_temperature_vs_conductivity.png) | ![TE zT demo](data/demo/thermoelectric_property/te_temperature_vs_zt.png) |
+The v1.3.0 public package adds SPB fitting scripts, recipes, demo data, and
+gallery figures.
 
 | SPB Pisarenko view | SPB PF view | SPB conductivity view |
 | --- | --- | --- |
@@ -52,231 +45,66 @@ v1.3.0 release packages.
 | --- | --- | --- |
 | ![SPB zT fit demo](data/demo/spb_fitting/Ag2Se/zt_fit.png) | ![SPB conductivity-axis Seebeck fit demo](data/demo/spb_fitting/Cu2SSeTe/conductivity_seebeck_fit.png) | ![SPB conductivity-axis zT fit demo](data/demo/spb_fitting/Cu2SSeTe/conductivity_zt_fit.png) |
 
-| Sound velocity bars | Simple bar template | Flexible multi-panel |
-| --- | --- | --- |
-| ![Sound velocity grouped bar demo](data/demo/sound%20velocity/sound_velocity_grouped_bar.png) | ![Simple bar template demo](data/demo/flexible_plotting/check_simple_bar_template.png) | ![Flexible multi-panel demo](data/demo/flexible_plotting/demo_02_messy_te_multi_panel.png) |
-
-Demo references for the public example datasets:
-
-- Liu et al., "Ultralow Chromium Doping Enables All-PbSe Thermoelectric Cooling."
-- Jiang et al., "High-Entropy-Stabilized Chalcogenides with High Thermoelectric Performance."
-- Sun et al., "Flexible thermoelectric device with blade-like structure for ultrahigh output performance."
-- Zhao et al., "Are Cu2Te‐Based Compounds Excellent Thermoelectric Materials?"
-- Zhao et al., "Enhanced Thermoelectric Performance through Tuning Bonding Energy in Cu2Se1–xSx Liquid-like Materials."
-- Yang et al., “Ductile Ag20S7Te3 with Excellent Shape‐conformability and High Thermoelectric Performance.”
-- Liang et al., “Flexible Thermoelectrics: from Silver Chalcogenides to Full-inorganic Devices.”
-
-
-## Install
-
-Use Python 3.10 or newer.
-
-```bash
-git clone https://github.com/aioyouko/TEDEX.git
-cd TEDEX
-
-python -m venv .venv
-source .venv/bin/activate
-pip install -r requirements.txt
-```
-
-For editable command-line entry points:
-
-```bash
-pip install -e .
-```
-
-## Quick Examples
-
-Run a grouped bar chart from the included demo table:
-
-```bash
-python flexible_plot.py data/demo/flexible_plotting/composition_grouped_bar_summary.csv \
-  --recipe configs/plot_recipes/bar/grouped_bar.json \
-  --x Composition \
-  --y zT_500K \
-  --y zT_700K \
-  --label "500 K" \
-  --label "700 K" \
-  --ylabel "zT" \
-  --stem quick_grouped_bar \
-  --formats png pdf \
-  --no-copy-to-data-dir \
-  --no-show
-```
-
-Run a single thermoelectric property plot from demo TE data:
-
-```bash
-python flexible_plot.py \
-  --recipe configs/plot_recipes/thermoeletric/temperature_vs_seebeck.json \
-  data/demo/thermoelectric_property/1.csv \
-  --stem quick_te_seebeck \
-  --formats png pdf \
-  --no-copy-to-data-dir \
-  --no-show
-```
-
-Compare the same TE property across multiple demo samples:
-
-```bash
-python flexible_plot.py \
-  --recipe configs/plot_recipes/thermoeletric/temperature_vs_zt.json \
-  data/demo/thermoelectric_property/1.csv \
-  data/demo/thermoelectric_property/2.csv \
-  data/demo/thermoelectric_property/3.csv \
-  --label "Sample 1" \
-  --label "Sample 2" \
-  --label "Sample 3" \
-  --stem quick_te_zt_compare \
-  --formats png pdf \
-  --no-copy-to-data-dir \
-  --no-show
-```
-
-Fit SPB effective mass from grouped Hall carrier concentration and Seebeck
-data:
-
-```bash
-python src/tools/SPB/effective_mass_fit.py \
-  data/demo/spb_fitting/Ag2Se/Ag2Se_series.csv \
-  -g curve_id \
-  --T-column T \
-  --x nH \
-  --y S \
-  --formats png pdf \
-  --no-show
-```
-
-Fit SPB performance curves from `nH-S-PF-ZT` data:
-
-```bash
-python src/tools/SPB/performance_fit.py \
-  data/demo/spb_fitting/Ag2Se/Ag2Se_series.csv \
-  -g curve_id \
-  --T-column T \
-  --x nH \
-  --y S \
-  --pf PF \
-  --zt ZT \
-  --kL 0.5 \
-  --formats png pdf \
-  --no-show
-```
-
-Fit SPB curves on conductivity when Hall carrier concentration is unavailable:
-
-```bash
-python src/tools/SPB/conductivity_fit.py \
-  data/demo/spb_fitting/Cu2SSeTe/900K.csv \
-  --T 900 \
-  --x conductivity \
-  --y S \
-  --pf PF \
-  --zt ZT \
-  --kL 0.5 \
-  --legend outside \
-  --formats png pdf \
-  --no-show
-```
-
-Create a direct plot without a recipe:
-
-```bash
-python flexible_plot.py data/demo/max_cooling_capacity/1.csv \
-  --kind line \
-  --x I \
-  --y Q \
-  --xlabel '$I$ (A)' \
-  --ylabel '$Q_{\mathrm{c}}$ (W)' \
-  --stem quick_qc_demo \
-  --formats png pdf \
-  --no-show
-```
-
-Installed entry-point equivalent:
-
-```bash
-te-flex-plot data/demo/max_cooling_capacity/1.csv --kind line --x I --y Q --no-show
-```
-
-## Recipe Map
-
-- `configs/plot_recipes/bar/`: simple and grouped categorical bar charts.
-- `configs/plot_recipes/thermoeletric/`: processed TE property plots and
-  summary panels.
-- `configs/plot_recipes/device/`: device efficiency, COP, cooling capacity,
-  maximum cooling temperature, and voltage/power plots.
-- `configs/plot_recipes/temperature/`: temperature-dependent transport plots.
-- `configs/plot_recipes/spb/`: carrier concentration and conductivity-axis
-  SPB fitting plots.
-- `configs/plot_recipes/dual_axis/`: two-axis composition or temperature plots.
-- `configs/plot_recipes/lattice/`: composition versus lattice parameter.
-
-Each saved figure also writes a normalized CSV by default, so the plotted x/y
-columns, labels, groups, and source files are auditable.
-
-## Entry Points
-
-```bash
-python plot_te.py --help
-python plot_XRD.py --help
-python flexible_plot.py --help
-python assess_selected_batches.py --help
-python bayesian_predict_te.py --help
-python src/tools/SPB/effective_mass_fit.py --help
-python src/tools/SPB/performance_fit.py --help
-python src/tools/SPB/conductivity_fit.py --help
-```
-
-After `pip install -e .`, the package also provides:
-
-```bash
-te-flex-plot --help
-te-plot-xrd --help
-te-assess-batches --help
-te-bayes-predict --help
-te-spb-effective-mass --help
-te-spb-performance --help
-te-spb-conductivity --help
-```
-
 ## Repository Layout
 
 ```text
 .
-├── src/                    # Reusable Python source
-├── myplotstyle/             # Matplotlib style helpers
-├── scripts/                 # Supporting CLI utilities
-├── configs/plot_recipes/    # Reusable plotting recipes
-├── data/demo/               # Public demo inputs and generated examples
-├── docs/                    # Command notes and workflow docs
-├── outputs/                 # Local generated figures, ignored by release
-└── results/                 # Local generated analysis outputs, ignored by release
+├── main.py               # Root-level launcher for common tools
+├── src/                  # Reusable Python source code
+│   ├── agents/
+│   └── tools/
+├── scripts/              # Runnable analysis, plotting, sync, and utility scripts
+│   ├── analysis/
+│   └── plotting/
+├── data/                 # Lab, reference, raw, and processed data
+│   ├── raw/
+│   ├── processed/
+│   ├── lab/
+│   ├── demo/
+│   └── reference/
+├── configs/              # JSON configs and plotting recipes
+├── results/              # Main analysis outputs used by existing scripts
+│   ├── reports/
+│   ├── assessments/
+│   ├── bayesian_predictions/
+│   └── xrd_lattice/
+├── outputs/              # Generated figures, artifacts, and exports
+│   ├── figures/
+│   ├── tables/
+│   ├── logs/
+│   └── cache/            # Ignored cache archive for generated local clutter
+├── notebooks/            # Jupyter notebooks and local scratch work
+├── docs/                 # Workflow notes and command references
+├── skills/               # Local Codex skill instructions
+├── external/             # External snapshots or vendored references
+└── requirements.txt
 ```
 
-## Release Note
+## Naming Conventions
 
-To publish this package to GitHub as a new release, see
-`TEDEX_SYNC_RELEASE.md`. In short: sync this v1.3.0 folder into a fresh clone of
-`aioyouko/TEDEX`, commit it, tag `v1.3.0`, push `main`, and push the tag.
+- Keep only `main.py` in the root as the user-facing launcher.
+- Put runnable workflow scripts under `scripts/analysis/`, `scripts/plotting/`,
+  or another focused `scripts/` subfolder.
+- Put reusable implementation code under `src/`, not in notebooks.
+- Keep raw experiment files under `data/raw/<batch_id>/`.
+- Keep cleaned sample tables under `data/processed/<batch_id>-processed/`.
+- Put plotting recipes and runtime options under `configs/`.
+- Let current scripts write newly generated figures under `outputs/figures/`.
+- Keep analysis tables, Markdown reports, and machine-readable result payloads
+  under `results/`.
+- Use `outputs/` for one-off exports, presentation artifacts, and manually
+  generated figures that are not part of the standard analysis pipeline.
+- Treat `outputs/cache/` as disposable local clutter collected from Python,
+  Jupyter, and macOS metadata.
+- Put external project snapshots under `external/` so they do not look like
+  first-party source code.
 
-## Acknowledgements
+## Recent Cleanup
 
-Documentation updates, release-check workflow notes, and selected code
-maintenance for this public package were assisted by OpenAI Codex, with final
-review and responsibility by Heyang Chen.
-
-## Copyright And Contact
-
-Copyright (c) 2026 Heyang Chen. All rights reserved unless a separate license
-file is added to this repository.
-
-For questions, collaborations, or citation details, contact:
-
-- Heyang Chen
-- heyang.chen@ntu.edu.sg
-- heyang.chen@northwestern.edu
-- School of Materials Science and Engineering, Nanyang Technological
-  University, Singapore
-- Department of Chemistry, Northwestern University, Evanston, IL, USA
+- Moved command notes to `docs/COMMANDS.md`.
+- Moved root composition-map PNGs to `outputs/figures/composition_maps/`.
+- Moved PDF text extracts to `data/reference/pdf_extracts/`.
+- Moved older report packages to `results/reports/research_reports/`.
+- Moved external GitHub snapshots to `external/github/`.
+- Renamed the temporary notebook to `notebooks/setup_env_template.ipynb` and
+  replaced the hardcoded key with a placeholder.

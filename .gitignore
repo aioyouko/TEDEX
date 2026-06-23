@@ -1,31 +1,28 @@
-.DS_Store
+# Secrets and local environment
+.env
+.env.*
+!.env.example
+*.key
+
+# Python cache
 __pycache__/
 *.py[cod]
+*$py.class
+
+# Jupyter cache
 .ipynb_checkpoints/
+
+# macOS and editor metadata
+.DS_Store
+.vscode/
+.idea/
+
+# Local virtual environments
 .venv/
 venv/
 env/
-build/
-dist/
-*.egg-info/
-.env
 
-data/raw/*
-!data/raw/.gitkeep
-data/processed/*
-!data/processed/.gitkeep
-data/lab/*
-!data/lab/.gitkeep
-data/reference/*
-!data/reference/.gitkeep
-data/pdf_card/*
-!data/pdf_card/plot_standards/
-data/pdf_card/plot_standards/*
-!data/pdf_card/plot_standards/.gitkeep
-
-results/*
-!results/.gitkeep
-outputs/*
-!outputs/.gitkeep
-
+# Local caches and logs
+outputs/cache/
+outputs/logs/
 *.log

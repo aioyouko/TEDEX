@@ -1,18 +1,18 @@
-# zsh completion for plot_te.py.
+# zsh completion for the plot-te launcher.
 #
 # Usage:
-#   source /path/to/te-analysis-plotting/scripts/plot_te_completion.zsh
+#   source /path/to/te_agent_workspace/scripts/plot_te_completion.zsh
 #   plot_te --s<Tab>
 #
 # Optional:
-#   export PLOT_TE_WORKSPACE=/path/to/te-analysis-plotting
+#   export PLOT_TE_WORKSPACE=/path/to/te_agent_workspace
 
 _plot_te_completion_file="${${(%):-%N}:A}"
 _plot_te_completion_dir="${_plot_te_completion_file:h}"
 : "${PLOT_TE_WORKSPACE:=${_plot_te_completion_dir:h}}"
 
 plot_te() {
-  (cd "$PLOT_TE_WORKSPACE" && python plot_te.py "$@")
+  (cd "$PLOT_TE_WORKSPACE" && python main.py plot-te "$@")
 }
 
 _plot_te_plot_modes() {
@@ -118,7 +118,6 @@ if ! whence -w compdef >/dev/null 2>&1; then
 fi
 
 compdef _plot_te plot_te
-compdef _plot_te plot_te.py
-compdef _plot_te ./plot_te.py
+compdef _plot_te plot-te
 
 unset _plot_te_completion_file _plot_te_completion_dir

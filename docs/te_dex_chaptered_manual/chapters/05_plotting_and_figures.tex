@@ -1,0 +1,66 @@
+\chapter{Plotting and Figures}
+
+\section{Introduction}
+
+This chapter will document standard TE plotting, flexible plotting recipes.
+
+\section{Fast TE Plotting}
+
+Based on the Raw TE Analysis in Chapter 3, the processed TE data are listed in \code{./data/processed/batch}. The fast plotting can be achieved
+by \code{python plot_te.py}
+
+\begin{lstlisting}[language=bash, caption={Fast TE plotting.}]
+python plot_te.py BATCH_ID SAMPLE_ID \
+  --seebeck --conductivity --power_factor \      
+  --xlim LOW HIGH --ylim LOW HIGH \        
+  --legend
+\end{lstlisting}
+The flexible plotting recipes also inclue temperatrue dependent thermoelectric proeprties.
+\begin{lstlisting}[language=bash,caption={TE plotting command slot.}]
+python flexible_plot.py \
+  --recipe configs/plot_recipes/thermoeletric/temperature_vs_seebeck.json \
+  data/demo/thermoelectric_property/1.csv \
+\end{lstlisting}
+
+\twofigureslot
+  {figures/chapter5/5.1a.pdf}
+  {(a) Single batch $S$.}
+  {figures/chapter5/5.1b.pdf}
+  {(b) Single batch $\kappa_L$.}
+  {Fast TE plotting.}
+
+\subsection{TE properties comparison inter batches}
+It's important to introduce the methods to plot inter-batches comparision of thermoelectric proeprties. If all data are recorded 
+in \code{data\processed} with $batch_id$, the fasted way is to run \code{python plot_te.py}.
+
+\begin{lstlisting}[language=bash, caption={Fast inter-batch TE plotting.}]
+python plot_te.py BATCH_ID_1 BATCH_ID_2 BATCH_ID_3
+\end{lstlisting}
+
+Most generally, comparision with references data, to use \code{flexible_plot.py} under different recipes is recomaned.
+The data of each sample should have columns with the title used in the program. 
+\begin{lstlisting}[language=bash, caption={Plotting multiple reference data.}]
+python fleible_plot.py \      
+  --recipe configs/plot_recipes/thermoeletric/temperature_vs_seebeck.json \
+  data/demo/thermoelectric_property/{1,2,3,4,5}.csv \      
+  --x T --y S \      
+  --label 'Sample1' --label '$Cu_{0.2}$' --label '$CU_{0.4}$'\       
+  --stem seebeck_comparison
+\end{lstlisting}
+
+\twofigureslot
+  {figures/chapter5/5.2a.pdf}
+  {(a) Single batch $S$.}
+  {figures/chapter5/5.2b.pdf}
+  {(b) Single batch $\kappa_L$.}
+  {Inter batch plotting.}
+
+\section{Planned Content}
+
+\begin{itemize}[leftmargin=*]
+  \item Standard single-property and combined TE plots.
+  \item Cross-batch comparison figures.
+  \item Flexible plotting direct CLI mode versus recipe mode.
+  \item Output formats: PNG for quick review, PDF/SVG for manuscripts.
+  \item Axis-limit conventions and legend placement.
+\end{itemize}/

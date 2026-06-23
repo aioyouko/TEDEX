@@ -1,0 +1,266 @@
+\chapter{SPB Fitting}
+
+\section{Objective}
+
+The single parabolic band (SPB) fitting tools provide a bridge between measured
+transport data and interpretable transport parameters. In TEDEX, the SPB
+workflow is not one monolithic command. It is split into three complementary
+entry points:
+
+\begin{enumerate}[leftmargin=*]
+  \item \code{effective_mass_fit.py}: fit density-of-states effective mass from
+  Hall carrier concentration and Seebeck data.
+  \item \code{performance_fit.py}: use Hall concentration, Seebeck, power
+  factor, and optionally $zT$ to model power-factor and $zT$ trends.
+  \item \code{conductivity_fit.py}: fit weighted mobility on a conductivity
+  axis and plot Seebeck, power factor, and optionally $zT$ versus conductivity.
+\end{enumerate}
+
+The practical goal is to answer three questions: what effective mass is
+consistent with the measured Pisarenko trend, which carrier concentration or
+conductivity regime maximizes performance, and whether the measured data sit on
+a physically plausible SPB curve.
+
+\section{SPB Model Used in the Code}
+
+The current implementation uses a compact acoustic-phonon SPB model. The
+reduced Fermi level $\eta$ is obtained from the measured Seebeck magnitude. For
+the default scattering exponent, the Seebeck magnitude is evaluated as
+
+\begin{equation}
+  |S| = \frac{k_B}{e}
+  \left( \frac{2F_1(\eta)}{F_0(\eta)} - \eta \right),
+\end{equation}
+
+where $F_j(\eta)$ denotes the unnormalized Fermi integral
+
+\begin{equation}
+  F_j(\eta) = \int_0^\infty
+  \frac{x^j}{1 + \exp(x-\eta)}\,dx.
+\end{equation}
+
+For a density-of-states effective mass $m^*$, the true carrier concentration is
+computed as
+
+\begin{equation}
+  n =
+  4\pi
+  \left(
+    \frac{2m^*m_e k_BT}{h^2}
+  \right)^{3/2}
+  F_{1/2}(\eta).
+\end{equation}
+
+By default, the Hall concentration is modeled as
+
+\begin{equation}
+  n_H = \frac{n}{r_H},
+\end{equation}
+
+where $r_H$ is the acoustic-SPB Hall factor. The command-line option
+\code{--no-hall-factor} switches to the simplified convention $n_H=n$.
+
+\section{Inputs and Outputs}
+
+\begin{table}[htbp]
+\centering
+\caption{SPB fitting modes and their expected files.}
+\begin{tabular}{@{}p{0.20\linewidth}p{0.32\linewidth}p{0.36\linewidth}@{}}
+\toprule
+Mode & Required data & Main outputs \\
+\midrule
+Effective mass & \code{nH}, \code{S}; optional \code{curve_id}, \code{T} &
+\code{fit_summary.json}, \code{effective_mass_points.csv},
+\code{pisarenko_curve.csv}, \code{pisarenko_fit.png/pdf} \\
+Performance & \code{nH}, \code{S}, \code{PF}; optional \code{ZT}, parameters &
+\code{performance_summary.json}, \code{performance_points.csv},
+\code{performance_curve.csv}, \code{pf_fit.png/pdf}, \code{zt_fit.png/pdf} \\
+Conductivity axis & \code{conductivity}, \code{S}; optional \code{PF},
+\code{ZT}, \code{kL} & \code{conductivity_summary.json},
+\code{conductivity_points.csv}, \code{conductivity_curve.csv},
+\code{conductivity_*_fit.png/pdf} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{Effective-Mass Fitting}
+
+This mode is the first pass for a Hall-Pisarenko analysis. The script reads a
+CSV containing Hall concentration and Seebeck columns, solves $\eta$ from
+Seebeck, and fits the effective mass that best maps the SPB carrier
+concentration curve to the measured $n_H$ values.
+
+
+Single-sample fitting will automatically calculate average density-of-states effective mass based on provided data. We can manually 
+define the effective mass by \code{--m 2.3} and alter fitting range by \code{--xlim 1e20 2e21}.
+
+\twofigureslot
+  {figures/chp4/4.1a.png}
+  {(a) Automatic effective-mass fitting result.}
+  {figures/chp4/4.1b.png}
+  {(b) Manual effective-mass fitting result.}
+  {Pisarenko fitting curves for Cu$_{2}$Se at 300 K.}
+
+When multiple samples are required for fitting, we can use the \code{--group-by curve_id} option to group the samples 
+by \code{curve_id}. This requires an original column named \code{curve_id} to be present in the input data. The paramter CSV is also need
+to identify the fitting temperature if not at default 300 K.
+
+\twofigureslot
+  {figures/chp4/4.2a.png}
+  {(a) Fitting of Ag2Se and Ag2SeTe at 300 K.}
+  {figures/chp4/4.2b.pdf}
+  {(b) Fitting of Cu2Se at 300 K and 750 K.}
+  {Multi-groupPisarenko fitting curves.}
+
+\begin{lstlisting}[language=bash,caption={Command slot: SPB effective-mass fit.}]
+python main.py spb effective-mass \
+  data/demo/spb_fitting/Ag2Se/Ag2Se_series.csv \
+  --group-by curve_id \
+  --params data/demo/spb_fitting/Ag2Se/Ag2Se_params.csv \
+  --output-dir results/spb_fitting/effective_mass_fit \
+  --formats png pdf \
+  --legend outside \
+  --no-show
+\end{lstlisting}
+
+\begin{lstlisting}[caption={Terminal-output slot: effective-mass fit.}]
+# TODO: paste key saved-file lines here.
+# Expected outputs include:
+# results/spb_fitting/effective_mass_fit/fit_summary.json
+# results/spb_fitting/effective_mass_fit/effective_mass_points.csv
+# results/spb_fitting/effective_mass_fit/pisarenko_curve.csv
+# results/spb_fitting/effective_mass_fit/pisarenko_fit.png
+\end{lstlisting}
+
+
+\section{Performance Fitting}
+
+The performance fit extends the Pisarenko analysis by fitting or using a
+mobility model and then rendering power-factor and $zT$ curves. This is useful
+when the question is not only ``what $m^*$ explains $S v.s. (n_H)$?'' but also
+``where should performance peak as carrier concentration changes?''
+
+The performance fitting also supports single data, which just requires input fitting paramters in CLI line or by the computer.
+If multiple curves is necessary, it is recommaned to use paramers.csv to input fittign parameters.
+
+The Fig4.3 is an example of auto-fitting of weighted mobiliy to calculate $PF$ and $ZT$ under $\kappa_L = 0.44$ at fixed temeprature 750 K and
+effective mass of 3.2 from Fig4.2b.
+
+\twofigureslot
+  {figures/chp4/4.3a.pdf}
+  {(a) Fitting of $PF$ at 750 K.}
+  {figures/chp4/4.3b.pdf}
+  {(b) Fitting of $ZT$ at 750 K.}
+  {Performance fitting of Cu2Se.}
+
+To fit multipe sets of data, using Listing 4.3 with raw data and parameters, the results can be seen in Fig 4.4.
+
+\twofigureslot{figures/chp4/4.4a.pdf}{(a) Fitting of $PF$ at 300 k.}{figures/chp4/4.4b.pdf}{(b) Fitting of $ZT$ at 300 K.}{Multiple sets data fitting of Ag2SSeTe.}
+
+\begin{lstlisting}[language=bash,caption={Command slot: SPB performance fit.}]
+python main.py spb performance \
+  data/demo/spb_fitting/Ag2Se/Ag2Se_series.csv \
+  --group-by curve_id \
+  --params data/demo/spb_fitting/Ag2Se/Ag2Se_params.csv \
+  --output-dir results/spb_fitting/performance_fit \
+  --properties pf zt \
+  --formats png pdf \
+  --legend outside \
+  --no-show
+\end{lstlisting}
+
+\begin{lstlisting}[caption={Terminal-output slot: performance fit.}]
+# TODO: paste key saved-file lines here.
+# Expected outputs include:
+# results/spb_fitting/performance_fit/performance_summary.json
+# results/spb_fitting/performance_fit/performance_curve.csv
+# results/spb_fitting/performance_fit/pf_fit.png
+# results/spb_fitting/performance_fit/zt_fit.png
+\end{lstlisting}
+
+\section{Conductivity-Axis Fitting}
+
+The conductivity-axis workflow is useful when the experimental series is more
+naturally interpreted as Seebeck, power factor, or $zT$ versus electrical
+conductivity. The script fits or uses a weighted mobility prefactor and renders
+model curves directly on the conductivity axis.
+
+\begin{lstlisting}[language=bash,caption={Command slot: conductivity-axis SPB fit.}]
+python main.py spb conductivity \
+  data/demo/spb_fitting/Cu2SSeTe/900K.csv \
+  --temperature 900 \
+  --x conductivity \
+  --y S \
+  --pf PF \
+  --zt ZT \
+  --sigma-unit S/cm \
+  --kL 0.3 \
+  --output-dir results/spb_fitting/conductivity_fit \
+  --properties seebeck pf zt \
+  --formats png pdf \
+  --legend outside \
+  --no-show
+\end{lstlisting}
+
+\begin{lstlisting}[caption={Terminal-output slot: conductivity-axis fit.}]
+# TODO: paste key saved-file lines here.
+# Expected outputs include:
+# results/spb_fitting/conductivity_fit/conductivity_summary.json
+# results/spb_fitting/conductivity_fit/conductivity_curve.csv
+# results/spb_fitting/conductivity_fit/conductivity_seebeck_fit.png
+# results/spb_fitting/conductivity_fit/conductivity_pf_fit.png
+# results/spb_fitting/conductivity_fit/conductivity_zt_fit.png
+\end{lstlisting}
+
+\twofigureslot{figures/chp4/4.5a.pdf}{(a) Fiteed $S$.}{figures/chp4/4.5b.pdf}{(b) Fitted $PF$.}{Fitted conducvtivity $v.s.$ thermoelectric parameetrs.}
+
+\figureslot{figures/chp4/4.6.pdf}
+{FFitted $ZT$ value.}
+
+\section{Interpreting the Outputs}
+
+\paragraph{Summary JSON files.}
+The JSON summaries are the best place to check fitted scalar parameters such as
+effective mass, mobility prefactor, lattice thermal conductivity setting, and
+fit configuration. They should be archived with any figure used in a report.
+
+\paragraph{Point CSV files.}
+The point files keep the experimental measurements after unit normalization and
+after derived SPB quantities have been added. These are useful for diagnosing
+outliers, sign conventions, and incorrect input columns.
+
+\paragraph{Curve CSV files.}
+The curve files store the model line sampled over the plotting range. They make
+the figure reproducible even if plotting styles change later.
+
+\paragraph{Figures.}
+The PNG/PDF outputs are intended for quick inspection and report insertion.
+Prefer PDF or SVG-like vector outputs when the figure will be edited or placed
+in a manuscript.
+
+\section{Quality-Control Checklist}
+
+\begin{enumerate}[leftmargin=*]
+  \item Confirm the carrier concentration unit: \code{cm^-3} and \code{m^-3}
+  differ by $10^6$.
+  \item Confirm the Seebeck unit: \code{uV/K} and \code{V/K} differ by $10^6$.
+  \item Confirm whether the Hall factor should be included. The default is to
+  include the acoustic-SPB Hall factor.
+  \item Avoid mixing temperatures in a single fit unless \code{--group-by} and
+  \code{--T-column} or a parameter CSV explicitly separate them.
+  \item Inspect residuals or point-vs-curve disagreement before interpreting a
+  fitted effective mass as a material constant.
+  \item Record the exact command, parameter CSV, and output directory for each
+  figure used in a presentation or report.
+\end{enumerate}
+
+\section{Open Slots for Future Expansion}
+
+\slotbox{Theory slot}{Add a fuller derivation of the SPB transport coefficients,
+including Lorenz number and the selected scattering exponent.}
+
+\slotbox{Validation slot}{Add one benchmark table comparing fitted values
+against a literature SPB example or a manually reproduced calculation.}
+
+\slotbox{Lab-data slot}{Add a CHY batch example once a complete Hall-containing
+dataset is selected for publication-style analysis.}

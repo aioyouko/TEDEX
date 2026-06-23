@@ -1,0 +1,37 @@
+{
+  "name": "Demo flexible Seebeck line plot",
+  "data": [
+    {
+      "path": "data/demo/flexible_plotting/messy_te_temperature_series.csv"
+    }
+  ],
+  "plot": {
+    "kind": "line",
+    "x": {
+      "semantic": "temperature",
+      "label": "$T$ (K)"
+    },
+    "group": {
+      "semantic": "sample"
+    },
+    "series": [
+      {
+        "semantic": "seebeck",
+        "property": "seebeck",
+        "label": "$S$ (\u00b5V K$^{-1}$)"
+      }
+    ],
+    "xlabel": "$T$ (K)",
+    "x_major": 100,
+    "x_minor": 50,
+    "legend": "outside",
+    "show_title": false
+  },
+  "output": {
+    "dir": "outputs/figures/flexible_demos",
+    "stem": "demo_01_messy_seebeck_vs_temperature",
+    "formats": ["png", "pdf"],
+    "normalized_csv": true,
+    "copy_to_data_dir": true
+  }
+}

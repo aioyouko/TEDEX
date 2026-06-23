@@ -242,7 +242,7 @@ JSON:
 Carrier concentration and mobility:
 
 ```bash
-python flexible_plot.py data/demo/concentration_mobility_double_axis.csv \
+python main.py flexible data/demo/concentration_mobility_double_axis.csv \
   --kind dual_line \
   --x x \
   --xlabel '$x$ ($10^{-3}$)' \
@@ -257,7 +257,7 @@ python flexible_plot.py data/demo/concentration_mobility_double_axis.csv \
 Three-group scatter:
 
 ```bash
-python flexible_plot.py data/demo/flexible_sactter.csv \
+python main.py flexible data/demo/flexible_sactter.csv \
   --kind scatter \
   --x x1 --y y1 \
   --x x2 --y y2 \
@@ -270,7 +270,7 @@ python flexible_plot.py data/demo/flexible_sactter.csv \
 Device voltage and power:
 
 ```bash
-python flexible_plot.py data.csv \
+python main.py flexible data.csv \
   --kind dual_line \
   --x I_A \
   --xlabel '$I$ (A)' \

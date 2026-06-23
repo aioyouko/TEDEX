@@ -1,0 +1,51 @@
+{
+  "name": "Demo flexible grouped bar plot",
+  "data": [
+    {
+      "path": "data/demo/flexible_plotting/composition_grouped_bar_summary.csv"
+    }
+  ],
+  "plot": {
+    "kind": "grouped_bar",
+    "x": {
+      "column": "Composition",
+      "label": "Composition"
+    },
+    "x_order": ["x = 0.00", "x = 0.03", "x = 0.06", "x = 0.10"],
+    "series": [
+      {
+        "y": {
+          "column": "zT_500K",
+          "label": "$zT$"
+        },
+        "property": "zt",
+        "group_value": "500 K",
+        "legend_label": "500 K"
+      },
+      {
+        "y": {
+          "column": "zT_700K",
+          "label": "$zT$"
+        },
+        "property": "zt",
+        "group_value": "700 K",
+        "legend_label": "700 K"
+      }
+    ],
+    "xlabel": "Composition",
+    "ylabel": "$zT$",
+    "legend": "inside",
+    "legend_loc": "upper left",
+    "bar_width": 0.72,
+    "bar_labels": true,
+    "bar_label_format": "{:.2f}",
+    "y_margin": 0.18
+  },
+  "output": {
+    "dir": "outputs/figures/flexible_demos",
+    "stem": "demo_08_composition_grouped_bar",
+    "formats": ["png", "pdf"],
+    "normalized_csv": true,
+    "copy_to_data_dir": true
+  }
+}

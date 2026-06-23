@@ -1,0 +1,43 @@
+\chapter*{Manual Outline}
+\addcontentsline{toc}{chapter}{Manual Outline}
+
+This manual is organized as a chaptered technical document. The goal is to make
+the project explainable, reproducible, and easy to extend chapter by chapter.
+
+\begin{table}[htbp]
+\centering
+\caption{Planned chapter structure.}
+\begin{tabular}{@{}>{\raggedright\arraybackslash}p{0.08\linewidth}
+>{\raggedright\arraybackslash}p{0.26\linewidth}
+>{\raggedright\arraybackslash}p{0.54\linewidth}@{}}
+\toprule
+No. & Chapter & Scope \\
+\midrule
+1 & Introduction & Research motivation, workspace goals, intended users, and the
+problem TEDEX solves. \\
+2 & Workspace Architecture & Folder layout, source-code boundaries, data
+ownership, and generated-output conventions. \\
+3 & Raw TE Analysis & ZEM/LFA ingestion, metadata requirements, transport
+property calculation, and extracted feature files. \\
+4 & SPB Fitting & Effective-mass fitting, performance curves, conductivity-axis
+fitting, command templates, outputs, and interpretation. \\
+5 & Plotting and Figures & Standard TE figures, flexible plotting recipes,
+style conventions, and publication-ready export formats. \\
+6 & XRD Analysis & XRD data layout, normalized/stacked plots, PDF-card overlays,
+and lattice-parameter fitting. \\
+7 & Assessment and Prediction & Batch assessment, AI-assisted interpretation,
+Bayesian prediction, and follow-up candidate ranking. \\
+8 & Reproducible Operations & End-to-end batch protocol, logging, figure slots,
+and recommended archival practice. \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section*{Editing Convention}
+
+Each chapter should include three practical components:
+\begin{enumerate}[leftmargin=*]
+  \item a conceptual description of the workflow;
+  \item command slots with exact bash commands;
+  \item terminal-output and figure slots that can be filled after each real run.
+\end{enumerate}

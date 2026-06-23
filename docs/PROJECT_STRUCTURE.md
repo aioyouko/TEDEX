@@ -1,67 +1,41 @@
 # Project Structure
 
-Version 1.2.0 is a public release rebuilt from the current workspace source while excluding private data and generated outputs.
+The root directory is intentionally reserved for the user-facing launcher:
 
 ```text
-te-analysis-plotting-v1.2.0/
-  run_analysis.py
-  plot_te.py
-  plot_XRD.py
-  flexible_plot.py
-  main.py
-  assess_selected_batches.py
-  bayesian_predict_te.py
-  te_analysis.py
-  src/
-  scripts/
-  myplotstyle/
-  configs/
-  data/
-  docs/
-  notebooks/
-  results/
-  outputs/
+main.py
 ```
 
-## Included Source
+Everything else should land in one of these buckets:
 
-| Path | Purpose |
+| Folder | Purpose |
 | --- | --- |
-| `src/tools/` | TE data loading, plotting, XRD, flexible plotting, SPB helpers, and shared utilities. |
-| `src/agents/` | Optional agent analysis helpers. They read API keys from environment variables or `.env`, which is not included. |
-| `scripts/` | Metadata sync, plotting helpers, reference extraction, and demo utilities. |
-| `myplotstyle/` | Plot styling helpers. |
-| `configs/plot_recipes/` | Reusable flexible plotting recipes. |
-| `configs/flexible_plot_demos/` | Recipes wired to included `data/demo/` files. |
+| `src/` | Importable source modules used by `main.py` and `scripts/`. |
+| `scripts/analysis/` | Runnable analysis workflows such as TE processing, assessment, agent analysis, and Bayesian prediction. |
+| `scripts/plotting/` | Runnable plotting entry scripts for TE, XRD, and flexible recipes. |
+| `scripts/` | Supporting sync/export utilities and small shell helpers. |
+| `data/raw/` | Original instrument exports and unmodified source data. |
+| `data/processed/` | Cleaned CSVs and extracted features generated from raw data. |
+| `data/lab/` | Batch/sample ledgers and lab metadata. |
+| `data/reference/` | Literature/reference datasets, extracted text, PDF-card data, and reference features. |
+| `configs/` | Plot recipes, batch templates, and schema/config JSON files. |
+| `results/` | Standard outputs produced by the analysis scripts. |
+| `outputs/` | Standalone artifacts, exported figures, decks, tables, logs, and one-off generated outputs. |
+| `outputs/cache/` | Ignored local cache archive for `.pyc`, Jupyter checkpoints, and macOS metadata. |
+| `notebooks/` | Scratch notebooks and exploratory work. |
+| `docs/` | Human-facing instructions, command notes, and project documentation. |
+| `skills/` | Local skill instructions used by Codex workflows. |
+| `external/` | Third-party snapshots or archived external code. |
 
-## Included Data
+## Practical Rules
 
-Only public demo data are included:
-
-```text
-data/demo/
-```
-
-Private-data folders are present only as empty placeholders:
-
-```text
-data/raw/
-data/processed/
-data/lab/
-data/reference/
-data/pdf_card/
-results/
-outputs/
-```
-
-The release `.gitignore` keeps those private/generated folders out of version control while keeping `data/demo/` available.
-
-## Not Included
-
-- `.env` and API keys.
-- Private lab metadata JSON/Markdown.
-- Raw instrument exports.
-- Processed sample CSVs outside `data/demo/`.
-- Reference PDF/data libraries.
-- Generated reports, plots, caches, and notebook checkpoints.
-- Local `skills/` and `external/` folders.
+1. User-facing tools should be launched through `python main.py <command>`.
+2. New reusable functions go in `src/tools/` or another `src/` package.
+3. New experiment data goes in `data/raw/` first, then processed outputs go in
+   `data/processed/`.
+4. New generated plots from standard TE/XRD scripts should stay under
+   `outputs/figures/te/` or `outputs/figures/xrd/`.
+5. One-off figures or exports should go under `outputs/figures/`,
+   `outputs/tables/`, or `outputs/logs/`.
+6. Notebooks should be named for their purpose, not `Untitled.ipynb`.
+7. Do not hardcode API keys in notebooks or scripts; use `.env`.
