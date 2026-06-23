@@ -825,7 +825,7 @@ def plot_xrd_comparison(
         ax.set_xlim(*two_theta_range)
     ax.set_yticks([])
     format_te_axis(ax, show_grid=False, tick_labelsize=tick_labelsize)
-    ax.tick_params(axis="x", which="both", direction="in", top=True, bottom=True, labelsize=tick_labelsize)
+    ax.tick_params(axis="x", which="both", direction="out", top=False, bottom=True, labelsize=tick_labelsize)
     ax.tick_params(axis="y", which="both", left=False, right=False, labelleft=False)
 
     bottom = 0.0 if pdf_standard else -0.05 * offset_step
