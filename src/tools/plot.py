@@ -53,8 +53,8 @@ DEFAULT_TEMPERATURE_MAJOR_TICK = 100
 DEFAULT_TEMPERATURE_MINOR_TICK = 50
 DEFAULT_SUBPLOT_ASPECT = "10:8"
 DEFAULT_SUBPLOT_HEIGHT = 2.65
-DEFAULT_FIGURE_DIR = "outputs/figures"
-DEFAULT_TE_FIGURE_DIR = "outputs/figures/te"
+DEFAULT_FIGURE_DIR = "figures"
+DEFAULT_TE_FIGURE_DIR = "data/processed/figures"
 DEFAULT_MARKER_SIZE = 5.0
 DEFAULT_LEGEND_FONT_SIZE = 7.5
 
@@ -430,9 +430,13 @@ def plot_property_vs_temperature(
     return ax
 
 
-def save_figure(fig, save_name, save_dir=DEFAULT_FIGURE_DIR, formats=None, transparent=False):
+def save_figure(fig, save_name, save_dir=DEFAULT_FIGURE_DIR, formats=None, transparent=None):
     """
     Save a figure and return the first saved path.
+
+    SVG outputs default to a transparent background so they drop cleanly into
+    slides and vector editors. Other formats keep Matplotlib's normal opaque
+    background unless a caller explicitly passes transparent=True.
     """
     os.makedirs(save_dir, exist_ok=True)
 
@@ -446,7 +450,8 @@ def save_figure(fig, save_name, save_dir=DEFAULT_FIGURE_DIR, formats=None, trans
 
     for file_format in formats:
         plot_path = os.path.join(save_dir, f"{base_name}.{file_format}")
-        fig.savefig(plot_path, dpi=600, bbox_inches='tight', transparent=transparent)
+        format_transparent = file_format == 'svg' if transparent is None else transparent
+        fig.savefig(plot_path, dpi=600, bbox_inches='tight', transparent=format_transparent)
         saved_paths.append(plot_path)
 
     return saved_paths[0]
@@ -459,7 +464,7 @@ def plot_single_property(
     save_dir=DEFAULT_TE_FIGURE_DIR,
     formats=None,
     figsize=None,
-    transparent=False,
+    transparent=None,
     xlim=None,
     ylim=None,
     style_mode='single',
@@ -468,6 +473,7 @@ def plot_single_property(
     legend='none',
     marker_size=DEFAULT_MARKER_SIZE,
     legend_font_size=DEFAULT_LEGEND_FONT_SIZE,
+    legend_columns=None,
     show=False,
 ):
     """
@@ -490,10 +496,12 @@ def plot_single_property(
     apply_subplot_aspect(ax, subplot_aspect)
     handles, labels = ax.get_legend_handles_labels()
     if legend == 'inside' and handles:
+        legend_ncol = legend_columns or 1
         ax.legend(
             handles,
             labels,
             loc='best',
+            ncol=legend_ncol,
             fontsize=legend_font_size,
             frameon=True,
             fancybox=False,
@@ -506,12 +514,13 @@ def plot_single_property(
         )
         fig.tight_layout()
     elif legend == 'outside' and handles:
+        legend_ncol = legend_columns or min(len(labels), 2)
         fig.legend(
             handles,
             labels,
             loc='upper center',
             bbox_to_anchor=(0.5, 0.98),
-            ncol=min(len(labels), 2),
+            ncol=legend_ncol,
             fontsize=legend_font_size,
             frameon=False,
             borderaxespad=0.0,
@@ -550,6 +559,7 @@ def plot_combined_figure(
     ylims=None,
     subplot_aspect=DEFAULT_SUBPLOT_ASPECT,
     marker_size=DEFAULT_MARKER_SIZE,
+    legend_columns=None,
     show=False,
 ):
     """
@@ -613,12 +623,13 @@ def plot_combined_figure(
 
     handles, labels = axs[0, 0].get_legend_handles_labels()
     if handles:
+        legend_ncol = legend_columns or min(len(labels), 4)
         fig.legend(
             handles,
             labels,
             loc='upper center',
             bbox_to_anchor=(0.5, 0.965),
-            ncol=min(len(labels), 4),
+            ncol=legend_ncol,
             fontsize=10,
             frameon=False,
             borderaxespad=0.0,

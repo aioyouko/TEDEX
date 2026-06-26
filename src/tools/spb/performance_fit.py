@@ -29,7 +29,7 @@ from src.tools.spb.effective_mass_fit import (  # noqa: E402
     _find_column,
     add_point_effective_mass_estimates,
     apply_plot_overrides,
-    build_plot_overrides,
+    build_multi_property_plot_overrides,
     copy_figures_to_input_data_dir,
     curve_nh_bounds_from_points,
     eta_from_nh_and_mstar,
@@ -766,8 +766,10 @@ def default_performance_recipe(property_key: str) -> dict[str, Any]:
                     "y": {"column": columns["experimental"], "label": labels["ylabel"]},
                     "property": labels["property"],
                     "group_value": labels["data_label"],
-                    "color": "black",
+                    "color": "#e76f6f",
                     "marker": "o",
+                    "marker_size": 5.5,
+                    "alpha": 0.75,
                     "linestyle": "none",
                     "line_width": 0.0,
                 },
@@ -895,6 +897,7 @@ def plot_property_fit(
     output_dir: Path,
     formats: tuple[str, ...],
     show: bool = False,
+    defer_show: bool = False,
     plot_overrides: dict | None = None,
 ) -> list[str]:
     cache_dir = Path(os.environ.get("TMPDIR", "/tmp")) / "te_matplotlib_cache"
@@ -913,10 +916,30 @@ def plot_property_fit(
 
     output_stem = PROPERTY_COLUMNS[property_key]["output_stem"]
     save_figure(fig, f"{output_stem}.png", save_dir=str(output_dir), formats=formats)
-    if show:
+    keep_open_for_group_show = show and defer_show
+    if show and not defer_show:
         plt.show()
-    plt.close(fig)
+    if not keep_open_for_group_show:
+        plt.close(fig)
     return [str(output_dir / f"{output_stem}.{file_format}") for file_format in formats]
+
+
+def plot_overrides_for_property(plot_overrides: dict | None, property_key: str) -> dict | None:
+    if not plot_overrides:
+        return None
+
+    overrides = dict(plot_overrides)
+    property_ylims = overrides.pop("property_ylims", {})
+    if property_key in property_ylims:
+        overrides["ylim"] = property_ylims[property_key]
+    return overrides
+
+
+def show_open_performance_figures() -> None:
+    import matplotlib.pyplot as plt
+
+    plt.show()
+    plt.close("all")
 
 
 def run_performance_fit(
@@ -977,12 +1000,16 @@ def run_performance_fit(
             output_dir,
             config.figure_formats,
             show=show,
-            plot_overrides=plot_overrides,
+            defer_show=show,
+            plot_overrides=plot_overrides_for_property(plot_overrides, property_key),
         )
         data_dir_plot_paths[property_key] = copy_figures_to_input_data_dir(
             plot_paths[property_key],
             csv_path,
         )
+
+    if show:
+        show_open_performance_figures()
 
     return {
         "summary": summary,
@@ -1192,12 +1219,16 @@ def run_performance_fit_multi(
             output_dir,
             config.figure_formats,
             show=show,
-            plot_overrides=combined_plot_overrides,
+            defer_show=show,
+            plot_overrides=plot_overrides_for_property(combined_plot_overrides, property_key),
         )
         data_dir_plot_paths[property_key] = copy_figures_to_input_data_dir(
             plot_paths[property_key],
             csv_path,
         )
+
+    if show:
+        show_open_performance_figures()
 
     return {
         "summary": summary,
@@ -1330,7 +1361,17 @@ def build_arg_parser() -> argparse.ArgumentParser:
     )
     parser.add_argument("--no-show", action="store_true", help="Save outputs without calling plt.show().")
     parser.add_argument("--xlim", nargs=2, metavar=("LOW", "HIGH"), help="Override x-axis limits; use auto for one side.")
-    parser.add_argument("--ylim", nargs=2, metavar=("LOW", "HIGH"), help="Override y-axis limits; use auto for one side.")
+    parser.add_argument(
+        "--ylim",
+        nargs="+",
+        action="append",
+        default=[],
+        metavar="VALUE",
+        help=(
+            "Override y-axis limits. Use --ylim LOW HIGH for all plots, "
+            "or repeat --ylim PROPERTY LOW HIGH, e.g. --ylim pf 0 15 --ylim zt 0 1.2."
+        ),
+    )
     parser.add_argument("--xscale", choices=("linear", "log", "symlog", "logit"), help="Override x-axis scale.")
     parser.add_argument("--yscale", choices=("linear", "log", "symlog", "logit"), help="Override y-axis scale.")
     parser.add_argument("--x-major", type=float, help="Set x major tick interval for linear axes.")
@@ -1400,7 +1441,7 @@ def main(argv: list[str] | None = None) -> int:
             temperature_column=args.temperature_column,
             only_groups=args.only,
             show=not args.no_show,
-            plot_overrides=build_plot_overrides(args),
+            plot_overrides=build_multi_property_plot_overrides(args, ("pf", "zt")),
         )
         summary = result["summary"]
         print("SPB performance multi-fit finished")
@@ -1420,7 +1461,7 @@ def main(argv: list[str] | None = None) -> int:
         args.output_dir,
         config,
         show=not args.no_show,
-        plot_overrides=build_plot_overrides(args),
+        plot_overrides=build_multi_property_plot_overrides(args, ("pf", "zt")),
     )
     summary = result["summary"]
 

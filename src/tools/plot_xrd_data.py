@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import csv
+import hashlib
 import json
 import math
 import os
@@ -69,7 +71,7 @@ except ImportError:  # pragma: no cover - lets this file run outside the repo pa
         ax.tick_params(which="minor", width=1, length=4)
         ax.grid(show_grid, which="major", linestyle="--", linewidth=0.5, alpha=0.5)
 
-    def save_figure(fig, save_name, save_dir="outputs/figures", formats=None, transparent=False):
+    def save_figure(fig, save_name, save_dir="figures", formats=None, transparent=False):
         Path(save_dir).mkdir(parents=True, exist_ok=True)
         formats = formats or [Path(save_name).suffix.lstrip(".") or "png"]
         base_name = Path(save_name).stem
@@ -93,9 +95,11 @@ except ImportError:  # pragma: no cover - lets this file run outside the repo pa
 DEFAULT_XRD_ROOT = Path("data/raw")
 DEFAULT_PDF_CARD_DIR = Path("data/pdf_card")
 DEFAULT_PDF_STANDARD_DIR = DEFAULT_PDF_CARD_DIR / "plot_standards"
-DEFAULT_XRD_SAVE_DIR = Path("outputs/figures/xrd")
+DEFAULT_XRD_SAVE_DIR = Path("data/raw/figures")
 DEFAULT_TWO_THETA_RANGE = (10.0, 80.0)
 DEFAULT_XRD_LINE_WIDTH = 1.15
+XRD_LABEL_FILE_STEMS = ("label", "labels", "legend", "legends")
+XRD_LABEL_FILE_SUFFIXES = ("", ".txt", ".csv", ".tsv", ".md")
 PDF_PEAK_PATTERN = re.compile(
     r"^\s*([0-9.]+)\s+([0-9.]+)\s+(\S+)\s+"
     r"\(\s*(-?\d+)\s+(-?\d+)\s+(-?\d+)\)"
@@ -137,10 +141,16 @@ def normalize_batch_selector(selector: str) -> str:
     return selector
 
 
-def safe_filename(value: str) -> str:
-    value = re.sub(r"[^\w.\-]+", "_", value.strip())
-    value = re.sub(r"_+", "_", value).strip("_")
-    return value or "xrd_comparison"
+def safe_filename(value: str, max_length: int = 96) -> str:
+    raw_value = str(value)
+    value = re.sub(r"[^\w.\-]+", "_", raw_value.strip())
+    value = re.sub(r"_+", "_", value).strip("_") or "xrd_comparison"
+    if len(value) <= max_length:
+        return value
+
+    digest = hashlib.sha1(value.encode("utf-8")).hexdigest()[:8]
+    prefix_length = max(1, max_length - len(digest) - 1)
+    return f"{value[:prefix_length].rstrip('_.-')}_{digest}"
 
 
 def infer_batch_id_from_path(path: Path, xrd_root: Path = DEFAULT_XRD_ROOT) -> str:
@@ -238,6 +248,88 @@ def read_xrd_xy(path: str | os.PathLike[str]) -> tuple[np.ndarray, np.ndarray, f
 
     order = np.argsort(two_theta)
     return np.asarray(two_theta)[order], np.asarray(intensity)[order], wavelength
+
+
+def find_xrd_label_file(xrd_dir: str | os.PathLike[str]) -> Path | None:
+    """
+    Return the first label/legend file found in an XRD folder.
+
+    Supported names are label, labels, legend, and legends, with optional
+    .txt/.csv/.tsv/.md suffixes.
+    """
+    directory = Path(xrd_dir)
+    for stem in XRD_LABEL_FILE_STEMS:
+        for suffix in XRD_LABEL_FILE_SUFFIXES:
+            candidate = directory / f"{stem}{suffix}"
+            if candidate.is_file():
+                return candidate
+    return None
+
+
+def read_xrd_labels(path: str | os.PathLike[str]) -> list[str]:
+    """
+    Read one-column XRD legend labels from a text, CSV, or TSV file.
+
+    Empty rows and rows whose first non-space character is # are ignored. CSV
+    and TSV files use their first column; plain-text files use one label per
+    line so Matplotlib mathtext strings such as $\\mathit{CuSbTe_2}$ are kept
+    intact.
+    """
+    path = Path(path)
+    labels: list[str] = []
+    suffix = path.suffix.lower()
+
+    if suffix in {".csv", ".tsv"}:
+        delimiter = "\t" if suffix == ".tsv" else ","
+        with path.open(encoding="utf-8-sig", newline="") as handle:
+            reader = csv.reader(handle, delimiter=delimiter)
+            for row in reader:
+                if not row:
+                    continue
+                label = row[0].strip()
+                if not label or label.startswith("#"):
+                    continue
+                labels.append(label)
+        return labels
+
+    with path.open(encoding="utf-8-sig", errors="replace") as handle:
+        for line in handle:
+            label = line.strip()
+            if not label or label.startswith("#"):
+                continue
+            labels.append(label)
+    return labels
+
+
+def load_xrd_label_overrides(xrd_files: Sequence[Path]) -> dict[Path, str]:
+    """
+    Map XRD files to labels from label/legend files in the same folder.
+
+    Labels are assigned in the same sorted order used for XRD file discovery.
+    If the label count does not match the number of .xy files in that folder,
+    available labels are still applied to the first files and a warning is
+    printed.
+    """
+    overrides: dict[Path, str] = {}
+    grouped_dirs = sorted({Path(path).parent for path in xrd_files})
+
+    for xrd_dir in grouped_dirs:
+        label_file = find_xrd_label_file(xrd_dir)
+        if label_file is None:
+            continue
+
+        labels = read_xrd_labels(label_file)
+        directory_files = sorted(xrd_dir.glob("*.xy"))
+        if len(labels) != len(directory_files):
+            print(
+                f"warning: {label_file} has {len(labels)} labels for "
+                f"{len(directory_files)} XRD files; applying labels by sorted file order."
+            )
+
+        for path, label in zip(directory_files, labels):
+            overrides[path.resolve()] = label
+
+    return overrides
 
 
 def find_xrd_files_for_selector(
@@ -388,6 +480,7 @@ def load_xrd_patterns(
     xrd_root = Path(xrd_root)
     xrd_files = collect_xrd_files(selectors, xrd_root)
     metadata = load_sample_metadata()
+    label_overrides = load_xrd_label_overrides(xrd_files)
 
     batch_count = len({infer_batch_id_from_path(path, xrd_root) for path in xrd_files})
     if include_batch is None:
@@ -400,7 +493,12 @@ def load_xrd_patterns(
         sample_id = infer_sample_id_from_xrd_path(path)
         sample_meta = metadata.get(sample_id, {})
         sample_name = sample_meta.get("sample_name") or sample_id
-        label = format_xrd_pattern_label(batch_id, sample_id, sample_name, include_batch=include_batch)
+        label = label_overrides.get(path.resolve()) or format_xrd_pattern_label(
+            batch_id,
+            sample_id,
+            sample_name,
+            include_batch=include_batch,
+        )
         patterns.append(
             XRDPattern(
                 label=label,
@@ -740,6 +838,8 @@ def plot_xrd_comparison(
     tick_labelsize: float = 10,
     legend_font_size: float = DEFAULT_LEGEND_FONT_SIZE,
     legend_outside: bool = True,
+    show_legend: bool = True,
+    fixed_aspect: bool = False,
     right_labels: bool = False,
     standard_color: str = "#d62728",
     transparent: bool = False,
@@ -835,20 +935,24 @@ def plot_xrd_comparison(
     ax.set_ylim(bottom, top + 0.25 * offset_step)
     if ylim is not None:
         ax.set_ylim(*ylim)
-    apply_subplot_aspect(ax, subplot_aspect)
+    if fixed_aspect:
+        apply_subplot_aspect(ax, subplot_aspect)
 
-    if legend_outside and handles:
-        fig.legend(
-            handles,
-            labels,
-            loc="center left",
-            bbox_to_anchor=(1.01, 0.5),
-            fontsize=legend_font_size,
-            frameon=False,
-        )
-        fig.tight_layout(rect=(0, 0, 0.82, 1))
+    if show_legend and handles:
+        if legend_outside:
+            fig.legend(
+                handles,
+                labels,
+                loc="center left",
+                bbox_to_anchor=(1.01, 0.5),
+                fontsize=legend_font_size,
+                frameon=False,
+            )
+            fig.tight_layout(rect=(0, 0, 0.82, 1))
+        else:
+            ax.legend(fontsize=legend_font_size, loc="best", frameon=False)
+            fig.tight_layout()
     else:
-        ax.legend(fontsize=legend_font_size, loc="best", frameon=False)
         fig.tight_layout()
 
     if save_name:
@@ -881,11 +985,16 @@ def plot_xrd_raw_and_normalized(
     tick_labelsize: float = 10,
     legend_font_size: float = DEFAULT_LEGEND_FONT_SIZE,
     legend_outside: bool = True,
+    show_legend: bool = True,
+    fixed_aspect: bool = False,
     right_labels: bool = False,
     standard_color: str = "#d62728",
     close: bool = True,
+    nest_in_comparison_dir: bool = True,
 ) -> dict[str, str]:
-    save_dir = Path(save_dir) / safe_filename(comparison_id)
+    save_dir = Path(save_dir)
+    if nest_in_comparison_dir:
+        save_dir = save_dir / safe_filename(comparison_id)
     raw_path = plot_xrd_comparison(
         patterns,
         pdf_standard=pdf_standard,
@@ -902,6 +1011,8 @@ def plot_xrd_raw_and_normalized(
         tick_labelsize=tick_labelsize,
         legend_font_size=legend_font_size,
         legend_outside=legend_outside,
+        show_legend=show_legend,
+        fixed_aspect=fixed_aspect,
         right_labels=right_labels,
         standard_color=standard_color,
         close=close,
@@ -922,6 +1033,8 @@ def plot_xrd_raw_and_normalized(
         tick_labelsize=tick_labelsize,
         legend_font_size=legend_font_size,
         legend_outside=legend_outside,
+        show_legend=show_legend,
+        fixed_aspect=fixed_aspect,
         right_labels=right_labels,
         standard_color=standard_color,
         close=close,
@@ -955,11 +1068,17 @@ def plot_xrd_separate(
     tick_labelsize: float = 10,
     legend_font_size: float = DEFAULT_LEGEND_FONT_SIZE,
     legend_outside: bool = True,
+    show_legend: bool = True,
+    fixed_aspect: bool = False,
     right_labels: bool = False,
     standard_color: str = "#d62728",
     close: bool = True,
+    nest_in_comparison_dir: bool = True,
 ) -> dict[str, str]:
-    save_dir = Path(save_dir) / safe_filename(comparison_id) / "separate"
+    save_dir = Path(save_dir)
+    if nest_in_comparison_dir:
+        save_dir = save_dir / safe_filename(comparison_id)
+    save_dir = save_dir / "separate"
     paths: dict[str, str] = {}
 
     for pattern in patterns:
@@ -981,6 +1100,8 @@ def plot_xrd_separate(
                 tick_labelsize=tick_labelsize,
                 legend_font_size=legend_font_size,
                 legend_outside=legend_outside,
+                show_legend=show_legend,
+                fixed_aspect=fixed_aspect,
                 right_labels=right_labels,
                 standard_color=standard_color,
                 close=close,
@@ -991,14 +1112,37 @@ def plot_xrd_separate(
 
 
 def comparison_id_from_patterns(patterns: Sequence[XRDPattern]) -> str:
+    patterns = list(patterns)
+    if not patterns:
+        return "xrd_comparison"
+    if len(patterns) == 1:
+        pattern = patterns[0]
+        return pattern.batch_id or pattern.sample_id or pattern.source_path.stem or pattern.label
+
     batches = []
     for pattern in patterns:
-        name = pattern.batch_id or pattern.label
-        if name not in batches:
-            batches.append(name)
+        if pattern.batch_id and pattern.batch_id not in batches:
+            batches.append(pattern.batch_id)
     if len(batches) == 1:
         return batches[0]
-    return "_vs_".join(batches)
+    if len(batches) > 1:
+        return "_vs_".join(batches)
+
+    source_dirs = sorted({pattern.source_path.parent.resolve() for pattern in patterns})
+    if len(source_dirs) == 1:
+        folder_name = source_dirs[0].name or source_dirs[0].parent.name
+        return f"{folder_name}_{len(patterns)}patterns"
+
+    stems = []
+    for pattern in patterns:
+        stem = pattern.sample_id or pattern.source_path.stem
+        if stem and stem not in stems:
+            stems.append(stem)
+    if 1 < len(stems) <= 4:
+        return "_vs_".join(stems)
+
+    common_dir = Path(os.path.commonpath([str(path) for path in source_dirs]))
+    return f"{common_dir.name or 'xrd'}_{len(patterns)}patterns"
 
 
 def summarize_patterns(patterns: Iterable[XRDPattern]) -> list[dict[str, str]]:

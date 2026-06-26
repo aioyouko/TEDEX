@@ -29,18 +29,35 @@ _plot_te_properties() {
   local -a properties
   properties=(
     'resistivity:electrical resistivity'
+    'rho:electrical resistivity alias'
     'seebeck:Seebeck coefficient'
+    's:Seebeck coefficient alias'
     'conductivity:electrical conductivity'
+    'sigma:electrical conductivity alias'
+    'cond:electrical conductivity alias'
     'thermal_conductivity:total thermal conductivity'
+    'kappa:total thermal conductivity alias'
+    'kt:total thermal conductivity alias'
+    'ktot:total thermal conductivity alias'
+    'tc:total thermal conductivity alias'
     'diffusivity:thermal diffusivity'
+    'diff:thermal diffusivity alias'
+    'alpha:thermal diffusivity alias'
     'carrier_thermal_conductivity:carrier thermal conductivity'
+    'ke:carrier thermal conductivity alias'
     'lattice_thermal_conductivity:lattice thermal conductivity'
+    'kl:lattice thermal conductivity alias'
     'lorenz_number:Lorenz number'
+    'lorenz:Lorenz number alias'
     'generalized_fermi_level:generalized Fermi level'
+    'eta:generalized Fermi level alias'
     'weighted_mobility:weighted mobility'
+    'muw:weighted mobility alias'
     'quality_factor:quality factor'
+    'b:quality factor alias'
     'zt:figure of merit'
     'power_factor:power factor'
+    'pf:power factor alias'
   )
   _describe -t te-properties 'TE property' properties
 }
@@ -84,18 +101,39 @@ _plot_te() {
     '--single-properties[select single-property plots]:property:_plot_te_properties' \
     '--properties[select single-property plots]:property:_plot_te_properties' \
     '--resistivity[plot electrical resistivity]' \
+    '--rho[plot electrical resistivity]' \
     '--seebeck[plot Seebeck coefficient]' \
+    '--s[plot Seebeck coefficient]' \
     '--conductivity[plot electrical conductivity]' \
+    '--sigma[plot electrical conductivity]' \
+    '--cond[plot electrical conductivity]' \
     '--thermal-conductivity[plot total thermal conductivity]' \
+    '--kappa[plot total thermal conductivity]' \
+    '--kt[plot total thermal conductivity]' \
+    '--ktot[plot total thermal conductivity]' \
+    '--tc[plot total thermal conductivity]' \
     '--diffusivity[plot thermal diffusivity]' \
+    '--diff[plot thermal diffusivity]' \
+    '--alpha[plot thermal diffusivity]' \
     '--carrier-thermal-conductivity[plot carrier thermal conductivity]' \
+    '--ke[plot carrier thermal conductivity]' \
+    '--kappa-e[plot carrier thermal conductivity]' \
     '--lattice-thermal-conductivity[plot lattice thermal conductivity]' \
+    '--kl[plot lattice thermal conductivity]' \
+    '--kappa-l[plot lattice thermal conductivity]' \
+    '--lattice[plot lattice thermal conductivity]' \
     '--lorenz-number[plot Lorenz number]' \
+    '--lorenz[plot Lorenz number]' \
     '--generalized-fermi-level[plot generalized Fermi level]' \
+    '--eta[plot generalized Fermi level]' \
     '--weighted-mobility[plot weighted mobility]' \
+    '--muw[plot weighted mobility]' \
+    '--mu-w[plot weighted mobility]' \
     '--quality-factor[plot quality factor]' \
+    '--b[plot quality factor]' \
     '--zt[plot ZT]' \
     '--power-factor[plot power factor]' \
+    '--pf[plot power factor]' \
     '--inter-batch[plot selected samples together]' \
     '--comparison-id[set output folder and filename prefix]:comparison id:' \
     '--xlim[set shared temperature axis limits]:low:' \
@@ -104,6 +142,9 @@ _plot_te() {
     '--single-legend[set single-property legend placement]:legend:_plot_te_legends' \
     '--legend[add an inside legend to selected single-property plots]' \
     '--legend-font-size[set single-property legend font size in points]:font size:' \
+    '--legend-columns[set legend column count]:columns:' \
+    '--legend-cols[set legend column count]:columns:' \
+    '--legend-ncol[set legend column count]:columns:' \
     '--marker-size[set marker size in points]:marker size:' \
     '--formats[set output format]:format:_plot_te_formats' \
     '--pdf[also save PDF output]' \

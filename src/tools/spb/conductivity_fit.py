@@ -25,7 +25,7 @@ from src.tools.spb.effective_mass_fit import (  # noqa: E402
     _convert_seebeck_to_uv,
     _find_column,
     apply_plot_overrides,
-    build_plot_overrides,
+    build_multi_property_plot_overrides,
     copy_figures_to_input_data_dir,
     eta_from_seebeck_abs_uv,
     filter_source_by_groups,
@@ -57,6 +57,7 @@ from src.tools.spb.performance_fit import (  # noqa: E402
     normalize_unit,
     optional_find_column,
     pf_uw_cm_to_si,
+    plot_overrides_for_property,
     resolve_kappa_lattice,
 )
 
@@ -456,8 +457,10 @@ def default_conductivity_recipe(property_key: str) -> dict[str, Any]:
                     "y": {"column": info["experimental"], "label": info["ylabel"]},
                     "property": info["property"],
                     "group_value": info["data_label"],
-                    "color": "black",
+                    "color": "#e76f6f",
                     "marker": "o",
+                    "marker_size": 5.5,
+                    "alpha": 0.75,
                     "linestyle": "none",
                     "line_width": 0.0,
                 },
@@ -669,7 +672,7 @@ def run_conductivity_fit(
             output_dir,
             config.figure_formats,
             show=show,
-            plot_overrides=plot_overrides,
+            plot_overrides=plot_overrides_for_property(plot_overrides, property_key),
         )
         data_dir_plot_paths[property_key] = copy_figures_to_input_data_dir(
             plot_paths[property_key],
@@ -859,7 +862,7 @@ def run_conductivity_fit_multi(
             output_dir,
             config.figure_formats,
             show=show,
-            plot_overrides=combined_plot_overrides,
+            plot_overrides=plot_overrides_for_property(combined_plot_overrides, property_key),
         )
         data_dir_plot_paths[property_key] = copy_figures_to_input_data_dir(
             plot_paths[property_key],
@@ -955,7 +958,17 @@ def build_arg_parser() -> argparse.ArgumentParser:
     )
     parser.add_argument("--no-show", action="store_true", help="Save outputs without calling plt.show().")
     parser.add_argument("--xlim", nargs=2, metavar=("LOW", "HIGH"), help="Override x-axis limits in S/cm; use auto for one side.")
-    parser.add_argument("--ylim", nargs=2, metavar=("LOW", "HIGH"), help="Override y-axis limits; use auto for one side.")
+    parser.add_argument(
+        "--ylim",
+        nargs="+",
+        action="append",
+        default=[],
+        metavar="VALUE",
+        help=(
+            "Override y-axis limits. Use --ylim LOW HIGH for all plots, "
+            "or repeat --ylim PROPERTY LOW HIGH, e.g. --ylim seebeck 0 300 --ylim pf 0 15."
+        ),
+    )
     parser.add_argument("--xscale", choices=("linear", "log", "symlog", "logit"), help="Override x-axis scale.")
     parser.add_argument("--yscale", choices=("linear", "log", "symlog", "logit"), help="Override y-axis scale.")
     parser.add_argument("--x-major", type=float, help="Set x major tick interval for linear axes.")
@@ -1007,7 +1020,7 @@ def main(argv: list[str] | None = None) -> int:
             temperature_column=args.temperature_column,
             only_groups=args.only,
             show=not args.no_show,
-            plot_overrides=build_plot_overrides(args),
+            plot_overrides=build_multi_property_plot_overrides(args, ("seebeck", "pf", "zt")),
         )
         summary = result["summary"]
         print("SPB conductivity multi-fit finished")
@@ -1027,7 +1040,7 @@ def main(argv: list[str] | None = None) -> int:
         args.output_dir,
         config,
         show=not args.no_show,
-        plot_overrides=build_plot_overrides(args),
+        plot_overrides=build_multi_property_plot_overrides(args, ("seebeck", "pf", "zt")),
     )
     summary = result["summary"]
     mobility = summary["mobility_model"]

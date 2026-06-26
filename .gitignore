@@ -26,3 +26,18 @@ env/
 outputs/cache/
 outputs/logs/
 *.log
+
+# Local generated artifacts
+outputs/*
+!outputs/.gitkeep
+results/*
+!results/.gitkeep
+
+# LaTeX build intermediates
+docs/build/
+*.aux
+*.fdb_latexmk
+*.fls
+*.out
+*.synctex.gz
+*.xdv

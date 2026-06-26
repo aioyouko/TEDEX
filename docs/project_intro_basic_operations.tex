@@ -170,8 +170,9 @@ inter-batch comparisons. It supports axis limits, selected property panels,
 multiple output formats, and no-preview batch rendering.
 
 \paragraph{XRD plotting and lattice fitting.}
-\code{python main.py plot-xrd} renders raw or normalized XRD scans, supports selected
-samples and optional PDF-card stick patterns, and writes figures under
+\code{python main.py plot-xrd} renders normalized XRD scans by default, supports
+raw-count output with \code{--raw}, selected samples, optional PDF-card stick
+patterns, and writes figures under
 \code{outputs/figures/xrd/}. Lattice fitting utilities live under
 \code{src/tools/xrd_lattice.py}.
 
@@ -320,8 +321,11 @@ optionally overlay a cleaned PDF-card standard.
 # Whole batch
 python main.py plot-xrd CHY-1038 --no-show
 
-# One normalized sample
-python main.py plot-xrd CHY-1038-A --mode normalized --no-show
+# One normalized sample (default)
+python main.py plot-xrd CHY-1038-A --no-show
+
+# One raw-count sample
+python main.py plot-xrd CHY-1038-A --raw --no-show
 
 # Selected suffixes from an XRD folder
 python main.py plot-xrd data/raw/CHY-1038/XRD \

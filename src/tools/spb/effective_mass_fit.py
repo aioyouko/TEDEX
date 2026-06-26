@@ -431,8 +431,10 @@ def default_spb_fit_recipe() -> dict:
                     },
                     "property": "seebeck",
                     "group_value": "data",
-                    "color": "black",
+                    "color": "#e76f6f",
                     "marker": "o",
+                    "marker_size": 5.5,
+                    "alpha": 0.75,
                     "linestyle": "none",
                     "line_width": 0.0,
                 },
@@ -1146,9 +1148,11 @@ def parse_output_formats(tokens: list[str] | tuple[str, ...] | None) -> tuple[st
     return tuple(formats) or ("png", "pdf")
 
 
-def parse_axis_limit(values: list[str] | None) -> list[float | None] | None:
+def parse_axis_limit(values: list[str] | tuple[str, ...] | None) -> list[float | None] | None:
     if not values:
         return None
+    if len(values) != 2:
+        raise ValueError("Axis limits must be exactly LOW HIGH.")
 
     parsed = []
     for value in values:
@@ -1163,6 +1167,70 @@ def parse_axis_limit(values: list[str] | None) -> list[float | None] | None:
     if parsed[0] is not None and parsed[1] is not None and parsed[0] >= parsed[1]:
         raise ValueError("Axis lower limit must be smaller than upper limit")
     return parsed
+
+
+def parse_global_axis_limit_arg(
+    values: list[str] | list[list[str]] | tuple[str, ...] | None,
+    option_name: str = "--ylim",
+) -> list[float | None] | None:
+    if not values:
+        return None
+    first_value = values[0]
+    if isinstance(first_value, (list, tuple)):
+        positional_limits = [raw_limit for raw_limit in values if len(raw_limit) == 2]
+        if not positional_limits:
+            return None
+        if len(positional_limits) > 1:
+            raise ValueError(
+                f"Repeated {option_name} LOW HIGH is ambiguous. "
+                f"Use {option_name} PROPERTY LOW HIGH for per-property limits."
+            )
+        return parse_axis_limit(positional_limits[0])
+    return parse_axis_limit(values)
+
+
+def normalize_property_axis_limit_key(property_key: str, valid_properties: tuple[str, ...]) -> str:
+    normalized = str(property_key).strip().lower().replace("-", "_")
+    aliases = {
+        "s": "seebeck",
+        "seebeck": "seebeck",
+        "pf": "pf",
+        "power_factor": "pf",
+        "powerfactor": "pf",
+        "zt": "zt",
+        "z_t": "zt",
+    }
+    normalized = aliases.get(normalized, normalized)
+    if normalized not in valid_properties:
+        choices = ", ".join(valid_properties)
+        raise ValueError(f"Unknown property for --ylim: {property_key}. Choose from: {choices}.")
+    return normalized
+
+
+def parse_property_axis_limits(
+    raw_limits: list[str] | list[list[str]] | tuple[str, ...] | None,
+    valid_properties: tuple[str, ...],
+    option_name: str = "--ylim",
+) -> dict[str, list[float | None]]:
+    if not raw_limits:
+        return {}
+    if isinstance(raw_limits[0], str):
+        return {}
+
+    property_limits = {}
+    for raw_limit in raw_limits:
+        if len(raw_limit) == 2:
+            continue
+        if len(raw_limit) != 3:
+            raise ValueError(
+                f"{option_name} expects LOW HIGH or PROPERTY LOW HIGH. "
+                f"Example: {option_name} pf 0 15 {option_name} zt 0 1.2."
+            )
+        property_key = normalize_property_axis_limit_key(raw_limit[0], valid_properties)
+        limit_pair = parse_axis_limit(raw_limit[1:])
+        if limit_pair is not None:
+            property_limits[property_key] = limit_pair
+    return property_limits
 
 
 def build_plot_overrides(args: argparse.Namespace) -> dict:
@@ -1190,7 +1258,7 @@ def build_plot_overrides(args: argparse.Namespace) -> dict:
             overrides[attr] = value
 
     xlim = parse_axis_limit(args.xlim)
-    ylim = parse_axis_limit(args.ylim)
+    ylim = parse_global_axis_limit_arg(args.ylim)
     if xlim is not None:
         overrides["xlim"] = xlim
     if ylim is not None:
@@ -1200,6 +1268,17 @@ def build_plot_overrides(args: argparse.Namespace) -> dict:
     if args.show_title:
         overrides["show_title"] = True
 
+    return overrides
+
+
+def build_multi_property_plot_overrides(
+    args: argparse.Namespace,
+    valid_properties: tuple[str, ...],
+) -> dict:
+    overrides = build_plot_overrides(args)
+    property_ylims = parse_property_axis_limits(args.ylim, valid_properties)
+    if property_ylims:
+        overrides["property_ylims"] = property_ylims
     return overrides
 
 

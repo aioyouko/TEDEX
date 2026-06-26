@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.4.1
+
+- Fixed small bugs found after the v1.4.0 launcher and path cleanup.
+- Refined plot and documentation formatting for a cleaner GitHub release.
+- Rebuilt the public package with current source, scripts, configs, docs,
+  public demo data, and PDF card examples.
+- Cleaned release contents by excluding Python caches, macOS metadata,
+  LaTeX build intermediates, local outputs, and private/raw data.
+
 ## 1.4.0
 
 - Added `main.py` as the single root command launcher for analysis, plotting,

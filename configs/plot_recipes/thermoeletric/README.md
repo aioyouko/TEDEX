@@ -5,8 +5,8 @@ Recipes in this folder target processed TE CSV files, such as
 mirror `TE_PLOT_SPECS` in `src/tools/plot.py`.
 
 The folder keeps the existing spelling `thermoeletric` from the requested path.
-By default, each recipe saves to `outputs/figures/te` and also copies the
-figure plus normalized CSV next to the input data file.
+By default, each recipe saves the figure plus normalized CSV in a `figures`
+folder beside the input data file.
 
 ## Usage
 

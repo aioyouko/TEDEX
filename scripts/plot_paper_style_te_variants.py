@@ -30,6 +30,7 @@ Compact 2x3 transport panel:
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import os
 import re
@@ -102,6 +103,16 @@ NORMALIZED_YLABELS = {
     "lattice_thermal_conductivity": r"Normalized $\kappa_{\mathrm{L}}$",
     "zt": r"Normalized $ZT$",
 }
+
+
+def safe_output_stem(value: str, max_length: int = 96) -> str:
+    stem = re.sub(r"[^A-Za-z0-9_.-]+", "_", str(value).strip())
+    stem = re.sub(r"_+", "_", stem).strip("_.-") or "plot"
+    if len(stem) <= max_length:
+        return stem
+    digest = hashlib.sha1(stem.encode("utf-8")).hexdigest()[:8]
+    prefix_length = max(1, max_length - len(digest) - 1)
+    return f"{stem[:prefix_length].rstrip('_.-')}_{digest}"
 
 
 def apply_paper_labels(specs: dict[str, dict[str, Any]]) -> dict[str, dict[str, Any]]:
@@ -188,7 +199,7 @@ def import_project_plot_style(workspace: Path):
             ax.tick_params(which="minor", width=0.8, length=2.5)
             ax.grid(show_grid, which="major", linestyle="--", linewidth=0.4, alpha=0.45)
 
-        def save_figure(fig, save_name: str, save_dir: str = "outputs/figures", formats=None, transparent: bool = False):
+        def save_figure(fig, save_name: str, save_dir: str = "figures", formats=None, transparent: bool = False):
             Path(save_dir).mkdir(parents=True, exist_ok=True)
             normalized = formats or [Path(save_name).suffix.lstrip(".") or "png"]
             stem = Path(save_name).stem
@@ -281,6 +292,14 @@ def csv_path_for(workspace: Path, meta: dict[str, Any]) -> Path:
         raise ValueError(f"Missing processed_file for {meta.get('sample_id')}")
     path = Path(processed_file).expanduser()
     return path if path.is_absolute() else workspace / path
+
+
+def default_output_dir_for_rows(workspace: Path, rows: list[dict[str, Any]]) -> Path:
+    data_dirs = sorted({csv_path_for(workspace, row).resolve().parent for row in rows})
+    if not data_dirs:
+        return workspace / "figures"
+    common_dir = Path(os.path.commonpath([str(path) for path in data_dirs]))
+    return common_dir / "figures"
 
 
 def load_curve(workspace: Path, meta: dict[str, Any]) -> pd.DataFrame:
@@ -525,6 +544,7 @@ def annotate_scatter_labels(ax, data: pd.DataFrame, x_key: str, y_key: str) -> N
 
 
 def save_outputs(fig, output_dir: Path, stem: str, formats: list[str], save_figure, transparent: bool) -> list[Path]:
+    stem = safe_output_stem(stem)
     output_dir.mkdir(parents=True, exist_ok=True)
     save_figure(fig, f"{stem}.png", save_dir=str(output_dir), formats=formats, transparent=transparent)
     plt.close(fig)
@@ -947,7 +967,11 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--temperature-major-tick", type=float, default=100.0, help="Major tick spacing for temperature x axes.")
     parser.add_argument("--temperature-minor-tick", type=float, default=50.0, help="Minor tick spacing for temperature x axes.")
     parser.add_argument("--figsize", nargs=2, type=float, default=None, metavar=("WIDTH", "HEIGHT"))
-    parser.add_argument("--output-dir", default="outputs/figures/paper_style_variants")
+    parser.add_argument(
+        "--output-dir",
+        default=None,
+        help="Output directory. Default: a figures folder beside the processed input data.",
+    )
     parser.add_argument("--stem", default=None)
     parser.add_argument("--formats", nargs="+", default=["svg"])
     parser.add_argument("--grid", action="store_true", help="Show light major grid lines.")
@@ -963,9 +987,6 @@ def parse_args() -> argparse.Namespace:
 def main() -> int:
     args = parse_args()
     workspace = Path(args.workspace).expanduser().resolve()
-    output_dir = Path(args.output_dir).expanduser()
-    if not output_dir.is_absolute():
-        output_dir = workspace / output_dir
 
     colors, markers, specs, apply_plot_style, format_te_axis, save_figure = import_project_plot_style(workspace)
     style = {
@@ -976,8 +997,15 @@ def main() -> int:
     }
 
     rows = resolve_samples(args.samples, workspace, load_samples(workspace))
+    if args.output_dir:
+        output_dir = Path(args.output_dir).expanduser()
+        if not output_dir.is_absolute():
+            output_dir = workspace / output_dir
+    else:
+        output_dir = default_output_dir_for_rows(workspace, rows)
     if not args.stem:
         args.stem = default_stem_prefix(args, rows)
+    args.stem = safe_output_stem(args.stem)
     output_dir.mkdir(parents=True, exist_ok=True)
 
     property_key = normalize_property(args.property)
@@ -998,10 +1026,12 @@ def main() -> int:
     if args.plot_type == "composition-line":
         data = collect_points(workspace, rows, [property_key], args.temperature, specs, args)
         fig, stem = plot_composition_line(data, property_key, specs, args, style)
+        stem = safe_output_stem(stem)
         data.to_csv(output_dir / f"{stem}.csv", index=False)
     elif args.plot_type == "composition-dual":
         data = collect_points(workspace, rows, [left_key, right_key], args.temperature, specs, args)
         fig, stem = plot_composition_dual(data, left_key, right_key, specs, args, style)
+        stem = safe_output_stem(stem)
         data.to_csv(output_dir / f"{stem}.csv", index=False)
     elif args.plot_type == "temperature-overlay":
         fig, stem = plot_temperature_overlay(rows, property_key, specs, args, style, workspace, normalized=False)
@@ -1013,6 +1043,7 @@ def main() -> int:
         properties = [x_key, y_key] + ([color_key] if color_key else [])
         data = collect_points(workspace, rows, properties, args.temperature, specs, args)
         fig, stem = plot_tradeoff_scatter(data, x_key, y_key, color_key, specs, args, style)
+        stem = safe_output_stem(stem)
         data.to_csv(output_dir / f"{stem}.csv", index=False)
     elif args.plot_type == "summary-panels":
         fig, stem = plot_summary_panels(rows, summary_properties, specs, args, style, workspace)

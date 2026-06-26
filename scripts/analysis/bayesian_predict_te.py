@@ -40,7 +40,7 @@ from sklearn.gaussian_process.kernels import ConstantKernel, Matern
 
 DEFAULT_TARGET = "ZT_max"
 DEFAULT_OUTPUT_DIR = Path("results/bayesian_predictions")
-DEFAULT_FIGURE_DIR = Path("outputs/figures/bayesian_predictions")
+DEFAULT_FIGURE_DIR = DEFAULT_OUTPUT_DIR / "figures"
 FORMULA_TOKEN_RE = re.compile(r"([A-Z][a-z]?)(\d*(?:\.\d+)?)")
 
 

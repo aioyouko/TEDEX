@@ -1,0 +1,6 @@
+# data
+$\mathrm{Cu_{0.8}Ag_{0.2}In_{0.8}Ga_{0.2}Te_2}$
+$\mathrm{Cu_{0.8}Ag_{0.2}In_{0.7}Ga_{0.3}Te_2}$
+$\mathrm{Cu_{0.8}Ag_{0.2}In_{0.6}Ga_{0.4}Te_2}$
+$\mathrm{Cu_{0.8}Ag_{0.2}In_{0.4}Ga_{0.6}Te_2}$
+$\mathrm{Cu_{0.8}Ag_{0.2}In_{0.3}Ga_{0.7}Te_2}$

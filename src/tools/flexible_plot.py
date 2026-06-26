@@ -10,8 +10,10 @@ from __future__ import annotations
 
 import argparse
 import copy
+import hashlib
 import json
 import math
+import os
 import re
 import shutil
 import sys
@@ -54,6 +56,17 @@ DEFAULT_LEGEND_EDGE_COLOR = "black"
 DEFAULT_LEGEND_FACE_COLOR = "white"
 DEFAULT_LEGEND_FRAME_ALPHA = 1.0
 DEFAULT_LEGEND_FRAME_LINEWIDTH = 0.8
+LEGACY_CENTRAL_OUTPUT_PREFIXES = ("outputs/figures", "results/plots")
+
+
+def safe_output_stem(value: Any, max_length: int = 96) -> str:
+    stem = re.sub(r"[^A-Za-z0-9_.-]+", "_", str(value).strip())
+    stem = re.sub(r"_+", "_", stem).strip("_.-") or "flexible_plot"
+    if len(stem) <= max_length:
+        return stem
+    digest = hashlib.sha1(stem.encode("utf-8")).hexdigest()[:8]
+    prefix_length = max(1, max_length - len(digest) - 1)
+    return f"{stem[:prefix_length].rstrip('_.-')}_{digest}"
 
 
 SEMANTIC_ALIASES = {
@@ -1383,10 +1396,30 @@ PLOTTERS = {
 }
 
 
+def is_legacy_central_output_dir(value: Any) -> bool:
+    if not value:
+        return True
+    normalized = str(value).replace("\\", "/").strip("/")
+    return any(normalized.startswith(prefix) for prefix in LEGACY_CENTRAL_OUTPUT_PREFIXES)
+
+
+def default_output_dir_for_recipe(recipe: dict[str, Any], workspace: Path) -> Path:
+    data_dirs = recipe_data_dirs(recipe, workspace)
+    if data_dirs:
+        common_dir = Path(os.path.commonpath([str(path) for path in data_dirs]))
+        return common_dir / "figures"
+    return workspace / "figures"
+
+
 def output_config(recipe: dict[str, Any], workspace: Path) -> tuple[Path, str, list[str]]:
     output = recipe.get("output", {})
-    output_dir = resolve_path(output.get("dir", "outputs/figures/flexible"), workspace)
-    stem = output.get("stem") or re.sub(r"[^a-zA-Z0-9_]+", "_", recipe.get("name", "flexible_plot")).strip("_")
+    raw_stem = output.get("stem") or re.sub(r"[^a-zA-Z0-9_]+", "_", recipe.get("name", "flexible_plot")).strip("_")
+    stem = safe_output_stem(raw_stem)
+    output_dir_value = output.get("dir")
+    if output.get("_dir_explicit") or not is_legacy_central_output_dir(output_dir_value):
+        output_dir = resolve_path(output_dir_value, workspace)
+    else:
+        output_dir = default_output_dir_for_recipe(recipe, workspace)
     formats = output.get("formats", ["png", "pdf"])
     return output_dir, stem, formats
 
@@ -1861,6 +1894,7 @@ def override_recipe_from_cli(
 
     if option_present(argv, "--output-dir"):
         output["dir"] = args.output_dir
+        output["_dir_explicit"] = True
     if option_present(argv, "--stem"):
         output["stem"] = args.stem
     if option_present(argv, "--formats", "--format"):
@@ -1993,13 +2027,15 @@ def build_recipe_from_cli(args: argparse.Namespace) -> dict[str, Any]:
         "name": args.name or args.stem or "CLI flexible plot",
         "plot": plot,
         "output": {
-            "dir": args.output_dir,
             "stem": args.stem,
             "formats": args.formats,
             "normalized_csv": args.normalized_csv,
             "copy_to_data_dir": args.copy_to_data_dir,
         },
     }
+    if args.output_dir:
+        recipe["output"]["dir"] = args.output_dir
+        recipe["output"]["_dir_explicit"] = True
     if len(sources) == 1:
         recipe["data"] = sources
     return recipe
@@ -2056,7 +2092,11 @@ def add_direct_cli_args(parser: argparse.ArgumentParser) -> None:
     parser.add_argument("--text-axes", action="append", help="Add axes-coordinate text: x,y,text[,color].")
     parser.add_argument("--subplot-aspect", default=DEFAULT_SUBPLOT_ASPECT, help="Plot frame width:height, default 10:8.")
     parser.add_argument("--name", help="Recipe/plot name for direct CLI mode.")
-    parser.add_argument("--output-dir", default="outputs/figures/flexible_cli", help="Output directory.")
+    parser.add_argument(
+        "--output-dir",
+        default=None,
+        help="Output directory. Default: a figures folder beside the input data.",
+    )
     parser.add_argument("--stem", default="flexible_cli_plot", help="Output filename stem.")
     parser.add_argument("--formats", "--format", nargs="+", default=["png", "pdf"], help="Output formats.")
     parser.add_argument("--normalized-csv", dest="normalized_csv", action="store_true", default=True)

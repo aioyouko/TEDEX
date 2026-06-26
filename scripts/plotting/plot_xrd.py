@@ -2,6 +2,7 @@
 # PYTHON_ARGCOMPLETE_OK
 
 import argparse
+import os
 import sys
 from pathlib import Path
 
@@ -36,6 +37,7 @@ from src.tools.plot_xrd_data import (
 import matplotlib.pyplot as plt
 
 from src.tools.matplotlib_backend import show_interactive_figures
+from src.tools.file_utils import copy_saved_figure_outputs
 
 try:
     import argcomplete
@@ -45,10 +47,13 @@ except ImportError:  # pragma: no cover - optional shell-completion helper.
 
 OUTPUT_MODE_ALIASES = {
     "both": "both",
+    "counts": "not_normalized",
     "raw": "not_normalized",
+    "normal": "not_normalized",
+    "normal-intensity": "not_normalized",
+    "normal_intensity": "not_normalized",
     "not-normalized": "not_normalized",
     "not_normalized": "not_normalized",
-    "normal": "normalized",
     "normalized": "normalized",
 }
 LAYOUT_ALIASES = {
@@ -145,6 +150,19 @@ def print_pdf_card_candidates(standard_dir=DEFAULT_PDF_STANDARD_DIR):
         print(f"  - {path.stem}: {path}")
 
 
+def resolve_xrd_data_figure_dir(patterns, folder_name="figures", comparison_id=None):
+    source_dirs = sorted({pattern.source_path.parent.resolve() for pattern in patterns})
+    if not source_dirs:
+        return None
+    if len(source_dirs) == 1:
+        return source_dirs[0] / folder_name
+
+    common_dir = Path(os.path.commonpath([str(path) for path in source_dirs]))
+    if comparison_id:
+        return common_dir / folder_name / safe_filename(comparison_id)
+    return common_dir / folder_name
+
+
 def parse_args():
     parser = argparse.ArgumentParser(
         description=(
@@ -176,11 +194,36 @@ def parse_args():
     parser.add_argument(
         "--mode",
         choices=tuple(MODE_ALIASES.keys()),
-        default="both",
+        default="normalized",
         help=(
-            "Choose raw-count, normalized, both figures, or use separate/seperate "
-            "as a shorthand for --layout separate."
+            "Choose normalized, raw-count, both figures, or use separate/seperate "
+            "as a shorthand for --layout separate. Default: normalized."
         ),
+    )
+    parser.add_argument(
+        "--normalized",
+        action="store_const",
+        const="normalized",
+        dest="mode",
+        help="Save normalized intensity plots. This is the default.",
+    )
+    parser.add_argument(
+        "--raw",
+        "--counts",
+        "--normal-intensity",
+        "--not-normalized",
+        "--not_normalized",
+        action="store_const",
+        const="not_normalized",
+        dest="mode",
+        help="Save raw-count/normal-intensity plots instead of normalized plots.",
+    )
+    parser.add_argument(
+        "--both",
+        action="store_const",
+        const="both",
+        dest="mode",
+        help="Save both raw-count and normalized plots.",
     )
     parser.add_argument(
         "--layout",
@@ -233,8 +276,22 @@ def parse_args():
     )
     parser.add_argument(
         "--output-dir",
-        default=str(DEFAULT_XRD_SAVE_DIR),
-        help="Base directory for saved XRD figures.",
+        default=None,
+        help=(
+            "Base directory for saved XRD figures. Default: a figures folder "
+            "beside the selected source XRD data."
+        ),
+    )
+    parser.add_argument(
+        "--data-figures",
+        "--save-near-data",
+        action="store_true",
+        help="Also copy saved figures into a figures folder beside the source XRD data.",
+    )
+    parser.add_argument(
+        "--data-figures-dir",
+        default="figures",
+        help="Folder name for --data-figures copies. Default: figures.",
     )
     parser.add_argument(
         "--comparison-id",
@@ -282,7 +339,21 @@ def parse_args():
     parser.add_argument(
         "--subplot-aspect",
         default=DEFAULT_SUBPLOT_ASPECT,
-        help="Width:height ratio for the plot frame, e.g. 10:8 or 1:1.",
+        help=(
+            "Initial width:height ratio for the plot frame, e.g. 10:8 or 1:1. "
+            "The interactive axes remain resizable unless --fixed-aspect is used."
+        ),
+    )
+    parser.add_argument(
+        "--fixed-aspect",
+        action="store_true",
+        help="Lock the axes box aspect to --subplot-aspect, matching the older resize behavior.",
+    )
+    parser.add_argument(
+        "--free-aspect",
+        action="store_false",
+        dest="fixed_aspect",
+        help="Let the axes stretch when the interactive window is resized. This is the default.",
     )
     parser.add_argument(
         "--tick-labelsize",
@@ -324,6 +395,19 @@ def parse_args():
         help="Keep the legend inside the axes instead of outside the main plot.",
     )
     parser.add_argument(
+        "--legend",
+        action="store_true",
+        dest="show_legend",
+        default=True,
+        help="Show the legend. This is the default, but the flag is accepted for explicit commands.",
+    )
+    parser.add_argument(
+        "--no-legend",
+        action="store_false",
+        dest="show_legend",
+        help="Hide the legend.",
+    )
+    parser.add_argument(
         "--right-labels",
         action="store_true",
         dest="right_labels",
@@ -361,13 +445,13 @@ def parse_args():
 def execute_xrd_plot(
     selectors=None,
     sample_selectors=None,
-    mode="both",
+    mode="normalized",
     layout="stack",
     pdf_card=None,
     pdf_standard_dir=DEFAULT_PDF_STANDARD_DIR,
     no_pdf_card=False,
     xrd_root=DEFAULT_XRD_ROOT,
-    output_dir=DEFAULT_XRD_SAVE_DIR,
+    output_dir=None,
     comparison_id=None,
     xlim=DEFAULT_TWO_THETA_RANGE,
     ylim=None,
@@ -382,7 +466,11 @@ def execute_xrd_plot(
     pdf=False,
     include_batch=None,
     legend_outside=True,
+    show_legend=True,
+    fixed_aspect=False,
     right_labels=False,
+    data_figures=False,
+    data_figures_dir="figures",
     show=True,
 ):
     output_mode, layout = normalize_mode_and_layout(mode, layout)
@@ -402,6 +490,11 @@ def execute_xrd_plot(
 
     comparison_id = comparison_id or comparison_id_from_patterns(patterns)
     comparison_id = safe_filename(comparison_id)
+    explicit_output_dir = output_dir is not None
+    if output_dir is None:
+        output_dir = resolve_xrd_data_figure_dir(patterns, data_figures_dir)
+        if output_dir is None:
+            output_dir = DEFAULT_XRD_SAVE_DIR
     output_dir = Path(output_dir)
     formats = normalize_output_formats(formats, pdf=pdf)
 
@@ -430,9 +523,12 @@ def execute_xrd_plot(
             tick_labelsize=tick_labelsize,
             legend_font_size=legend_font_size,
             legend_outside=legend_outside,
+            show_legend=show_legend,
+            fixed_aspect=fixed_aspect,
             right_labels=right_labels,
             standard_color=standard_color,
             close=not show,
+            nest_in_comparison_dir=explicit_output_dir,
         )
     elif output_mode == "both":
         paths = plot_xrd_raw_and_normalized(
@@ -450,12 +546,15 @@ def execute_xrd_plot(
             tick_labelsize=tick_labelsize,
             legend_font_size=legend_font_size,
             legend_outside=legend_outside,
+            show_legend=show_legend,
+            fixed_aspect=fixed_aspect,
             right_labels=right_labels,
             standard_color=standard_color,
             close=not show,
+            nest_in_comparison_dir=explicit_output_dir,
         )
     else:
-        save_dir = output_dir / comparison_id
+        save_dir = output_dir / comparison_id if explicit_output_dir else output_dir
         normalized = output_mode == "normalized"
         suffix = "normalized" if normalized else "not_normalized"
         plot_path = plot_xrd_comparison(
@@ -474,6 +573,8 @@ def execute_xrd_plot(
             tick_labelsize=tick_labelsize,
             legend_font_size=legend_font_size,
             legend_outside=legend_outside,
+            show_legend=show_legend,
+            fixed_aspect=fixed_aspect,
             right_labels=right_labels,
             standard_color=standard_color,
             close=not show,
@@ -482,6 +583,16 @@ def execute_xrd_plot(
 
     for label, path in paths.items():
         print(f"saved {label}: {path}")
+    if data_figures:
+        data_figure_dir = (
+            resolve_xrd_data_figure_dir(patterns, data_figures_dir, comparison_id)
+            if explicit_output_dir
+            else output_dir
+        )
+        if data_figure_dir is not None:
+            copied_paths = copy_saved_figure_outputs(paths, data_figure_dir, formats=formats)
+            if copied_paths:
+                print(f"copied data figures to: {data_figure_dir}")
     if show:
         show_interactive_figures()
         plt.close("all")
@@ -518,7 +629,11 @@ def main():
         pdf=args.pdf,
         include_batch=args.include_batch,
         legend_outside=not args.no_legend_outside,
+        show_legend=args.show_legend,
+        fixed_aspect=args.fixed_aspect,
         right_labels=args.right_labels,
+        data_figures=args.data_figures,
+        data_figures_dir=args.data_figures_dir,
         show=not args.no_show,
     )
 
