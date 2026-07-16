@@ -580,7 +580,7 @@ def group_label_from_params(group_key: str, params_row: pd.Series | None = None)
 
 
 def group_style(index: int) -> tuple[str, str]:
-    from src.tools.plot import get_style_cycles
+    from te_analysis.tools.plot import get_style_cycles
 
     colors, markers = get_style_cycles()
     color = marker = None
@@ -763,8 +763,8 @@ def plot_pisarenko_fit(
     os.environ.setdefault("MPLCONFIGDIR", str(cache_dir))
     os.environ.setdefault("XDG_CACHE_HOME", str(cache_dir))
 
-    from src.tools.flexible_plot import plot_line_or_scatter
-    from src.tools.plot import save_figure
+    from te_analysis.tools.flexible_plot import plot_line_or_scatter
+    from te_analysis.tools.plot import save_figure
 
     import matplotlib.pyplot as plt
 

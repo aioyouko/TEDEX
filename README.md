@@ -50,8 +50,9 @@ gallery figures.
 ```text
 .
 ├── main.py               # Root-level launcher for common tools
-├── src/                  # Reusable Python source code
+├── te_analysis/          # Installable Python package (tools, agents, plot styles)
 │   ├── agents/
+│   ├── plotstyle/
 │   └── tools/
 ├── scripts/              # Runnable analysis, plotting, sync, and utility scripts
 │   ├── analysis/
@@ -85,7 +86,7 @@ gallery figures.
 - Keep only `main.py` in the root as the user-facing launcher.
 - Put runnable workflow scripts under `scripts/analysis/`, `scripts/plotting/`,
   or another focused `scripts/` subfolder.
-- Put reusable implementation code under `src/`, not in notebooks.
+- Put reusable implementation code under `te_analysis/`, not in notebooks.
 - Keep raw experiment files under `data/raw/<batch_id>/`.
 - Keep cleaned sample tables under `data/processed/<batch_id>-processed/`.
 - Put plotting recipes and runtime options under `configs/`.

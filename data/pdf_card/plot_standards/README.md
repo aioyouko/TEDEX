@@ -36,4 +36,14 @@ Example commands:
 ```bash
 python main.py plot-xrd CHY-1038 --pdf-card CuInTe2_PDF_97_023_8958
 python main.py plot-xrd CHY-1038 --pdf-card data/pdf_card/plot_standards/CuInTe2_PDF_97_023_8958.csv
+python main.py plot-xrd CHY-1038 --pdf-card CuInTe2_PDF_97_023_8958 --pdf-card Sb2Te3_PDF_97_067_0037
 ```
+
+With two `--pdf-card` options, the first card is drawn below the measured XRD
+traces and the second above them. The first starts at the x-axis; the second
+uses a black baseline. The cards use red and blue defaults controlled by
+`--standard-color` and `--top-standard-color`. Card names are hidden by default;
+add `--pdf-labels` to write them directly in the plot. Maximum stick height
+defaults to `1.0` of one XRD offset step. The default bottom-card gap is `0.25`
+of one offset step; an enabled bottom label retains `0.60` clearance. Use
+`--pdf-height-fraction` only for an explicit height override.

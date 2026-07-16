@@ -3,7 +3,7 @@ from pathlib import Path
 from itertools import cycle
 from math import gcd
 
-from src.tools.matplotlib_backend import configure_matplotlib_backend, show_interactive_figures
+from te_analysis.tools.matplotlib_backend import configure_matplotlib_backend, show_interactive_figures
 
 configure_matplotlib_backend()
 
@@ -12,7 +12,7 @@ import pandas as pd
 from matplotlib import ticker
 
 try:
-    from myplotstyle import axis_formatting, mpl_arial
+    from te_analysis.plotstyle import axis_formatting, mpl_arial
 except ImportError:
     axis_formatting = None
     mpl_arial = None

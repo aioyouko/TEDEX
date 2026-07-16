@@ -3,7 +3,7 @@
 Run commands from the workspace root:
 
 ```bash
-cd "/Users/chenheyang/Library/CloudStorage/OneDrive-NorthwesternUniversity/02-Northwestern Lab/te_agent_workspace"
+cd ~/Documents/te-analysis-plotting
 ```
 
 Most user-facing tools are launched through `main.py`:
@@ -24,9 +24,56 @@ Most user-facing tools are launched through `main.py`:
 Use `python main.py --help` or `python main.py <command> --help` to inspect
 the current options.
 
+## How the Launcher Works
+
+The root `main.py` is intentionally a 10-line shim: the actual launcher lives
+in `te_analysis/launcher.py` so the installed package owns it. Running
+`python main.py <command>` dispatches to the matching entry script. If the
+package is installed with `pip install -e .`, the same launcher is also
+available as the `te` command (`te plot-te ...`, `te flexible ...`).
+
+Where the plotting implementation now lives (each split from a former
+single-file module, with the old module names kept as import shims):
+
+| Area | Package | Entry point |
+| --- | --- | --- |
+| TE property plots | `te_analysis/tools/te_plotting/` (properties, ledger, locate) | `scripts/plotting/plot_te.py` via `python main.py plot-te` |
+| Flexible recipe plots | `te_analysis/tools/flexible/` (util, normalize, style, render, output, cli) | `python main.py flexible` |
+| XRD plots | `te_analysis/tools/xrd/` (io, pdf_cards, render) | `scripts/plotting/plot_xrd.py` via `python main.py plot-xrd` |
+
+## Quick Plotting Recipes
+
+The three most common plotting tasks:
+
+```bash
+# 1. Plot processed TE properties for a batch (or a direct CSV path)
+python main.py plot-te CHY-1048 --zt --no-show
+python main.py plot-te path/to/sample.csv --seebeck --conductivity --zt --no-show
+
+# 2. Plot XRD patterns (batch, sample, or a direct .xy file)
+python main.py plot-xrd CHY-1056-B --no-show
+python main.py plot-xrd path/to/pattern.xy --no-pdf-card --no-show --output-dir out/
+
+# 3. Render a flexible plot recipe
+python main.py flexible --recipe configs/plot_recipes/thermoeletric/temperature_vs_zt.json --no-show
+```
+
+## Running the Tests
+
+The characterization test suite pins current behavior so refactors can be
+verified:
+
+```bash
+pytest tests/              # with pytest installed
+python tests/run_tests.py  # fallback runner, no pytest needed
+```
+
+The first run records missing golden baselines (reported as skips); rerun to
+compare against them. SPB tests require scipy.
+
 ## Run TE Analysis
 
-The selected-batch raw-data workflow is implemented in `scripts/analysis/te_analysis.py` and
+The selected-batch raw-data workflow is implemented in `scripts/analysis/te_analysis_pipeline.py` and
 called by `python main.py analyze`. This workflow processes raw ZEM/LFA data, calculates
 transport properties, extracts feature JSON, and plots TE summaries. It does not
 run any agent/LLM analysis.
@@ -386,9 +433,9 @@ SPB fitting command recipe mapping:
 
 | Command | Script | Recipe(s) loaded for plots | Main outputs |
 |---|---|---|---|
-| `python main.py spb effective-mass ...` aliases: `mass`, `mstar`, `pisarenko` | `src/tools/spb/effective_mass_fit.py` | `configs/plot_recipes/spb/pisarenko_fit.json` | `effective_mass_points.csv`, `pisarenko_curve.csv`, `fit_summary.json`, `pisarenko_fit.*` |
-| `python main.py spb performance ...` aliases: `fitting`, `fit`, `pf`, `zt` | `src/tools/spb/performance_fit.py` | `pf_fit.json` for `--properties pf`; `zt_fit.json` for `--properties zt` | `performance_points.csv`, `performance_curve.csv`, `performance_summary.json`, `pf_fit.*`, `zt_fit.*` |
-| `python main.py spb conductivity ...` aliases: `sigma`, `mobility` | `src/tools/spb/conductivity_fit.py` | `conductivity_seebeck_fit.json`, `conductivity_pf_fit.json`, `conductivity_zt_fit.json` | `conductivity_points.csv`, `conductivity_curve.csv`, `conductivity_summary.json`, `conductivity_seebeck_fit.*`, `conductivity_pf_fit.*`, `conductivity_zt_fit.*` |
+| `python main.py spb effective-mass ...` aliases: `mass`, `mstar`, `pisarenko` | `te_analysis/tools/spb/effective_mass_fit.py` | `configs/plot_recipes/spb/pisarenko_fit.json` | `effective_mass_points.csv`, `pisarenko_curve.csv`, `fit_summary.json`, `pisarenko_fit.*` |
+| `python main.py spb performance ...` aliases: `fitting`, `fit`, `pf`, `zt` | `te_analysis/tools/spb/performance_fit.py` | `pf_fit.json` for `--properties pf`; `zt_fit.json` for `--properties zt` | `performance_points.csv`, `performance_curve.csv`, `performance_summary.json`, `pf_fit.*`, `zt_fit.*` |
+| `python main.py spb conductivity ...` aliases: `sigma`, `mobility` | `te_analysis/tools/spb/conductivity_fit.py` | `conductivity_seebeck_fit.json`, `conductivity_pf_fit.json`, `conductivity_zt_fit.json` | `conductivity_points.csv`, `conductivity_curve.csv`, `conductivity_summary.json`, `conductivity_seebeck_fit.*`, `conductivity_pf_fit.*`, `conductivity_zt_fit.*` |
 
 The fitting recipes are usually internal style templates. They expect columns
 created by the fitting scripts, such as `nH_cm-3`,
@@ -487,10 +534,11 @@ Plot selected samples from one XRD folder:
 python main.py plot-xrd data/raw/CHY-1038/XRD --select A C
 ```
 
-Use custom legend labels from a file in the same XRD folder. Supported filenames
-include `label`, `labels`, `legend`, and `legends`, with optional `.txt`,
-`.csv`, `.tsv`, or `.md` suffixes. Put one label per row; CSV/TSV files use the
-first column. Labels are applied in sorted `.xy` filename order.
+Use custom trace labels from a file in the same XRD folder. These labels are
+used by both the legend and `--right-labels`. Supported filenames include
+`label`, `labels`, `legend`, and `legends`, with optional `.txt`, `.csv`,
+`.tsv`, or `.md` suffixes. Put one label per row; CSV/TSV files use the first
+column. Labels are applied in sorted `.xy` filename order.
 
 ```text
 # data/raw/CHY-1038/XRD/legend
@@ -524,6 +572,33 @@ Use a clean PDF standard CSV by basename:
 
 ```bash
 python main.py plot-xrd CHY-1038 --pdf-card CuInTe2_PDF_97_023_8958
+```
+
+Plot two PDF cards by repeating `--pdf-card`. The first card is placed below
+all measured XRD traces and the second is placed above them:
+
+```bash
+python main.py plot-xrd CHY-1038 \
+  --pdf-card CuInTe2_PDF_97_023_8958 \
+  --pdf-card Sb2Te3_PDF_97_067_0037
+```
+
+The bottom PDF sticks start directly from the x-axis. The top PDF sticks use a
+separate black baseline. Both stick fields are scaled taller than before
+relative to a normalized XRD trace. PDF-card names are hidden by default; add
+`--pdf-labels` to show them. When shown, the top name is placed above its sticks.
+The default maximum stick-height fraction is `1.0`. The bottom card-to-first-
+trace gap is `0.25` of one offset step, while the top separation remains `0.60`.
+Use `--pdf-height-fraction` only when an explicit height override is needed.
+The default card colors are red and blue; override them independently when needed:
+
+```bash
+python main.py plot-xrd CHY-1038 \
+  --pdf-card CuInTe2_PDF_97_023_8958 \
+  --pdf-card Sb2Te3_PDF_97_067_0037 \
+  --pdf-labels \
+  --standard-color '#d62728' \
+  --top-standard-color '#1f77b4'
 ```
 
 List available PDF-card basenames:
@@ -577,7 +652,19 @@ Use the shared TE plot frame ratio and override trace styling:
 python main.py plot-xrd CHY-1038 \
   --subplot-aspect 10:8 \
   --color '#d62728' --color '#1f77b4' \
-  --line-width 1.15
+  --line-width 0.9
+```
+
+By default, XRD figures omit the conventional legend and PDF-card names, showing
+only right-side trace labels. Add `--pdf-labels` to show the PDF-card names. If
+the XRD folder contains `label`,
+`labels`, `legend`, or `legends` with optional `.txt`, `.csv`, `.tsv`, or `.md`
+suffix, labels are applied in sorted `.xy` file order; otherwise the `.xy` file
+stems are used. Use `--legend` to restore the conventional legend or
+`--no-right-labels` to hide the trace annotations.
+
+```bash
+python main.py plot-xrd CHY-1038 --legend --pdf-labels --no-right-labels
 ```
 
 Save multiple output formats:
@@ -713,3 +800,13 @@ python main.py analyze CHY-1048
 python main.py plot-te CHY-1048 --seebeck
 python main.py plot-xrd CHY-1038
 ```
+
+### Markdown Layout (v2)
+
+`lab_metadata.md` groups records by batch: an Overview table first, then one
+`## <batch_id>` section per batch containing the `### Batch` table followed by
+its `### Sample` tables. File paths (`Raw:` / `Processed:` lines) are shown as
+read-only info; edit paths in JSON or let `sync metadata` manage them.
+Deleting a section from the Markdown no longer deletes the JSON record — the
+import keeps it and prints a warning. Pass `--prune` to actually delete
+records removed from the Markdown.

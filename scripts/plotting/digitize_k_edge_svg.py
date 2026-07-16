@@ -20,14 +20,14 @@ ROOT = Path(__file__).resolve().parents[2]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-from src.tools.matplotlib_backend import configure_matplotlib_backend  # noqa: E402
+from te_analysis.tools.matplotlib_backend import configure_matplotlib_backend  # noqa: E402
 
 configure_matplotlib_backend()
 
 import matplotlib.pyplot as plt  # noqa: E402
 from matplotlib import ticker  # noqa: E402
 
-from src.tools.plot import (  # noqa: E402
+from te_analysis.tools.plot import (  # noqa: E402
     apply_plot_style,
     figure_size_for_subplot_aspect,
     format_te_axis,

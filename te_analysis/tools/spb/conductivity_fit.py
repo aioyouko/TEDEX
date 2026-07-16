@@ -19,7 +19,7 @@ ROOT = Path(__file__).resolve().parents[3]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-from src.tools.spb.effective_mass_fit import (  # noqa: E402
+from te_analysis.tools.spb.effective_mass_fit import (  # noqa: E402
     DEFAULT_SEEBECK_COLUMN_CANDIDATES,
     SPB_FIT_STYLE_KEYS,
     _convert_seebeck_to_uv,
@@ -47,7 +47,7 @@ from src.tools.spb.effective_mass_fit import (  # noqa: E402
     selector_display_label,
     series_style,
 )
-from src.tools.spb.performance_fit import (  # noqa: E402
+from te_analysis.tools.spb.performance_fit import (  # noqa: E402
     PF_COLUMN_CANDIDATES,
     ZT_COLUMN_CANDIDATES,
     MobilityModel,
@@ -595,8 +595,8 @@ def plot_conductivity_property_fit(
     os.environ.setdefault("MPLCONFIGDIR", str(cache_dir))
     os.environ.setdefault("XDG_CACHE_HOME", str(cache_dir))
 
-    from src.tools.flexible_plot import plot_line_or_scatter
-    from src.tools.plot import save_figure
+    from te_analysis.tools.flexible_plot import plot_line_or_scatter
+    from te_analysis.tools.plot import save_figure
 
     import matplotlib.pyplot as plt
 

@@ -1,0 +1,10 @@
+x,x_category,y,property,group,legend_label,label,condition,source,x_source_column,y_source_column,series_order,color,marker,linestyle,line_width,marker_size,alpha
+0.01,0.01,0.5,zt,Literature,This work,Ref-A,,literature_comparison_loose.csv,Ag fraction x,Best zT,0,,,,,,
+0.06,0.06,0.68,zt,Literature,This work,Ref-B,,literature_comparison_loose.csv,Ag fraction x,Best zT,0,,,,,,
+0.1,0.1,0.79,zt,Literature,This work,Ref-C,,literature_comparison_loose.csv,Ag fraction x,Best zT,0,,,,,,
+0.16,0.16,0.62,zt,Literature,This work,Ref-D,,literature_comparison_loose.csv,Ag fraction x,Best zT,0,,,,,,
+0.0,0,0.42,zt,This work,This work,Base,,literature_comparison_loose.csv,Ag fraction x,Best zT,0,,,,,,
+0.02,0.02,0.58,zt,This work,This work,Ag-0.02,,literature_comparison_loose.csv,Ag fraction x,Best zT,0,,,,,,
+0.05,0.05,0.76,zt,This work,This work,Ag-0.05,,literature_comparison_loose.csv,Ag fraction x,Best zT,0,,,,,,
+0.08,0.08,0.83,zt,This work,This work,Ag-0.08,,literature_comparison_loose.csv,Ag fraction x,Best zT,0,,,,,,
+0.12,0.12,0.71,zt,This work,This work,Ag-0.12,,literature_comparison_loose.csv,Ag fraction x,Best zT,0,,,,,,

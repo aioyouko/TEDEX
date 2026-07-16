@@ -35,6 +35,12 @@ import json
 import os
 import re
 import sys
+
+from pathlib import Path as _Path
+_ROOT = _Path(__file__).resolve().parents[1]
+if str(_ROOT) not in sys.path:
+    sys.path.insert(0, str(_ROOT))
+from te_analysis.tools.selectors import truncate_with_digest
 from itertools import cycle
 from pathlib import Path
 from typing import Any
@@ -108,11 +114,7 @@ NORMALIZED_YLABELS = {
 def safe_output_stem(value: str, max_length: int = 96) -> str:
     stem = re.sub(r"[^A-Za-z0-9_.-]+", "_", str(value).strip())
     stem = re.sub(r"_+", "_", stem).strip("_.-") or "plot"
-    if len(stem) <= max_length:
-        return stem
-    digest = hashlib.sha1(stem.encode("utf-8")).hexdigest()[:8]
-    prefix_length = max(1, max_length - len(digest) - 1)
-    return f"{stem[:prefix_length].rstrip('_.-')}_{digest}"
+    return truncate_with_digest(stem, max_length)
 
 
 def apply_paper_labels(specs: dict[str, dict[str, Any]]) -> dict[str, dict[str, Any]]:
@@ -125,92 +127,16 @@ def apply_paper_labels(specs: dict[str, dict[str, Any]]) -> dict[str, dict[str, 
 
 def import_project_plot_style(workspace: Path):
     sys.path.insert(0, str(workspace))
-    try:
-        from src.tools.plot import (  # type: ignore
-            DEFAULT_COLORS,
-            DEFAULT_MARKERS,
-            TE_PLOT_SPECS,
-            apply_plot_style,
-            format_te_axis,
-            save_figure,
-        )
+    from te_analysis.tools.plot import (  # type: ignore
+        DEFAULT_COLORS,
+        DEFAULT_MARKERS,
+        TE_PLOT_SPECS,
+        apply_plot_style,
+        format_te_axis,
+        save_figure,
+    )
 
-        return DEFAULT_COLORS, DEFAULT_MARKERS, apply_paper_labels(TE_PLOT_SPECS), apply_plot_style, format_te_axis, save_figure
-    except Exception:
-        specs = {
-            "seebeck": {
-                "column": "Seebeck",
-                "scale": 1e6,
-                "title": "Seebeck Coefficient",
-                "ylabel": PAPER_YLABELS["seebeck"],
-            },
-            "conductivity": {
-                "column": "Conductivity",
-                "scale": 0.01,
-                "title": "Electrical Conductivity",
-                "ylabel": PAPER_YLABELS["conductivity"],
-            },
-            "thermal_conductivity": {
-                "column": "Thermal_Conductivity",
-                "scale": 1,
-                "title": "Total Thermal Conductivity",
-                "ylabel": PAPER_YLABELS["thermal_conductivity"],
-            },
-            "lattice_thermal_conductivity": {
-                "column": "Lattice_Thermal_Conductivity",
-                "scale": 1,
-                "title": "Lattice Thermal Conductivity",
-                "ylabel": PAPER_YLABELS["lattice_thermal_conductivity"],
-            },
-            "zt": {
-                "column": "ZT",
-                "scale": 1,
-                "title": "Figure of Merit",
-                "ylabel": r"$ZT$",
-            },
-            "power_factor": {
-                "column": "Power_Factor",
-                "scale": 1e4,
-                "title": "Power Factor",
-                "ylabel": PAPER_YLABELS["power_factor"],
-            },
-        }
-
-        def apply_plot_style(font: str = "arial", mode: str = "single") -> None:
-            del font, mode
-            plt.rcParams.update(
-                {
-                    "font.sans-serif": "Arial",
-                    "mathtext.fontset": "custom",
-                    "axes.linewidth": 0.9,
-                    "xtick.direction": "in",
-                    "ytick.direction": "in",
-                    "xtick.minor.visible": True,
-                    "ytick.minor.visible": True,
-                    "legend.frameon": False,
-                    "savefig.dpi": 600,
-                }
-            )
-
-        def format_te_axis(ax, show_grid: bool = False, tick_labelsize: int = 9) -> None:
-            ax.minorticks_on()
-            ax.tick_params(which="both", direction="in", top=False, right=False)
-            ax.tick_params(which="major", width=0.9, length=4.5, labelsize=tick_labelsize)
-            ax.tick_params(which="minor", width=0.8, length=2.5)
-            ax.grid(show_grid, which="major", linestyle="--", linewidth=0.4, alpha=0.45)
-
-        def save_figure(fig, save_name: str, save_dir: str = "figures", formats=None, transparent: bool = False):
-            Path(save_dir).mkdir(parents=True, exist_ok=True)
-            normalized = formats or [Path(save_name).suffix.lstrip(".") or "png"]
-            stem = Path(save_name).stem
-            saved = []
-            for fmt in normalized:
-                path = Path(save_dir) / f"{stem}.{fmt}"
-                fig.savefig(path, dpi=600, bbox_inches="tight", transparent=transparent)
-                saved.append(str(path))
-            return saved[0]
-
-        return FALLBACK_COLORS, FALLBACK_MARKERS, specs, apply_plot_style, format_te_axis, save_figure
+    return DEFAULT_COLORS, DEFAULT_MARKERS, apply_paper_labels(TE_PLOT_SPECS), apply_plot_style, format_te_axis, save_figure
 
 
 def normalize_selector(raw: str) -> str:

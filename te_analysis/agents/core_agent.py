@@ -7,7 +7,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # 引入抽离出来的 Prompt
-from src.agents.prompts import TE_EXPERT_SYSTEM_PROMPT, TE_ASSESSMENT_SYSTEM_PROMPT
+from te_analysis.agents.prompts import TE_EXPERT_SYSTEM_PROMPT, TE_ASSESSMENT_SYSTEM_PROMPT
 
 def analyze_materials_data(extracted_features: dict) -> str:
     """

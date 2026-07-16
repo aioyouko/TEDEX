@@ -1,5 +1,33 @@
 # Changelog
 
+## Unreleased
+
+## 1.4.2 - 2026-07-16
+
+- Added two-card XRD comparison plots: the first PDF card is placed below the
+  measured traces and the second above them. XRD plots now default to right-side
+  trace labels without a conventional legend or in-plot PDF-card names; the
+  names can be enabled with `--pdf-labels`. Bottom sticks now start at the
+  x-axis, top sticks use a black baseline with their
+  label above the stick field, both stick fields default to `1.0` of one XRD
+  offset step, the bottom card-to-first-trace gap is reduced to `0.25` offset
+  step, and the two cards have independently configurable colors.
+- Renamed the installable code to a single proper package: `src/` is now
+  `te_analysis/`, and `myplotstyle/` moved to `te_analysis/plotstyle/`.
+  Previously `pip install` shipped top-level packages named `src`, `scripts`,
+  `myplotstyle`, and `main`, which collide with other projects.
+- Moved the launcher into `te_analysis/launcher.py`; root `main.py` is now a
+  thin shim, so `python main.py ...` works unchanged.
+- Renamed `scripts/analysis/te_analysis.py` to
+  `scripts/analysis/te_analysis_pipeline.py` to stop it shadowing the new
+  package name.
+- Updated console scripts: `te` and the three `te-spb-*` entries remain; the
+  `te-plot-xrd`, `te-flex-plot`, `te-assess-batches`, `te-bayes-predict`,
+  `te-sync-*`, and `te-paper-plots` shortcuts were removed (use the
+  equivalent `te <command>` instead).
+- Started tracking the project with git; private lab data folders are
+  excluded via .gitignore.
+
 ## 1.4.1
 
 - Fixed small bugs found after the v1.4.0 launcher and path cleanup.

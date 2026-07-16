@@ -14,10 +14,10 @@ os.environ.setdefault("XDG_CACHE_HOME", str(_MPL_CACHE_DIR))
 
 import pandas as pd
 
-from src.tools.file_utils import setup_batch_directories
+from te_analysis.tools.file_utils import setup_batch_directories
 
 try:
-    from src.tools.te_data import calculate_zt, load_lfa, load_zem
+    from te_analysis.tools.te_data import calculate_zt, load_lfa, load_zem
 
     HAS_PARSER = True
 except ImportError:
@@ -25,7 +25,7 @@ except ImportError:
     print("TE data parser module is not available.")
 
 try:
-    from src.tools.plot import plot_combined_figure
+    from te_analysis.tools.plot import plot_combined_figure
 
     HAS_PLOTTER = True
 except ImportError:
@@ -33,7 +33,7 @@ except ImportError:
     print("TE plotting module is not available.")
 
 try:
-    from src.tools.spb.lattice_cal import (
+    from te_analysis.tools.spb.lattice_cal import (
         OUTPUT_COLUMNS as SPB_OUTPUT_COLUMNS,
         QUALITY_FACTOR_COLUMN,
         WEIGHTED_MOBILITY_COLUMN,

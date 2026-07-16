@@ -2,6 +2,7 @@
 # PYTHON_ARGCOMPLETE_OK
 
 import argparse
+import math
 import os
 import sys
 from pathlib import Path
@@ -10,16 +11,17 @@ PROJECT_ROOT = Path(__file__).resolve().parents[2]
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
-from src.tools.plot import (
+from te_analysis.tools.plot import (
     DEFAULT_LEGEND_FONT_SIZE,
     DEFAULT_SUBPLOT_ASPECT,
     normalize_output_formats,
     parse_aspect_ratio,
 )
-from src.tools.plot_xrd_data import (
+from te_analysis.tools.xrd import (
     DEFAULT_PDF_STANDARD_DIR,
     DEFAULT_TWO_THETA_RANGE,
     DEFAULT_XRD_LINE_WIDTH,
+    DEFAULT_PDF_HEIGHT_FRACTION,
     DEFAULT_XRD_ROOT,
     DEFAULT_XRD_SAVE_DIR,
     comparison_id_from_patterns,
@@ -36,8 +38,8 @@ from src.tools.plot_xrd_data import (
 
 import matplotlib.pyplot as plt
 
-from src.tools.matplotlib_backend import show_interactive_figures
-from src.tools.file_utils import copy_saved_figure_outputs
+from te_analysis.tools.matplotlib_backend import show_interactive_figures
+from te_analysis.tools.file_utils import copy_saved_figure_outputs
 
 try:
     import argcomplete
@@ -167,7 +169,7 @@ def parse_args():
     parser = argparse.ArgumentParser(
         description=(
             "Plot stacked XRD .xy patterns for selected batches/samples and optionally "
-            "compare them with a PDF-card stick pattern."
+            "compare them with one or two PDF-card stick patterns."
         )
     )
     parser.add_argument(
@@ -248,10 +250,14 @@ def parse_args():
     pdf_card_argument = parser.add_argument(
         "--pdf-card",
         "--card",
-        default=None,
+        action="append",
+        dest="pdf_cards",
+        default=[],
+        metavar="CARD",
         help=(
-            "Optional PDF standard CSV/text path or basename. Prefer clean CSV files in "
-            f"{DEFAULT_PDF_STANDARD_DIR}. Extensionless names are allowed."
+            "PDF standard CSV/text path or basename. Repeat once for a second card: "
+            "the first card is drawn below the XRD traces and the second above them. "
+            f"Prefer clean CSV files in {DEFAULT_PDF_STANDARD_DIR}."
         ),
     )
     parser.add_argument(
@@ -319,6 +325,18 @@ def parse_args():
         help="Stack spacing between traces. Smaller values make traces overlap more.",
     )
     parser.add_argument(
+        "--pdf-height-fraction",
+        "--standard-height-fraction",
+        dest="standard_height_fraction",
+        type=float,
+        default=DEFAULT_PDF_HEIGHT_FRACTION,
+        help=(
+            "Maximum PDF-stick height relative to one stacked XRD offset step; "
+            "applies to both cards. "
+            f"Default: {DEFAULT_PDF_HEIGHT_FRACTION}."
+        ),
+    )
+    parser.add_argument(
         "--color",
         "--colors",
         action="append",
@@ -328,7 +346,13 @@ def parse_args():
     parser.add_argument(
         "--standard-color",
         default="#d62728",
-        help="PDF-card stick color.",
+        help="Bottom PDF-card stick/name color. Default: #d62728 (red).",
+    )
+    parser.add_argument(
+        "--top-standard-color",
+        "--second-standard-color",
+        default="#1f77b4",
+        help="Top PDF-card stick/name color. Default: #1f77b4 (blue).",
     )
     parser.add_argument(
         "--line-width",
@@ -398,8 +422,7 @@ def parse_args():
         "--legend",
         action="store_true",
         dest="show_legend",
-        default=True,
-        help="Show the legend. This is the default, but the flag is accepted for explicit commands.",
+        help="Show a conventional legend; by default only right-side trace labels are shown.",
     )
     parser.add_argument(
         "--no-legend",
@@ -411,15 +434,34 @@ def parse_args():
         "--right-labels",
         action="store_true",
         dest="right_labels",
-        help="Add right-side sample labels beside the stacked traces.",
+        help=(
+            "Show right-side labels beside stacked traces (the default). Label/legend "
+            "files are used in sorted XRD file order; without one, file stems are used."
+        ),
     )
     parser.add_argument(
         "--no-right-labels",
         action="store_false",
         dest="right_labels",
-        help=argparse.SUPPRESS,
+        help="Hide the default right-side trace labels.",
     )
-    parser.set_defaults(right_labels=False)
+    parser.add_argument(
+        "--pdf-labels",
+        "--pdf-card-labels",
+        "--show-pdf-labels",
+        "--show-pdf-card-labels",
+        action="store_true",
+        dest="show_pdf_labels",
+        help="Show PDF-card names inside the plot. They are hidden by default.",
+    )
+    parser.add_argument(
+        "--no-pdf-labels",
+        "--no-pdf-card-labels",
+        action="store_false",
+        dest="show_pdf_labels",
+        help="Hide PDF-card names inside the plot. This is the default.",
+    )
+    parser.set_defaults(show_legend=False, right_labels=True, show_pdf_labels=False)
     if argcomplete is not None:
         sample_selectors_argument.completer = complete_sample_selectors
         pdf_card_argument.completer = complete_pdf_cards
@@ -431,14 +473,23 @@ def parse_args():
         parse_aspect_ratio(args.subplot_aspect)
         if args.overlap <= 0:
             raise ValueError("--overlap must be positive")
+        if (
+            not math.isfinite(args.standard_height_fraction)
+            or args.standard_height_fraction <= 0
+        ):
+            raise ValueError("--pdf-height-fraction must be a finite positive number")
         if args.line_width <= 0:
             raise ValueError("--line-width must be positive")
         if args.tick_labelsize <= 0:
             raise ValueError("--tick-labelsize must be positive")
         if args.legend_font_size <= 0:
             raise ValueError("--legend-font-size must be positive")
+        if len(args.pdf_cards) > 2:
+            raise ValueError("--pdf-card may be specified at most twice")
     except ValueError as exc:
         parser.error(str(exc))
+    args.pdf_card = args.pdf_cards[0] if args.pdf_cards else None
+    args.top_pdf_card = args.pdf_cards[1] if len(args.pdf_cards) == 2 else None
     return args
 
 
@@ -466,12 +517,16 @@ def execute_xrd_plot(
     pdf=False,
     include_batch=None,
     legend_outside=True,
-    show_legend=True,
+    show_legend=False,
     fixed_aspect=False,
-    right_labels=False,
+    right_labels=True,
     data_figures=False,
     data_figures_dir="figures",
     show=True,
+    top_pdf_card=None,
+    top_standard_color="#1f77b4",
+    show_pdf_labels=False,
+    standard_height_fraction=DEFAULT_PDF_HEIGHT_FRACTION,
 ):
     output_mode, layout = normalize_mode_and_layout(mode, layout)
     xlim = tuple(xlim) if xlim else None
@@ -485,8 +540,11 @@ def execute_xrd_plot(
         return {}
 
     pdf_standard = None
+    top_pdf_standard = None
     if pdf_card and not no_pdf_card:
         pdf_standard = resolve_pdf_standard(pdf_card, standard_dir=pdf_standard_dir)
+    if top_pdf_card and not no_pdf_card:
+        top_pdf_standard = resolve_pdf_standard(top_pdf_card, standard_dir=pdf_standard_dir)
 
     comparison_id = comparison_id or comparison_id_from_patterns(patterns)
     comparison_id = safe_filename(comparison_id)
@@ -502,7 +560,9 @@ def execute_xrd_plot(
     for item in summarize_patterns(patterns):
         print(f"  - {item['label']}: {item['source_path']}")
     if pdf_standard is not None:
-        print(f"PDF standard: {pdf_standard.label} ({pdf_standard.source_path})")
+        print(f"Bottom PDF standard: {pdf_standard.label} ({pdf_standard.source_path})")
+    if top_pdf_standard is not None:
+        print(f"Top PDF standard: {top_pdf_standard.label} ({top_pdf_standard.source_path})")
     print(f"Output group: {comparison_id}")
     print(f"Layout: {layout}")
 
@@ -510,6 +570,7 @@ def execute_xrd_plot(
         paths = plot_xrd_separate(
             patterns,
             pdf_standard=pdf_standard,
+            top_pdf_standard=top_pdf_standard,
             comparison_id=comparison_id,
             output_mode=output_mode,
             save_dir=output_dir,
@@ -527,6 +588,9 @@ def execute_xrd_plot(
             fixed_aspect=fixed_aspect,
             right_labels=right_labels,
             standard_color=standard_color,
+            top_standard_color=top_standard_color,
+            show_pdf_labels=show_pdf_labels,
+            standard_height_fraction=standard_height_fraction,
             close=not show,
             nest_in_comparison_dir=explicit_output_dir,
         )
@@ -534,6 +598,7 @@ def execute_xrd_plot(
         paths = plot_xrd_raw_and_normalized(
             patterns,
             pdf_standard=pdf_standard,
+            top_pdf_standard=top_pdf_standard,
             comparison_id=comparison_id,
             save_dir=output_dir,
             formats=formats,
@@ -550,6 +615,9 @@ def execute_xrd_plot(
             fixed_aspect=fixed_aspect,
             right_labels=right_labels,
             standard_color=standard_color,
+            top_standard_color=top_standard_color,
+            show_pdf_labels=show_pdf_labels,
+            standard_height_fraction=standard_height_fraction,
             close=not show,
             nest_in_comparison_dir=explicit_output_dir,
         )
@@ -560,6 +628,7 @@ def execute_xrd_plot(
         plot_path = plot_xrd_comparison(
             patterns,
             pdf_standard=pdf_standard,
+            top_pdf_standard=top_pdf_standard,
             normalized=normalized,
             save_name=f"{comparison_id}_XRD_{suffix}.png",
             save_dir=save_dir,
@@ -577,6 +646,9 @@ def execute_xrd_plot(
             fixed_aspect=fixed_aspect,
             right_labels=right_labels,
             standard_color=standard_color,
+            top_standard_color=top_standard_color,
+            show_pdf_labels=show_pdf_labels,
+            standard_height_fraction=standard_height_fraction,
             close=not show,
         )
         paths = {suffix: plot_path}
@@ -611,6 +683,7 @@ def main():
         mode=args.mode,
         layout=args.layout,
         pdf_card=args.pdf_card,
+        top_pdf_card=args.top_pdf_card,
         pdf_standard_dir=args.pdf_standard_dir,
         no_pdf_card=args.no_pdf_card,
         xrd_root=args.xrd_root,
@@ -619,8 +692,10 @@ def main():
         xlim=args.xlim,
         ylim=args.ylim,
         overlap=args.overlap,
+        standard_height_fraction=args.standard_height_fraction,
         colors=args.colors,
         standard_color=args.standard_color,
+        top_standard_color=args.top_standard_color,
         line_width=args.line_width,
         subplot_aspect=args.subplot_aspect,
         tick_labelsize=args.tick_labelsize,
@@ -632,6 +707,7 @@ def main():
         show_legend=args.show_legend,
         fixed_aspect=args.fixed_aspect,
         right_labels=args.right_labels,
+        show_pdf_labels=args.show_pdf_labels,
         data_figures=args.data_figures,
         data_figures_dir=args.data_figures_dir,
         show=not args.no_show,

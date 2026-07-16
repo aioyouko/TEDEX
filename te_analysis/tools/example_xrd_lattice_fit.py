@@ -11,13 +11,13 @@ from __future__ import annotations
 from pathlib import Path
 
 try:
-    from src.tools.xrd_lattice import run_lattice_fit
+    from te_analysis.tools.xrd_lattice import run_lattice_fit
 except ModuleNotFoundError:
     import sys
 
     repo_root = Path(__file__).resolve().parents[2]
     sys.path.insert(0, str(repo_root))
-    from src.tools.xrd_lattice import run_lattice_fit
+    from te_analysis.tools.xrd_lattice import run_lattice_fit
 
 
 REPO_ROOT = Path(__file__).resolve().parents[2]

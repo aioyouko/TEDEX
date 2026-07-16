@@ -2,7 +2,7 @@
 
 Recipes in this folder target processed TE CSV files, such as
 `data/processed/*-processed/*.csv`. The labels, columns, and scale factors
-mirror `TE_PLOT_SPECS` in `src/tools/plot.py`.
+mirror `TE_PLOT_SPECS` in `te_analysis/tools/plot.py`.
 
 The folder keeps the existing spelling `thermoeletric` from the requested path.
 By default, each recipe saves the figure plus normalized CSV in a `figures`
@@ -11,7 +11,7 @@ folder beside the input data file.
 ## Usage
 
 ```bash
-python src/tools/flexible_plot.py \
+python main.py flexible \
   --recipe configs/plot_recipes/thermoeletric/temperature_vs_te_summary.json \
   data/processed/CHY-1033-processed/CHY-1033-A.csv \
   --no-show
@@ -20,7 +20,7 @@ python src/tools/flexible_plot.py \
 For a single property comparison across multiple samples:
 
 ```bash
-python src/tools/flexible_plot.py \
+python main.py flexible \
   --recipe configs/plot_recipes/thermoeletric/temperature_vs_seebeck.json \
   data/processed/CHY-1033-processed/CHY-1033-A.csv \
   data/processed/CHY-1033-processed/CHY-1033-B.csv \

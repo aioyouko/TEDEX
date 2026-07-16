@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "te-analysis-plotting"
-version = "1.4.1"
+version = "1.4.2"
 description = "Thermoelectric analysis, plotting, SPB fitting, and demo workflow package."
 readme = "README.md"
 requires-python = ">=3.10"
@@ -22,23 +22,14 @@ dependencies = [
 
 [project.optional-dependencies]
 notebook = ["jupyterlab>=4"]
+test = ["pytest>=7"]
 
 [project.scripts]
-te = "main:main"
-te-plot-xrd = "scripts.plotting.plot_xrd:main"
-te-flex-plot = "scripts.plotting.flexible_plot:main"
-te-assess-batches = "scripts.analysis.assess_selected_batches:main"
-te-bayes-predict = "scripts.analysis.bayesian_predict_te:main"
-te-sync-metadata = "scripts.sync_lab_metadata:main"
-te-sync-markdown = "scripts.sync_lab_markdown:main"
-te-paper-plots = "scripts.plot_paper_style_te_variants:main"
-te-spb-effective-mass = "src.tools.spb.effective_mass_fit:main"
-te-spb-performance = "src.tools.spb.performance_fit:main"
-te-spb-conductivity = "src.tools.spb.conductivity_fit:main"
-
-[tool.setuptools]
-py-modules = ["main"]
+te = "te_analysis.launcher:main"
+te-spb-effective-mass = "te_analysis.tools.spb.effective_mass_fit:main"
+te-spb-performance = "te_analysis.tools.spb.performance_fit:main"
+te-spb-conductivity = "te_analysis.tools.spb.conductivity_fit:main"
 
 [tool.setuptools.packages.find]
 where = ["."]
-include = ["src*", "myplotstyle*", "scripts*"]
+include = ["te_analysis*"]

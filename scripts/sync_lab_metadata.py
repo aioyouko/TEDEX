@@ -164,8 +164,10 @@ def merge_sample_records(existing_samples, discovered_samples):
         batch_id = discovered["batch_id"]
         existing = samples_by_id.get(sample_id, {})
         sample_name = existing.get("sample_name") or infer_sample_label(sample_id, batch_id)
-        default_processed_file = build_processed_path(batch_id, sample_id)
-        processed_file = default_processed_file
+        # Preserve a manually curated processed path; only default when unset.
+        processed_file = existing.get("processed_file") or build_processed_path(
+            batch_id, sample_id
+        )
 
         merged = {
             "sample_id": sample_id,

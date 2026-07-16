@@ -10,7 +10,7 @@ Everything else should land in one of these buckets:
 
 | Folder | Purpose |
 | --- | --- |
-| `src/` | Importable source modules used by `main.py` and `scripts/`. |
+| `te_analysis/` | Importable source modules used by `main.py` and `scripts/`. |
 | `scripts/analysis/` | Runnable analysis workflows such as TE processing, assessment, agent analysis, and Bayesian prediction. |
 | `scripts/plotting/` | Runnable plotting entry scripts for TE, XRD, and flexible recipes. |
 | `scripts/` | Supporting sync/export utilities and small shell helpers. |
@@ -30,7 +30,7 @@ Everything else should land in one of these buckets:
 ## Practical Rules
 
 1. User-facing tools should be launched through `python main.py <command>`.
-2. New reusable functions go in `src/tools/` or another `src/` package.
+2. New reusable functions go in `src/tools/` or another `te_analysis/` package.
 3. New experiment data goes in `data/raw/` first, then processed outputs go in
    `data/processed/`.
 4. New generated plots from standard TE/XRD scripts should stay under

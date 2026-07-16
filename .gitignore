@@ -41,3 +41,13 @@ docs/build/
 *.out
 *.synctex.gz
 *.xdv
+
+# Private lab data (keep local, never commit)
+data/raw/
+data/lab/
+data/processed/
+data/reference/
+!data/raw/.gitkeep
+!data/lab/.gitkeep
+!data/processed/.gitkeep
+!data/reference/.gitkeep

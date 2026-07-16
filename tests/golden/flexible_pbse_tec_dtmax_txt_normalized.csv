@@ -1,0 +1,8 @@
+x,x_category,y,property,group,legend_label,label,condition,source,x_source_column,y_source_column,series_order,color,marker,linestyle,line_width,marker_size,alpha
+303.0,303,38.5,delta_tmax,Well-matched all-PbSe-based TEC,Well-matched all-PbSe-based TEC,,,pbse_tec_dtmax_curve.txt,T_H_K,DeltaTmax_K,0,#ff0000,*,,1.6,9.0,
+312.0,312,40.8,delta_tmax,Well-matched all-PbSe-based TEC,Well-matched all-PbSe-based TEC,,,pbse_tec_dtmax_curve.txt,T_H_K,DeltaTmax_K,0,#ff0000,*,,1.6,9.0,
+322.0,322,43.2,delta_tmax,Well-matched all-PbSe-based TEC,Well-matched all-PbSe-based TEC,,,pbse_tec_dtmax_curve.txt,T_H_K,DeltaTmax_K,0,#ff0000,*,,1.6,9.0,
+333.0,333,45.5,delta_tmax,Well-matched all-PbSe-based TEC,Well-matched all-PbSe-based TEC,,,pbse_tec_dtmax_curve.txt,T_H_K,DeltaTmax_K,0,#ff0000,*,,1.6,9.0,
+343.0,343,48.0,delta_tmax,Well-matched all-PbSe-based TEC,Well-matched all-PbSe-based TEC,,,pbse_tec_dtmax_curve.txt,T_H_K,DeltaTmax_K,0,#ff0000,*,,1.6,9.0,
+353.0,353,50.6,delta_tmax,Well-matched all-PbSe-based TEC,Well-matched all-PbSe-based TEC,,,pbse_tec_dtmax_curve.txt,T_H_K,DeltaTmax_K,0,#ff0000,*,,1.6,9.0,
+363.0,363,53.1,delta_tmax,Well-matched all-PbSe-based TEC,Well-matched all-PbSe-based TEC,,,pbse_tec_dtmax_curve.txt,T_H_K,DeltaTmax_K,0,#ff0000,*,,1.6,9.0,

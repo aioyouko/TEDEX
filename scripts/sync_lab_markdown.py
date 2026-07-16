@@ -263,9 +263,40 @@ def record_table(record, fields, preferred_fields):
     return "\n".join(lines)
 
 
+STRUCTURAL_SAMPLE_FIELDS = ("zem", "lfa", "processed_file", "processed_exists")
+
+
+def _sample_info_lines(sample):
+    """Read-only file info shown as plain text (ignored by the importer)."""
+    zem = sample.get("zem") or "—"
+    lfa = sample.get("lfa") or "—"
+    processed = sample.get("processed_file") or "—"
+    status = "exists" if sample.get("processed_exists") else "missing"
+    return [
+        f"- Raw: ZEM `{zem}` · LFA `{lfa}`",
+        f"- Processed: `{processed}` ({status})",
+    ]
+
+
 def render_markdown(batches, samples):
     batch_fields = ordered_fields(batches, BATCH_FIELDS)
-    sample_fields = ordered_fields(samples, SAMPLE_FIELDS)
+    editable_sample_fields = [
+        field
+        for field in ordered_fields(samples, SAMPLE_FIELDS)
+        if field not in STRUCTURAL_SAMPLE_FIELDS
+    ]
+    editable_preferred = [
+        field for field in SAMPLE_FIELDS if field not in STRUCTURAL_SAMPLE_FIELDS
+    ]
+
+    sorted_batches = sorted(batches, key=lambda item: item.get("batch_id", ""))
+    sorted_samples = sorted(
+        samples,
+        key=lambda item: (item.get("batch_id", ""), item.get("sample_id", "")),
+    )
+    samples_by_batch = {}
+    for sample in sorted_samples:
+        samples_by_batch.setdefault(sample.get("batch_id", ""), []).append(sample)
 
     lines = [
         "# Lab Metadata",
@@ -273,21 +304,39 @@ def render_markdown(batches, samples):
         "Edit the values in the tables below, then run:",
         "",
         "```bash",
-        "python scripts/sync_lab_markdown.py",
+        "python main.py sync markdown",
         "```",
         "",
-        "Keep the `### Batch ...` / `### Sample ...` headings and `Field` names unchanged so the sync script can find each record.",
-        "`lab-sync` comments are optional; some Markdown editors may hide or remove them.",
-        "Blank numeric values become `null`; comma-separated list values become JSON arrays.",
+        "Rules the sync relies on:",
         "",
-        "## Batches",
+        "- Keep the `### Batch ...` / `### Sample ...` headings and `Field` names unchanged.",
+        "- `lab-sync` comments are optional; some Markdown editors may hide or remove them.",
+        "- Blank numeric values become `null`; comma-separated list values become JSON arrays.",
+        "- File paths (`Raw:` / `Processed:` lines) are managed by `python main.py sync metadata`; edit them in JSON, not here.",
+        "- Deleting a section does NOT delete the record from JSON (use `--prune` to do that).",
         "",
+        "## Overview",
+        "",
+        "| Batch | Samples | Material family | Matrix composition |",
+        "| --- | --- | --- | --- |",
     ]
-
-    for batch in sorted(batches, key=lambda item: item.get("batch_id", "")):
+    for batch in sorted_batches:
         batch_id = batch.get("batch_id", "")
+        count = len(samples_by_batch.get(batch_id, []))
+        lines.append(
+            f"| {batch_id} | {count} | {markdown_value(batch.get('material_family', ''))} "
+            f"| {markdown_value(batch.get('matrix_composition', ''))} |"
+        )
+    lines.append("")
+
+    covered = set()
+    for batch in sorted_batches:
+        batch_id = batch.get("batch_id", "")
+        covered.add(batch_id)
         lines.extend(
             [
+                f"## {batch_id}",
+                "",
                 f"<!-- lab-sync:batch {batch_id} -->",
                 f"### Batch {batch_id}",
                 "",
@@ -295,23 +344,36 @@ def render_markdown(batches, samples):
                 "",
             ]
         )
+        for sample in samples_by_batch.get(batch_id, []):
+            sample_id = sample.get("sample_id", "")
+            lines.extend(
+                [
+                    f"<!-- lab-sync:sample {sample_id} -->",
+                    f"### Sample {sample_id}",
+                    "",
+                    *_sample_info_lines(sample),
+                    "",
+                    record_table(sample, editable_sample_fields, editable_preferred),
+                    "",
+                ]
+            )
 
-    lines.extend(["## Samples", ""])
-
-    for sample in sorted(
-        samples,
-        key=lambda item: (item.get("batch_id", ""), item.get("sample_id", "")),
-    ):
-        sample_id = sample.get("sample_id", "")
-        lines.extend(
-            [
-                f"<!-- lab-sync:sample {sample_id} -->",
-                f"### Sample {sample_id}",
-                "",
-                record_table(sample, sample_fields, SAMPLE_FIELDS),
-                "",
-            ]
-        )
+    orphans = [s for s in sorted_samples if s.get("batch_id", "") not in covered]
+    if orphans:
+        lines.extend(["## Unassigned Samples", ""])
+        for sample in orphans:
+            sample_id = sample.get("sample_id", "")
+            lines.extend(
+                [
+                    f"<!-- lab-sync:sample {sample_id} -->",
+                    f"### Sample {sample_id}",
+                    "",
+                    *_sample_info_lines(sample),
+                    "",
+                    record_table(sample, editable_sample_fields, editable_preferred),
+                    "",
+                ]
+            )
 
     return "\n".join(lines).rstrip() + "\n"
 
@@ -422,7 +484,7 @@ def parse_markdown(markdown_path, existing_batches, existing_samples):
     return batches, samples
 
 
-def merge_records(parsed_records, existing_records, key, preferred_fields):
+def merge_records(parsed_records, existing_records, key, preferred_fields, keep_missing=True):
     existing = existing_by_id(existing_records, key)
     merged_records = []
     seen_ids = set()
@@ -444,6 +506,20 @@ def merge_records(parsed_records, existing_records, key, preferred_fields):
             elif field in prior:
                 merged[field] = prior[field]
         merged_records.append(merged)
+
+    missing_ids = [rid for rid in existing if rid not in seen_ids]
+    if missing_ids:
+        if keep_missing:
+            print(
+                f"⚠️ {len(missing_ids)} {key} record(s) missing from Markdown were kept "
+                f"in JSON: {', '.join(sorted(missing_ids))} (use --prune to delete)"
+            )
+            merged_records.extend(existing[rid] for rid in missing_ids)
+        else:
+            print(
+                f"Pruned {len(missing_ids)} {key} record(s) absent from Markdown: "
+                f"{', '.join(sorted(missing_ids))}"
+            )
 
     return merged_records
 
@@ -471,8 +547,13 @@ def import_markdown(args):
         existing_samples,
     )
 
-    batches = merge_records(parsed_batches, existing_batches, "batch_id", BATCH_FIELDS)
-    samples = merge_records(parsed_samples, existing_samples, "sample_id", SAMPLE_FIELDS)
+    keep_missing = not getattr(args, "prune", False)
+    batches = merge_records(
+        parsed_batches, existing_batches, "batch_id", BATCH_FIELDS, keep_missing
+    )
+    samples = merge_records(
+        parsed_samples, existing_samples, "sample_id", SAMPLE_FIELDS, keep_missing
+    )
     batches = sorted(batches, key=lambda item: item.get("batch_id", ""))
     samples = sorted(samples, key=lambda item: (item.get("batch_id", ""), item.get("sample_id", "")))
 
@@ -502,6 +583,11 @@ def build_parser():
     parser.add_argument("--batches-json", type=Path, default=Path("data/lab/batches.json"))
     parser.add_argument("--samples-json", type=Path, default=Path("data/lab/samples.json"))
     parser.add_argument("--dry-run", action="store_true")
+    parser.add_argument(
+        "--prune",
+        action="store_true",
+        help="On import, delete JSON records whose sections were removed from the Markdown.",
+    )
     return parser
 
 

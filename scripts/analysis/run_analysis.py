@@ -16,7 +16,12 @@ _MPL_CACHE_DIR.mkdir(parents=True, exist_ok=True)
 os.environ.setdefault("MPLCONFIGDIR", str(_MPL_CACHE_DIR))
 os.environ.setdefault("XDG_CACHE_HOME", str(_MPL_CACHE_DIR))
 
-from te_analysis import te_analysis
+from te_analysis_pipeline import te_analysis
+from te_analysis.tools.selectors import (
+    normalize_batch_id,
+    parse_batch_sample_selector,
+    parse_qualified_sample_selector,
+)
 from scripts.sync_lab_metadata import (
     discover_raw_samples,
     merge_batch_records,
@@ -119,46 +124,7 @@ def sync_lab_metadata_from_markdown():
     subprocess.run(command, cwd=PROJECT_ROOT, check=True)
 
 
-def normalize_batch_id(selector):
-    selector = str(selector).strip()
-    if selector.startswith("Batch-"):
-        selector = selector.replace("Batch-", "CHY-", 1)
-    if selector.isdigit() or (selector and selector[0].isdigit()):
-        selector = f"CHY-{selector}"
-    return selector
 
-
-def parse_batch_sample_selector(selector):
-    """
-    Split selectors like CHY-1054-B, 1054-B, CHY-1054/B, or CHY-1054:B.
-
-    Returns (batch_id, sample_selector). sample_selector is None for a whole
-    batch selector such as CHY-1054.
-    """
-    raw = str(selector or "").strip()
-    if not raw:
-        return "", None
-
-    normalized = raw.replace("Batch-", "CHY-", 1)
-    match = re.match(r"^(?:CHY-)?(\d+)(?:[-/:](.+))?$", normalized)
-    if not match:
-        return normalize_batch_id(normalized), None
-
-    batch_id = f"CHY-{match.group(1)}"
-    sample_part = match.group(2)
-    if not sample_part:
-        return batch_id, None
-
-    separator = "/" if "/" in normalized else ":" if ":" in normalized else "-"
-    return batch_id, f"{batch_id}{separator}{sample_part}"
-
-
-def parse_qualified_sample_selector(selector):
-    """Return a scoped sample selector when the selector includes a batch id."""
-    batch_id, sample_selector = parse_batch_sample_selector(selector)
-    if sample_selector:
-        return batch_id, sample_selector
-    return "", str(selector or "").strip()
 
 
 def add_unique(targets, value):

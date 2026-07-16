@@ -8,7 +8,7 @@ PROJECT_ROOT = Path(__file__).resolve().parents[2]
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
-from src.agents.core_agent import analyze_materials_data
+from te_analysis.agents.core_agent import analyze_materials_data
 
 # Set MOONSHOT_API_KEY in your shell or .env file. Do not hardcode API keys here.
 
