@@ -11,7 +11,14 @@ The sync is intentionally conservative:
 import argparse
 import json
 import re
+import sys
 from pathlib import Path
+
+PROJECT_ROOT = Path(__file__).resolve().parents[1]
+if str(PROJECT_ROOT) not in sys.path:
+    sys.path.insert(0, str(PROJECT_ROOT))
+
+from te_analysis.run_manifest import record_output  # noqa: E402
 
 try:
     from scripts.sync_lab_markdown import (
@@ -69,11 +76,13 @@ def write_json(path, data):
     with path.open("w", encoding="utf-8") as handle:
         json.dump(data, handle, indent=4, ensure_ascii=False)
         handle.write("\n")
+    record_output(path)
 
 
 def write_markdown(path, batches, samples):
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(render_markdown(batches, samples), encoding="utf-8")
+    record_output(path)
 
 
 def load_json_with_markdown_edits(markdown_path, batches_path, samples_path):

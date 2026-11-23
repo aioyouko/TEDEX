@@ -33,7 +33,6 @@ from scripts.sync_lab_metadata import (
 
 LAB_MARKDOWN_PATH = PROJECT_ROOT / "data" / "lab" / "lab_metadata.md"
 LAB_MARKDOWN_SYNC_SCRIPT = PROJECT_ROOT / "scripts" / "sync_lab_markdown.py"
-DEFAULT_TARGET_BATCHES = ["CHY-1048"]
 
 
 def load_json(file_path, default):
@@ -143,6 +142,9 @@ def build_batch_sample_selection(
     Positional selectors can be whole batches or individual samples. Explicit
     --sample/--samples selectors are applied to the selected batches unless they
     already include a batch id.
+
+    There is no default batch: with nothing selected and analyze_all False,
+    this raises SystemExit rather than guessing which batch was meant.
     """
     batch_targets = []
     sample_targets_by_batch = {}
@@ -163,13 +165,17 @@ def build_batch_sample_selection(
             unqualified_samples.append(sample_selector)
 
     if unqualified_samples:
-        scoped_batches = batch_targets or ([] if analyze_all else list(DEFAULT_TARGET_BATCHES))
-        for batch_id in scoped_batches:
-            add_unique(batch_targets, batch_id)
+        if not batch_targets:
+            raise SystemExit(
+                f"--sample {' '.join(unqualified_samples)} does not name a batch. "
+                "Pass the batch too (e.g. CHY-1054 --sample B) or a full sample id "
+                "(e.g. --sample CHY-1054-B)."
+            )
+        for batch_id in batch_targets:
             sample_targets_by_batch.setdefault(batch_id, []).extend(unqualified_samples)
 
     if not batch_targets and not analyze_all:
-        batch_targets = list(DEFAULT_TARGET_BATCHES)
+        raise SystemExit("No batch selected. Pass batch IDs (e.g. CHY-1048) or --all.")
 
     return batch_targets, sample_targets_by_batch
 
@@ -215,9 +221,7 @@ def export_lab_metadata_to_markdown():
 def resolve_target_batches(target_batches, analyze_all=False):
     if analyze_all:
         return sorted(ALL_LAB_BATCHES)
-    if target_batches:
-        return [normalize_batch_id(batch_id) for batch_id in target_batches]
-    return list(DEFAULT_TARGET_BATCHES)
+    return [normalize_batch_id(batch_id) for batch_id in target_batches or []]
 
 
 def execute_selected_batches(
@@ -313,7 +317,7 @@ def parse_args():
         nargs="*",
         help=(
             "Batch ids to analyze. Examples: CHY-1048, 1048, CHY-1038 CHY-1040. "
-            f"If omitted, defaults to {' '.join(DEFAULT_TARGET_BATCHES)}."
+            "Required unless --all is given."
         ),
     )
     parser.add_argument(

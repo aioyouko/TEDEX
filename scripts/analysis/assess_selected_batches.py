@@ -22,6 +22,7 @@ import csv
 import json
 import math
 import re
+import sys
 from collections import defaultdict
 from datetime import datetime
 from pathlib import Path
@@ -34,7 +35,11 @@ except ImportError:  # pragma: no cover - pandas is already in requirements.txt
 
 
 WORKSPACE = Path(__file__).resolve().parents[2]
-DEFAULT_SELECTED_BATCHES = ["CHY-1040", "CHY-1048"]
+if str(WORKSPACE) not in sys.path:
+    sys.path.insert(0, str(WORKSPACE))
+
+from te_analysis.run_manifest import record_output  # noqa: E402
+
 FEATURE_ROOT = WORKSPACE / "data" / "processed"
 REFERENCE_TABLES = [
     WORKSPACE / "data" / "extracted_te_review" / "article_level_extraction_20.csv",
@@ -67,6 +72,7 @@ def write_json(path: Path, payload: Any) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     with path.open("w", encoding="utf-8") as f:
         json.dump(payload, f, indent=2, ensure_ascii=False)
+    record_output(path)
 
 
 def safe_float(value: Any) -> float | None:
@@ -950,7 +956,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "batches",
         nargs="*",
-        help="Batch IDs to assess, e.g. CHY-1040 CHY-1048.",
+        help="Batch IDs to assess, e.g. CHY-1040 CHY-1048. Required unless --all.",
     )
     parser.add_argument(
         "--all",
@@ -962,17 +968,20 @@ def parse_args() -> argparse.Namespace:
         default=str(WORKSPACE / "results" / "assessments"),
         help="Directory for JSON, Markdown, and AI prompt outputs.",
     )
-    return parser.parse_args()
+    args = parser.parse_args()
+    if args.all and args.batches:
+        parser.error("pass batch IDs or --all, not both")
+    if not args.all and not args.batches:
+        parser.error("no batch selected; pass batch IDs (e.g. CHY-1048) or --all")
+    return args
 
 
 def main() -> None:
     args = parse_args()
     if args.all:
         batch_ids = discover_batches()
-    elif args.batches:
-        batch_ids = args.batches
     else:
-        batch_ids = DEFAULT_SELECTED_BATCHES
+        batch_ids = args.batches
 
     assessment = build_assessment(batch_ids)
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
@@ -985,7 +994,9 @@ def main() -> None:
     write_json(json_path, assessment)
     markdown_path.parent.mkdir(parents=True, exist_ok=True)
     markdown_path.write_text(render_markdown(assessment), encoding="utf-8")
+    record_output(markdown_path)
     prompt_path.write_text(build_ai_prompt(assessment), encoding="utf-8")
+    record_output(prompt_path)
 
     print(f"Assessment JSON: {json_path}")
     print(f"Markdown report: {markdown_path}")

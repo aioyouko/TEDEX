@@ -13,7 +13,14 @@ The default command is import, so step 3 writes Markdown values back to JSON.
 import argparse
 import json
 import re
+import sys
 from pathlib import Path
+
+PROJECT_ROOT = Path(__file__).resolve().parents[1]
+if str(PROJECT_ROOT) not in sys.path:
+    sys.path.insert(0, str(PROJECT_ROOT))
+
+from te_analysis.run_manifest import record_output  # noqa: E402
 
 
 BATCH_FIELDS = [
@@ -80,6 +87,7 @@ def write_json(path, data):
     with path.open("w", encoding="utf-8") as handle:
         json.dump(data, handle, indent=4, ensure_ascii=False)
         handle.write("\n")
+    record_output(path)
 
 
 def ordered_fields(records, preferred_fields):
@@ -535,6 +543,7 @@ def export_markdown(args):
 
     args.markdown.parent.mkdir(parents=True, exist_ok=True)
     args.markdown.write_text(markdown, encoding="utf-8")
+    record_output(args.markdown)
     print(f"Exported {len(batches)} batches and {len(samples)} samples to {args.markdown}")
 
 

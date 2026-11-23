@@ -8,6 +8,8 @@ from scipy.integrate import quad
 from scipy.optimize import root
 from scipy.special import expit
 
+from te_analysis.run_manifest import record_output
+
 WEIGHTED_MOBILITY_COLUMN = 'Weighted_Mobility_cm2_V-1_s-1'
 QUALITY_FACTOR_COLUMN = 'Quality_Factor_B'
 
@@ -203,6 +205,7 @@ def calculate_lattice_for_csv(csv_path, save=True):
 
     if save:
         updated_df.to_csv(csv_path, index=False)
+        record_output(csv_path)
         print(f"✅ SPB-derived columns saved: {csv_path}")
 
     return updated_df

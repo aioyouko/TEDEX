@@ -3,15 +3,23 @@
 
 from __future__ import annotations
 
+import json
 import os
 import subprocess
 import sys
+import tempfile
 import textwrap
 from dataclasses import dataclass
 from pathlib import Path
 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
+if str(PROJECT_ROOT) not in sys.path:
+    sys.path.insert(0, str(PROJECT_ROOT))
+
+from te_analysis.run_manifest import MANIFEST_ENV_VAR, read_manifest  # noqa: E402
+
+JSON_FLAG = "--json"
 
 
 @dataclass(frozen=True)
@@ -71,7 +79,10 @@ DIRECT_COMMANDS = (
         target=PROJECT_ROOT / "scripts" / "analysis" / "agent_analysis.py",
         description="Run agent-based analysis from extracted features.",
         aliases=("agent-analysis",),
-        examples=("python main.py agent data/processed/CHY-1048-processed/extracted_features.json",),
+        examples=(
+            "python main.py agent CHY-1048",
+            "python main.py agent data/processed/CHY-1048-processed/extracted_features.json",
+        ),
     ),
     Command(
         name="xrd-lattice",
@@ -176,19 +187,84 @@ def add_project_to_pythonpath(env: dict[str, str]) -> None:
     env["PYTHONPATH"] = root if not current else root + os.pathsep + current
 
 
+def child_env() -> dict[str, str]:
+    env = os.environ.copy()
+    add_project_to_pythonpath(env)
+    # Tools print non-ASCII status symbols. When stdout is a pipe (an agent,
+    # a test, `| tee`), Windows would otherwise encode it with the legacy code
+    # page and crash with UnicodeEncodeError.
+    env.setdefault("PYTHONIOENCODING", "utf-8")
+    return env
+
+
 def run_python(target: Path, args: list[str]) -> int:
     if not target.exists():
         print(f"Target script does not exist: {target}", file=sys.stderr)
         return 2
 
-    env = os.environ.copy()
-    add_project_to_pythonpath(env)
     result = subprocess.run(
         [sys.executable, str(target), *args],
         cwd=PROJECT_ROOT,
-        env=env,
+        env=child_env(),
     )
     return result.returncode
+
+
+def stderr_fileno() -> int | None:
+    try:
+        sys.stderr.flush()
+        return sys.stderr.fileno()
+    except (AttributeError, OSError, ValueError):
+        return None
+
+
+def run_python_json(command_name: str, target: Path, args: list[str]) -> int:
+    """Run a tool and print one JSON object describing the run on stdout.
+
+    The tool's own console output goes to stderr, so stdout carries only the
+    JSON object: the command, its arguments, the exit code, and every file the
+    tool recorded through te_analysis.run_manifest.record_output.
+    """
+    handle, manifest_name = tempfile.mkstemp(prefix="te_run_", suffix=".jsonl")
+    os.close(handle)
+    manifest_path = Path(manifest_name)
+    try:
+        if target.exists():
+            env = child_env()
+            env[MANIFEST_ENV_VAR] = str(manifest_path)
+            stdout_target = stderr_fileno()
+            result = subprocess.run(
+                [sys.executable, str(target), *args],
+                cwd=PROJECT_ROOT,
+                env=env,
+                stdout=stdout_target if stdout_target is not None else subprocess.PIPE,
+            )
+            if stdout_target is None and result.stdout:
+                sys.stderr.write(result.stdout.decode("utf-8", errors="replace"))
+            exit_code = result.returncode
+        else:
+            print(f"Target script does not exist: {target}", file=sys.stderr)
+            exit_code = 2
+
+        summary = {
+            "command": command_name,
+            "args": args,
+            "exit_code": exit_code,
+            "ok": exit_code == 0,
+            "outputs": read_manifest(manifest_path, root=PROJECT_ROOT),
+        }
+    finally:
+        manifest_path.unlink(missing_ok=True)
+
+    # ASCII-escaped so printing never fails on a non-UTF-8 console.
+    print(json.dumps(summary, indent=2))
+    return exit_code
+
+
+def run_command(command_name: str, target: Path, args: list[str], json_mode: bool) -> int:
+    if json_mode:
+        return run_python_json(command_name, target, args)
+    return run_python(target, args)
 
 
 def command_rows(commands: tuple[Command, ...]) -> str:
@@ -202,8 +278,12 @@ def command_rows(commands: tuple[Command, ...]) -> str:
 def print_main_help() -> None:
     common = textwrap.indent(command_rows(DIRECT_COMMANDS), "  ")
     print(f"""Usage:
-  python main.py <command> [args...]
-  python main.py <group> <command> [args...]
+  python main.py [--json] <command> [args...]
+  python main.py [--json] <group> <command> [args...]
+
+  --json           Print one JSON object on stdout when the command finishes:
+                   command, args, exit_code, ok, and the files it wrote
+                   (outputs). The tool's own messages move to stderr.
 
 Common commands:
 {common}
@@ -220,6 +300,7 @@ Examples:
   python main.py flexible --recipe configs/plot_recipes/example.json
   python main.py spb fitting data/demo/spb_fitting/Ag2Se/input.csv
   python main.py sync markdown export
+  python main.py --json assess CHY-1048
 
 Use "python main.py <command> --help" for a tool's own options.
 Use "python main.py <group> --help" to list commands in a group.""")
@@ -249,7 +330,7 @@ def print_unknown_command(command_name: str) -> None:
     print("Run `python main.py --help` to see available commands.", file=sys.stderr)
 
 
-def dispatch_group(group_name: str, args: list[str]) -> int:
+def dispatch_group(group_name: str, args: list[str], json_mode: bool = False) -> int:
     title, commands = GROUPS[group_name]
     if not args or args[0] in {"-h", "--help", "help"}:
         print_group_help(group_name, title, commands)
@@ -263,7 +344,7 @@ def dispatch_group(group_name: str, args: list[str]) -> int:
         print_group_help(group_name, title, commands)
         return 2
 
-    return run_python(command.target, args[1:])
+    return run_command(f"{group_name} {command.name}", command.target, args[1:], json_mode)
 
 
 def dispatch_help(args: list[str]) -> int:
@@ -288,23 +369,30 @@ def dispatch_help(args: list[str]) -> int:
 def main(argv: list[str] | None = None) -> int:
     args = list(sys.argv[1:] if argv is None else argv)
 
+    # --json belongs to the launcher only when it comes before the command;
+    # after the command it is passed through to the tool untouched.
+    json_mode = bool(args) and args[0] == JSON_FLAG
+    if json_mode:
+        args = args[1:]
+
     if not args or args[0] in {"-h", "--help"}:
         print_main_help()
-        return 0
+        # A bare `--json` names no command to run.
+        return 2 if json_mode and not args else 0
 
     if args[0] == "help":
         return dispatch_help(args[1:])
 
     command_name = args[0]
     if command_name in GROUPS:
-        return dispatch_group(command_name, args[1:])
+        return dispatch_group(command_name, args[1:], json_mode)
 
     command = DIRECT_ALIAS_MAP.get(command_name)
     if command is None:
         print_unknown_command(command_name)
         return 2
 
-    return run_python(command.target, args[1:])
+    return run_command(command.name, command.target, args[1:], json_mode)
 
 
 if __name__ == "__main__":

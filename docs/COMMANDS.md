@@ -24,6 +24,39 @@ Most user-facing tools are launched through `main.py`:
 Use `python main.py --help` or `python main.py <command> --help` to inspect
 the current options.
 
+`analyze`, `plot-te`, `assess`, and `agent` have no default batch: name the
+batches (or pass `--all` where supported), otherwise they stop with an error.
+
+## Machine-Readable Runs (`--json`)
+
+Put `--json` before the command to get one JSON object on stdout when it
+finishes. The tool's own messages move to stderr, so stdout stays parseable:
+
+```bash
+python main.py --json assess CHY-1048
+python main.py --json plot-te CHY-1048 --zt --no-show
+```
+
+```json
+{
+  "command": "assess",
+  "args": ["CHY-1048"],
+  "exit_code": 0,
+  "ok": true,
+  "outputs": [
+    {"path": "results/assessments/assessment_CHY-1048_20261123_160501.json", "kind": "json", "exists": true}
+  ]
+}
+```
+
+`outputs` lists every file the command wrote, in write order, with paths
+relative to the workspace root (absolute when outside it). `kind` is one of
+`figure`, `table`, `json`, `markdown`, `text`, or `file`. This includes shared
+metadata such as `data/lab/batches.json` when `analyze` rewrites it.
+
+Tools report a file by calling `te_analysis.run_manifest.record_output(path)`
+right after writing it. New tools should do the same.
+
 ## How the Launcher Works
 
 The root `main.py` is intentionally a 10-line shim: the actual launcher lives
@@ -140,6 +173,23 @@ data/raw/CHY-1048/CHY-1048-A_LFA.csv
 ```
 
 Before analysis, fill `density` and `cp_value` for each sample in `data/lab/lab_metadata.md` or `data/lab/samples.json`.
+
+## Run Agent (LLM) Analysis
+
+`python main.py agent` sends a processed batch's `extracted_features.json` to
+the model and saves a Markdown mechanism analysis to
+`results/reports/<batch>_Analysis.md`. It needs `MOONSHOT_API_KEY` in `.env`.
+
+```bash
+python main.py agent CHY-1040 CHY-1038
+python main.py agent CHY-1040 --matrix Cu0.8Ag0.2In0.5Ga0.5Te2
+python main.py agent data/processed/CHY-1048-processed/extracted_features.json
+```
+
+The matrix composition comes from `--matrix`, else `data/lab/batches.json`
+(then `configs/lab_batches.json`), else the samples in the features file when
+they all agree. A target without one fails instead of being analyzed blind.
+The command exits non-zero if any target fails.
 
 ## Plot TE Data
 

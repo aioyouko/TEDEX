@@ -1,88 +1,83 @@
-# src/agents/core_agent.py
-import os
+"""LLM interpretation layer for thermoelectric analysis results.
+
+Both entry points send a JSON payload to an OpenAI-compatible chat endpoint
+(Moonshot) and return the model's Markdown reply. Every failure raises
+AgentError, so a caller can always tell a failed call from a report.
+"""
+
+from __future__ import annotations
+
 import json
 import logging
-from openai import OpenAI
+import os
+
 from dotenv import load_dotenv
+from openai import OpenAI
+
+from te_analysis.agents.prompts import TE_ASSESSMENT_SYSTEM_PROMPT, TE_EXPERT_SYSTEM_PROMPT
+
 load_dotenv()
 
-# 引入抽离出来的 Prompt
-from te_analysis.agents.prompts import TE_EXPERT_SYSTEM_PROMPT, TE_ASSESSMENT_SYSTEM_PROMPT
+API_KEY_ENV_VAR = "MOONSHOT_API_KEY"
+BASE_URL = "https://api.moonshot.cn/v1"
+MODEL = "moonshot-v1-8k"
+TEMPERATURE = 0.2
 
-def analyze_materials_data(extracted_features: dict) -> str:
-    """
-    调用大模型对提取的热电特征进行机理分析。
-    """
-    api_key = os.getenv("MOONSHOT_API_KEY")
+
+class AgentError(RuntimeError):
+    """The model call did not produce a report."""
+
+
+def _complete(system_prompt: str, user_prompt: str, max_tokens: int) -> str:
+    api_key = os.getenv(API_KEY_ENV_VAR)
     if not api_key:
-        error_msg = "⚠️ 未找到 API Key。请在环境变量中设置 MOONSHOT_API_KEY。"
-        logging.error(error_msg)
-        return error_msg
+        raise AgentError(f"{API_KEY_ENV_VAR} is not set. Add it to .env or the environment.")
 
-    client = OpenAI(
-        api_key=api_key,
-        base_url="https://api.moonshot.cn/v1")
-
-    # 构造 User Prompt
-    user_prompt = f"请分析以下批次的热电材料特征数据：\n\n{json.dumps(extracted_features, indent=2, ensure_ascii=False)}"
-
-    logging.info("🧠 正在等待 Agent 深度思考...")
+    client = OpenAI(api_key=api_key, base_url=BASE_URL)
     try:
         response = client.chat.completions.create(
-            model="moonshot-v1-8k",
+            model=MODEL,
             messages=[
-                # 直接在这里使用导入的变量
-                {"role": "system", "content": TE_EXPERT_SYSTEM_PROMPT},
-                {"role": "user", "content": user_prompt}
+                {"role": "system", "content": system_prompt},
+                {"role": "user", "content": user_prompt},
             ],
-            temperature=0.2,
-            max_tokens=1500
+            temperature=TEMPERATURE,
+            max_tokens=max_tokens,
         )
-        return response.choices[0].message.content
-        
-    except Exception as e:
-        error_msg = f"❌ Agent 分析时发生错误: {str(e)}"
-        logging.error(error_msg)
-        return error_msg
+    except Exception as error:  # the SDK raises many error types; report them all the same way
+        raise AgentError(f"Model call failed: {error}") from error
 
-# 测试运行块...
+    content = response.choices[0].message.content if response.choices else None
+    if not content or not content.strip():
+        raise AgentError("Model returned an empty reply.")
+    return content
+
+
+def analyze_materials_data(extracted_features: dict) -> str:
+    """Return a Markdown mechanism analysis of one batch's extracted features.
+
+    The payload should carry ``base_matrix_material``; the system prompt asks
+    the model to explain every trend against that matrix. Raises AgentError.
+    """
+    user_prompt = (
+        "请分析以下批次的热电材料特征数据：\n\n"
+        f"{json.dumps(extracted_features, indent=2, ensure_ascii=False)}"
+    )
+    logging.info("Waiting for the mechanism-analysis model reply...")
+    return _complete(TE_EXPERT_SYSTEM_PROMPT, user_prompt, max_tokens=1500)
 
 
 def assess_materials_performance(assessment_payload: dict) -> str:
-    """
-    Call the model for evidence-grounded self-assessment and next-step feedback.
+    """Return an evidence-grounded assessment and next-step feedback.
 
-    The payload is expected to come from assess_selected_batches.py. The local
-    script performs deterministic scoring first; this function adds the AI
-    interpretation layer.
+    The payload is expected to come from assess_selected_batches.py, which
+    does the deterministic scoring first; this adds the AI interpretation
+    layer. Raises AgentError.
     """
-    api_key = os.getenv("MOONSHOT_API_KEY")
-    if not api_key:
-        error_msg = "⚠️ 未找到 API Key。请在环境变量中设置 MOONSHOT_API_KEY。"
-        logging.error(error_msg)
-        return error_msg
-
-    client = OpenAI(api_key=api_key, base_url="https://api.moonshot.cn/v1")
     user_prompt = (
         "Please assess the selected thermoelectric batches from this payload. "
         "Keep evidence sources explicit.\n\n"
         f"{json.dumps(assessment_payload, indent=2, ensure_ascii=False)}"
     )
-
-    logging.info("🧠 正在等待 Agent 进行证据化评估...")
-    try:
-        response = client.chat.completions.create(
-            model="moonshot-v1-8k",
-            messages=[
-                {"role": "system", "content": TE_ASSESSMENT_SYSTEM_PROMPT},
-                {"role": "user", "content": user_prompt},
-            ],
-            temperature=0.2,
-            max_tokens=1800,
-        )
-        return response.choices[0].message.content
-
-    except Exception as e:
-        error_msg = f"❌ Agent 评估时发生错误: {str(e)}"
-        logging.error(error_msg)
-        return error_msg
+    logging.info("Waiting for the assessment model reply...")
+    return _complete(TE_ASSESSMENT_SYSTEM_PROMPT, user_prompt, max_tokens=1800)

@@ -11,11 +11,17 @@ from __future__ import annotations
 
 import csv
 import json
+import sys
 from datetime import datetime
 from pathlib import Path
 
 
 WORKSPACE = Path(__file__).resolve().parents[1]
+if str(WORKSPACE) not in sys.path:
+    sys.path.insert(0, str(WORKSPACE))
+
+from te_analysis.run_manifest import record_output  # noqa: E402
+
 SAMPLES_PATH = WORKSPACE / "data" / "lab" / "samples.json"
 BATCHES_PATH = WORKSPACE / "data" / "lab" / "batches.json"
 PROCESSED_DIR = WORKSPACE / "data" / "processed"
@@ -339,6 +345,7 @@ def write_csv(path: Path, rows: list[dict], fields: list[str]):
         writer = csv.DictWriter(handle, fieldnames=fields, extrasaction="ignore")
         writer.writeheader()
         writer.writerows(rows)
+    record_output(path)
 
 
 def main():
@@ -371,6 +378,7 @@ def main():
     with (OUTPUT_DIR / "manifest.json").open("w", encoding="utf-8") as handle:
         json.dump(manifest, handle, indent=4, ensure_ascii=False)
         handle.write("\n")
+    record_output(OUTPUT_DIR / "manifest.json")
 
     print(f"Wrote {len(sample_records)} sample records")
     print(f"Wrote {len(batch_records)} batch records")

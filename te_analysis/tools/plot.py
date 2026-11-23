@@ -3,6 +3,7 @@ from pathlib import Path
 from itertools import cycle
 from math import gcd
 
+from te_analysis.run_manifest import record_output
 from te_analysis.tools.matplotlib_backend import configure_matplotlib_backend, show_interactive_figures
 
 configure_matplotlib_backend()
@@ -452,6 +453,7 @@ def save_figure(fig, save_name, save_dir=DEFAULT_FIGURE_DIR, formats=None, trans
         plot_path = os.path.join(save_dir, f"{base_name}.{file_format}")
         format_transparent = file_format == 'svg' if transparent is None else transparent
         fig.savefig(plot_path, dpi=600, bbox_inches='tight', transparent=format_transparent)
+        record_output(plot_path)
         saved_paths.append(plot_path)
 
     return saved_paths[0]

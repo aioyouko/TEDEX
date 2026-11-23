@@ -2,6 +2,26 @@
 
 ## Unreleased
 
+- Added `python main.py --json <command> ...`: prints one JSON object on
+  stdout with the command, args, exit code, and every file the command wrote
+  (`outputs`), and moves the tool's own messages to stderr. Tools report files
+  through the new `te_analysis.run_manifest.record_output()`.
+- `analyze`, `plot-te`, and `assess` no longer fall back to a hard-coded batch
+  (`CHY-1048`, or `CHY-1040 CHY-1048` for `assess`) when none is given; they
+  stop with an error instead. `analyze --sample B` without a batch is also an
+  error now rather than silently using `CHY-1048`.
+- `agent` now takes its targets from the command line (batch IDs or
+  `extracted_features.json` paths) instead of two hard-coded batches, finds the
+  matrix composition in the lab ledger (or `--matrix`), and exits non-zero when
+  a target fails.
+- `te_analysis.agents.core_agent` raises `AgentError` on a missing API key, a
+  failed call, or an empty reply instead of returning the error text as if it
+  were a report.
+- The launcher sets `PYTHONIOENCODING=utf-8` for the tools it runs, so piped
+  output on Windows no longer crashes on the status symbols.
+- Tracked `AGENTS.md` (project rules for agents) and added `CLAUDE.md`, which
+  imports it for Claude Code.
+
 ## 1.4.2 - 2026-07-16
 
 - Added two-card XRD comparison plots: the first PDF card is placed below the

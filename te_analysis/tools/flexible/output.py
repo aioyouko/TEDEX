@@ -21,6 +21,7 @@ ROOT = Path(__file__).resolve().parents[2]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
+from te_analysis.run_manifest import record_output  # noqa: E402
 from te_analysis.tools.matplotlib_backend import configure_matplotlib_backend, show_interactive_figures  # noqa: E402
 
 configure_matplotlib_backend()
@@ -144,6 +145,7 @@ def copy_outputs_to_data_dirs(
             if output_path.resolve() == target.resolve():
                 continue
             shutil.copy2(output_path, target)
+            record_output(target)
             copied_paths.append(str(target))
     return copied_paths
 
@@ -164,6 +166,7 @@ def save_outputs(
     if output.get("normalized_csv", True):
         normalized_path = str(output_dir / f"{stem}_normalized.csv")
         normalized.to_csv(normalized_path, index=False)
+        record_output(normalized_path)
 
     output_paths = [Path(path) for path in figure_paths]
     if normalized_path:

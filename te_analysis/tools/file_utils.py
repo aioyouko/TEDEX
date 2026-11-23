@@ -2,6 +2,8 @@ import os
 import shutil
 from pathlib import Path
 
+from te_analysis.run_manifest import record_output
+
 def setup_batch_directories(batch_id):
     """
     Locate the raw folder and create the processed output folder for a batch.
@@ -67,6 +69,7 @@ def copy_saved_figure_outputs(saved_paths, target_dir, formats=None):
             if source_path.resolve() == target_path.resolve():
                 continue
             shutil.copy2(source_path, target_path)
+            record_output(target_path)
             copied_paths.append(str(target_path))
 
     return copied_paths
