@@ -21,6 +21,11 @@
   output on Windows no longer crashes on the status symbols.
 - Tracked `AGENTS.md` (project rules for agents) and added `CLAUDE.md`, which
   imports it for Claude Code.
+- Added Claude Code role subagents in `.claude/agents/`: `te-plotter`
+  (figures), `te-analyst` (raw-data processing, SPB fits, lab metadata; the
+  only writer of `data/lab/`), and `te-assessor` (assessment, Bayesian
+  ranking, LLM analysis). Ignored `.claude/worktrees/` and
+  `.claude/settings.local.json`.
 
 ## 1.4.2 - 2026-07-16
 

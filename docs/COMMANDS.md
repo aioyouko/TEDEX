@@ -57,6 +57,30 @@ metadata such as `data/lab/batches.json` when `analyze` rewrites it.
 Tools report a file by calling `te_analysis.run_manifest.record_output(path)`
 right after writing it. New tools should do the same.
 
+## Working With the Role Agents (Claude Code)
+
+In Claude Code, three subagents defined in `.claude/agents/` split the work:
+
+| Agent | Handles | Writes |
+| --- | --- | --- |
+| `te-plotter` | `plot-te`, `plot-xrd`, `flexible` | figures (and new recipes when asked) |
+| `te-analyst` | `analyze`, `spb`, `sync` | `data/lab/`, processed data, SPB outputs |
+| `te-assessor` | `assess`, `bayes`, `agent` | `results/` reports |
+
+Ask in plain language; Claude delegates by each agent's description, or name
+one directly:
+
+```text
+Plot zT and Seebeck for CHY-1040 and CHY-1048 in one comparison, and the XRD stack for CHY-1056.
+Use te-analyst to process CHY-1060 and CHY-1061.
+Have te-assessor compare CHY-1040 and CHY-1048 and suggest the next composition.
+```
+
+Independent plotting and assessment jobs can run in parallel. `analyze` jobs
+must run one at a time because each rewrites `data/lab/`; the analyst takes all
+batches in one command. The assessor runs `agent` (which sends data to the
+Moonshot API) only when you ask for an LLM analysis.
+
 ## How the Launcher Works
 
 The root `main.py` is intentionally a 10-line shim: the actual launcher lives

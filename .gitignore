@@ -4,6 +4,10 @@
 !.env.example
 *.key
 
+# Claude Code: agent definitions are tracked; worktrees and local settings are not
+.claude/worktrees/
+.claude/settings.local.json
+
 # Python cache
 __pycache__/
 *.py[cod]
