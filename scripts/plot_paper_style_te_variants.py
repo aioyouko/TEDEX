@@ -40,6 +40,7 @@ from pathlib import Path as _Path
 _ROOT = _Path(__file__).resolve().parents[1]
 if str(_ROOT) not in sys.path:
     sys.path.insert(0, str(_ROOT))
+from te_analysis.run_manifest import record_output
 from te_analysis.tools.selectors import truncate_with_digest
 from itertools import cycle
 from pathlib import Path
@@ -954,11 +955,13 @@ def main() -> int:
         fig, stem = plot_composition_line(data, property_key, specs, args, style)
         stem = safe_output_stem(stem)
         data.to_csv(output_dir / f"{stem}.csv", index=False)
+        record_output(output_dir / f"{stem}.csv")
     elif args.plot_type == "composition-dual":
         data = collect_points(workspace, rows, [left_key, right_key], args.temperature, specs, args)
         fig, stem = plot_composition_dual(data, left_key, right_key, specs, args, style)
         stem = safe_output_stem(stem)
         data.to_csv(output_dir / f"{stem}.csv", index=False)
+        record_output(output_dir / f"{stem}.csv")
     elif args.plot_type == "temperature-overlay":
         fig, stem = plot_temperature_overlay(rows, property_key, specs, args, style, workspace, normalized=False)
     elif args.plot_type == "normalized-temperature":
@@ -971,6 +974,7 @@ def main() -> int:
         fig, stem = plot_tradeoff_scatter(data, x_key, y_key, color_key, specs, args, style)
         stem = safe_output_stem(stem)
         data.to_csv(output_dir / f"{stem}.csv", index=False)
+        record_output(output_dir / f"{stem}.csv")
     elif args.plot_type == "summary-panels":
         fig, stem = plot_summary_panels(rows, summary_properties, specs, args, style, workspace)
     else:

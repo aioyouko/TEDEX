@@ -14,6 +14,7 @@ os.environ.setdefault("XDG_CACHE_HOME", str(_MPL_CACHE_DIR))
 
 import pandas as pd
 
+from te_analysis.run_manifest import record_output
 from te_analysis.tools.file_utils import setup_batch_directories
 
 try:
@@ -251,6 +252,7 @@ def process_batch_raw_data(batch_id: str, sample_files: dict, processed_path: st
 
         save_path = os.path.join(processed_path, f"{sample_id}.csv")
         zt_data.to_csv(save_path, index=False)
+        record_output(save_path)
         processed_files[sample_name] = save_path
 
         print(f"Saved processed data: {save_path}")
@@ -291,6 +293,7 @@ def run_spb_fitting(processed_data: dict, processed_files: dict = None):
             save_path = processed_files.get(sample_name)
             if save_path:
                 df.to_csv(save_path, index=False)
+                record_output(save_path)
                 print(f"Saved SPB-derived columns: {save_path}")
 
     spb_results = {}
@@ -500,6 +503,7 @@ def extract_and_save_features(
 
     with open(json_path, "w", encoding="utf-8") as handle:
         json.dump(features_dict, handle, indent=4, ensure_ascii=False)
+    record_output(json_path)
 
     print(f"Saved feature JSON: {json_path}")
     return features_dict

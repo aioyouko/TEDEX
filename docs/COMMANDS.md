@@ -1,10 +1,14 @@
 # Project Commands
 
-Run commands from the workspace root:
+Run commands from the workspace root, in the `teagent` conda environment:
 
 ```bash
 cd ~/Documents/te-analysis-plotting
+conda activate teagent
 ```
+
+From a non-interactive shell (scripts, agents), use
+`conda run --no-capture-output -n teagent python main.py ...` instead.
 
 Most user-facing tools are launched through `main.py`:
 
@@ -23,6 +27,77 @@ Most user-facing tools are launched through `main.py`:
 
 Use `python main.py --help` or `python main.py <command> --help` to inspect
 the current options.
+
+`analyze`, `plot-te`, `assess`, and `agent` have no default batch: name the
+batches (or pass `--all` where supported), otherwise they stop with an error.
+
+## Machine-Readable Runs (`--json`)
+
+Put `--json` before the command to get one JSON object on stdout when it
+finishes. The tool's own messages move to stderr, so stdout stays parseable:
+
+```bash
+python main.py --json assess CHY-1048
+python main.py --json plot-te CHY-1048 --zt --no-show
+```
+
+```json
+{
+  "command": "assess",
+  "args": ["CHY-1048"],
+  "exit_code": 0,
+  "ok": true,
+  "outputs": [
+    {"path": "results/assessments/assessment_CHY-1048_20261123_160501.json", "kind": "json", "exists": true}
+  ]
+}
+```
+
+`outputs` lists every file the command wrote, in write order, with paths
+relative to the workspace root (absolute when outside it). `kind` is one of
+`figure`, `table`, `json`, `markdown`, `text`, or `file`. This includes shared
+metadata such as `data/lab/batches.json` when `analyze` rewrites it.
+
+Tools report a file by calling `te_analysis.run_manifest.record_output(path)`
+right after writing it. New tools should do the same.
+
+## Working With the Role Agents (Claude Code)
+
+In Claude Code, three subagents defined in `.claude/agents/` split the work:
+
+| Agent | Handles | Writes |
+| --- | --- | --- |
+| `te-plotter` | `plot-te`, `plot-xrd`, `flexible` | figures (and new recipes when asked) |
+| `te-analyst` | `analyze`, `spb`, `sync` | `data/lab/`, processed data, SPB outputs |
+| `te-assessor` | `assess`, `bayes`, `agent` | `results/` reports |
+
+Ask in plain language; Claude delegates by each agent's description, or name
+one directly:
+
+```text
+Plot zT and Seebeck for CHY-1040 and CHY-1048 in one comparison, and the XRD stack for CHY-1056.
+Use te-analyst to process CHY-1060 and CHY-1061.
+Have te-assessor compare CHY-1040 and CHY-1048 and suggest the next composition.
+```
+
+The agents can work in parallel. The assessor runs `agent` (which sends data
+to the Moonshot API) only when you ask for an LLM analysis.
+
+### Running Commands in Parallel
+
+Commands that change `data/lab/` (`analyze`, `sync metadata`, `sync markdown`,
+`sync workbook`, `sync fill`) hold a lock while they read, change, and write
+it, so parallel runs take turns instead of overwriting each other. A waiting
+command prints `Waiting for another command to finish updating ...` and gives
+up after 120 s (set `TE_LAB_LOCK_TIMEOUT` to change that). `analyze` holds the
+lock only while it syncs metadata, not while it processes data, so analyses of
+different batches overlap. Files are swapped in whole, so commands that only
+read `data/lab/` (`plot-te`, `assess`) never see a half-written file.
+
+Two limits: don't analyze the same batch twice at once, and the lock covers
+one computer only. Running commands on two computers against the
+OneDrive-synced folder at the same time can still produce conflict copies such
+as `samples-<computer name>.json`.
 
 ## How the Launcher Works
 
@@ -140,6 +215,23 @@ data/raw/CHY-1048/CHY-1048-A_LFA.csv
 ```
 
 Before analysis, fill `density` and `cp_value` for each sample in `data/lab/lab_metadata.md` or `data/lab/samples.json`.
+
+## Run Agent (LLM) Analysis
+
+`python main.py agent` sends a processed batch's `extracted_features.json` to
+the model and saves a Markdown mechanism analysis to
+`results/reports/<batch>_Analysis.md`. It needs `MOONSHOT_API_KEY` in `.env`.
+
+```bash
+python main.py agent CHY-1040 CHY-1038
+python main.py agent CHY-1040 --matrix Cu0.8Ag0.2In0.5Ga0.5Te2
+python main.py agent data/processed/CHY-1048-processed/extracted_features.json
+```
+
+The matrix composition comes from `--matrix`, else `data/lab/batches.json`
+(then `configs/lab_batches.json`), else the samples in the features file when
+they all agree. A target without one fails instead of being analyzed blind.
+The command exits non-zero if any target fails.
 
 ## Plot TE Data
 
@@ -799,6 +891,52 @@ python main.py sync markdown
 python main.py analyze CHY-1048
 python main.py plot-te CHY-1048 --seebeck
 python main.py plot-xrd CHY-1038
+```
+
+### Fill Cp and Composition From the Lab Workbook
+
+`sync workbook` reads the batch's sheet in `NU Lab samples lists.xlsx` (looked
+up in `data/lab/`, then the workspace root) and fills `cp_value` and
+`sample_composition` for the samples already in the metadata:
+
+```bash
+python main.py sync workbook CHY-1090 --dry-run   # show the changes
+python main.py sync workbook CHY-1090             # write them
+```
+
+The sheet must be named after the batch. For each `Sample ID` block the
+composition is the cell below the sample ID in column A, and Cp is the value in
+column G between 0.05 and 1.5 J/g/K (the other G values are the molar mass and
+atoms per formula unit, in either order). Cp is checked against Dulong-Petit
+(3R x atoms / molar mass) and written with 9 decimals. Sample IDs from other
+batches on the sheet are skipped, and blocks with an empty sample-ID cell are
+reported by row rather than guessed. Close the workbook in Excel first: Excel
+locks it against reading.
+
+### Set a Field in Sample Order (Density, Labels, ...)
+
+`sync fill` writes one value per sample, in sample-ID order (A, B, C, ...):
+
+```bash
+python main.py sync fill CHY-1090 density 5.94 5.97 6.01 5.88 5.90 5.92
+python main.py sync fill CHY-1090 density 5.94 6.01 --samples A C
+python main.py sync fill CHY-1090 sample_name Ga0.8 Ag_alloy Se_alloy_0.025 --samples A B C
+```
+
+The number of values must match the number of samples. Both commands import
+your Markdown edits first, then write `samples.json` and re-export
+`lab_metadata.md`, changing only the fields they set. If a field already holds a
+different value, nothing is written and the command exits 1 so you can check;
+add `--overwrite` to replace it. A `sample_name` that is still the raw-scan
+placeholder (the sample letter) counts as empty.
+
+New-batch workflow:
+
+```bash
+python main.py sync metadata                       # after raw files are in data/raw/CHY-1090/
+python main.py sync workbook CHY-1090              # Cp + composition
+python main.py sync fill CHY-1090 density 5.94 5.97 6.01 5.88 5.90 5.92
+python main.py analyze CHY-1090
 ```
 
 ### Markdown Layout (v2)

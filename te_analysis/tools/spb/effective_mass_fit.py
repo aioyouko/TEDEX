@@ -24,6 +24,8 @@ ROOT = Path(__file__).resolve().parents[3]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
+from te_analysis.run_manifest import record_output  # noqa: E402
+
 
 DEFAULT_NH_COLUMN_CANDIDATES = (
     "nH",
@@ -803,6 +805,7 @@ def copy_figures_to_input_data_dir(
         target = data_dir / source.name
         if source.resolve() != target.resolve():
             shutil.copy2(source, target)
+            record_output(target)
         copied_paths.append(str(target))
     return copied_paths
 
@@ -864,9 +867,12 @@ def run_effective_mass_fit(
     plot_path = output_dir / "pisarenko_fit.png"
 
     points.to_csv(points_path, index=False)
+    record_output(points_path)
     curve.to_csv(curve_path, index=False)
+    record_output(curve_path)
     with open(summary_path, "w", encoding="utf-8") as handle:
         json.dump(summary, handle, indent=2)
+    record_output(summary_path)
     plot_paths = plot_pisarenko_fit(
         points,
         curve,
@@ -947,6 +953,7 @@ def run_effective_mass_fit_multi(
         group_dir.mkdir(parents=True, exist_ok=True)
         group_input_path = group_dir / "input.csv"
         group_df.to_csv(group_input_path, index=False)
+        record_output(group_input_path)
 
         result = run_effective_mass_fit(
             group_input_path,
@@ -1018,10 +1025,14 @@ def run_effective_mass_fit_multi(
     plot_path = output_dir / "pisarenko_fit.png"
 
     combined_points.to_csv(points_path, index=False)
+    record_output(points_path)
     combined_curve.to_csv(curve_path, index=False)
+    record_output(curve_path)
     pd.DataFrame(group_results).to_csv(summary_by_group_path, index=False)
+    record_output(summary_by_group_path)
     with open(summary_path, "w", encoding="utf-8") as handle:
         json.dump(summary, handle, indent=2)
+    record_output(summary_path)
 
     combined_plot_overrides = dict(plot_overrides or {})
     combined_plot_overrides.setdefault("legend_font_size", 7.5)

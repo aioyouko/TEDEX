@@ -17,6 +17,8 @@ WORKSPACE = Path(__file__).resolve().parents[1]
 if str(WORKSPACE) not in sys.path:
     sys.path.insert(0, str(WORKSPACE))
 
+from te_analysis.run_manifest import record_output  # noqa: E402
+
 try:
     from te_analysis.tools.spb.lattice_cal import (
         QUALITY_FACTOR_COLUMN,
@@ -529,6 +531,7 @@ def write_json(path: Path, payload: Any) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     with path.open("w", encoding="utf-8") as handle:
         json.dump(json_clean(payload), handle, indent=2, ensure_ascii=False)
+    record_output(path)
 
 
 def read_json(path: Path, default: Any) -> Any:
@@ -618,6 +621,7 @@ def write_feature_exports(
     csv_columns = [column for column in FEATURE_COLUMNS if column in csv_frame.columns]
     csv_columns.extend(column for column in csv_frame.columns if column not in csv_columns)
     csv_frame.to_csv(sample_features_csv, index=False, columns=csv_columns)
+    record_output(sample_features_csv)
 
     summary_columns = [
         "sample_name",
@@ -652,6 +656,7 @@ def write_feature_exports(
         "",
     ]
     sample_features_md.write_text("\n".join(md_lines), encoding="utf-8")
+    record_output(sample_features_md)
 
     txt_lines = [
         f"{reference_id} reference features",
@@ -666,6 +671,7 @@ def write_feature_exports(
             f"at {record.get('T_ZT_max(K)')} K; modifier={record.get('modifier_species') or 'pristine'}"
         )
     sample_features_txt.write_text("\n".join(txt_lines) + "\n", encoding="utf-8")
+    record_output(sample_features_txt)
 
     return {
         "features_json": relative_path(features_json),
@@ -709,6 +715,7 @@ def extract_reference_workbook(args: argparse.Namespace) -> dict[str, Any]:
         metadata = build_sample_metadata(sample_name, reference_id, matrix, csv_path, workbook)
         processed_df = add_derived_columns(raw_df, calculate_lattice=not args.no_lattice)
         processed_df.to_csv(csv_path, index=False)
+        record_output(csv_path)
 
         processed_files.append(relative_path(csv_path))
         sample_records.append(metadata)

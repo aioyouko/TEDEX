@@ -19,6 +19,8 @@ ROOT = Path(__file__).resolve().parents[3]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
+from te_analysis.run_manifest import record_output  # noqa: E402
+
 from te_analysis.tools.spb.effective_mass_fit import (  # noqa: E402
     DEFAULT_NH_COLUMN_CANDIDATES,
     DEFAULT_SEEBECK_COLUMN_CANDIDATES,
@@ -986,9 +988,12 @@ def run_performance_fit(
     curve_path = output_dir / "performance_curve.csv"
     summary_path = output_dir / "performance_summary.json"
     points.to_csv(points_path, index=False)
+    record_output(points_path)
     curve.to_csv(curve_path, index=False)
+    record_output(curve_path)
     with open(summary_path, "w", encoding="utf-8") as handle:
         json.dump(summary, handle, indent=2)
+    record_output(summary_path)
 
     plot_paths: dict[str, list[str]] = {}
     data_dir_plot_paths: dict[str, list[str]] = {}
@@ -1129,6 +1134,7 @@ def run_performance_fit_multi(
         group_dir.mkdir(parents=True, exist_ok=True)
         group_input_path = group_dir / "input.csv"
         group_df.to_csv(group_input_path, index=False)
+        record_output(group_input_path)
 
         result = run_performance_fit(
             group_input_path,
@@ -1201,10 +1207,14 @@ def run_performance_fit_multi(
     summary_path = output_dir / "performance_summary.json"
     summary_by_group_path = output_dir / "performance_summary_by_group.csv"
     combined_points.to_csv(points_path, index=False)
+    record_output(points_path)
     combined_curve.to_csv(curve_path, index=False)
+    record_output(curve_path)
     pd.DataFrame(group_results).to_csv(summary_by_group_path, index=False)
+    record_output(summary_by_group_path)
     with open(summary_path, "w", encoding="utf-8") as handle:
         json.dump(summary, handle, indent=2)
+    record_output(summary_path)
 
     plot_paths: dict[str, list[str]] = {}
     data_dir_plot_paths: dict[str, list[str]] = {}

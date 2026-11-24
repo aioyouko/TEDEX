@@ -5,6 +5,7 @@ import re
 import subprocess
 import sys
 import argparse
+from contextlib import nullcontext
 from pathlib import Path
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
@@ -17,6 +18,7 @@ os.environ.setdefault("MPLCONFIGDIR", str(_MPL_CACHE_DIR))
 os.environ.setdefault("XDG_CACHE_HOME", str(_MPL_CACHE_DIR))
 
 from te_analysis_pipeline import te_analysis
+from te_analysis.lab_store import LabLockTimeout, lab_lock
 from te_analysis.tools.selectors import (
     normalize_batch_id,
     parse_batch_sample_selector,
@@ -31,9 +33,9 @@ from scripts.sync_lab_metadata import (
 )
 
 
-LAB_MARKDOWN_PATH = PROJECT_ROOT / "data" / "lab" / "lab_metadata.md"
+LAB_DIR = PROJECT_ROOT / "data" / "lab"
+LAB_MARKDOWN_PATH = LAB_DIR / "lab_metadata.md"
 LAB_MARKDOWN_SYNC_SCRIPT = PROJECT_ROOT / "scripts" / "sync_lab_markdown.py"
-DEFAULT_TARGET_BATCHES = ["CHY-1048"]
 
 
 def load_json(file_path, default):
@@ -143,6 +145,9 @@ def build_batch_sample_selection(
     Positional selectors can be whole batches or individual samples. Explicit
     --sample/--samples selectors are applied to the selected batches unless they
     already include a batch id.
+
+    There is no default batch: with nothing selected and analyze_all False,
+    this raises SystemExit rather than guessing which batch was meant.
     """
     batch_targets = []
     sample_targets_by_batch = {}
@@ -163,13 +168,17 @@ def build_batch_sample_selection(
             unqualified_samples.append(sample_selector)
 
     if unqualified_samples:
-        scoped_batches = batch_targets or ([] if analyze_all else list(DEFAULT_TARGET_BATCHES))
-        for batch_id in scoped_batches:
-            add_unique(batch_targets, batch_id)
+        if not batch_targets:
+            raise SystemExit(
+                f"--sample {' '.join(unqualified_samples)} does not name a batch. "
+                "Pass the batch too (e.g. CHY-1054 --sample B) or a full sample id "
+                "(e.g. --sample CHY-1054-B)."
+            )
+        for batch_id in batch_targets:
             sample_targets_by_batch.setdefault(batch_id, []).extend(unqualified_samples)
 
     if not batch_targets and not analyze_all:
-        batch_targets = list(DEFAULT_TARGET_BATCHES)
+        raise SystemExit("No batch selected. Pass batch IDs (e.g. CHY-1048) or --all.")
 
     return batch_targets, sample_targets_by_batch
 
@@ -215,9 +224,7 @@ def export_lab_metadata_to_markdown():
 def resolve_target_batches(target_batches, analyze_all=False):
     if analyze_all:
         return sorted(ALL_LAB_BATCHES)
-    if target_batches:
-        return [normalize_batch_id(batch_id) for batch_id in target_batches]
-    return list(DEFAULT_TARGET_BATCHES)
+    return [normalize_batch_id(batch_id) for batch_id in target_batches or []]
 
 
 def execute_selected_batches(
@@ -243,22 +250,28 @@ def execute_selected_batches(
         sync_markdown = False
         sync_raw = False
 
-    if sync_markdown:
-        try:
-            sync_lab_metadata_from_markdown()
-        except FileNotFoundError as error:
-            raise SystemExit(str(error)) from error
-        except subprocess.CalledProcessError as error:
-            raise SystemExit(
-                "Markdown lab metadata sync failed. Fix data/lab/lab_metadata.md "
-                "before running analysis."
-            ) from error
+    # data/lab/ is locked only while it is synced, not while batches are
+    # processed, so other commands can update it during a long analysis.
+    try:
+        with lab_lock(LAB_DIR) if (sync_markdown or sync_raw) else nullcontext():
+            if sync_markdown:
+                try:
+                    sync_lab_metadata_from_markdown()
+                except FileNotFoundError as error:
+                    raise SystemExit(str(error)) from error
+                except subprocess.CalledProcessError as error:
+                    raise SystemExit(
+                        "Markdown lab metadata sync failed. Fix data/lab/lab_metadata.md "
+                        "before running analysis."
+                    ) from error
 
-    if sync_raw:
-        print("Syncing selected raw folders -> data/lab/*.json...", flush=True)
-        sync_lab_metadata_from_raw(normalized_targets if not analyze_all else None)
+            if sync_raw:
+                print("Syncing selected raw folders -> data/lab/*.json...", flush=True)
+                sync_lab_metadata_from_raw(normalized_targets if not analyze_all else None)
 
-    ALL_LAB_BATCHES = load_lab_ledger()
+            ALL_LAB_BATCHES = load_lab_ledger()
+    except LabLockTimeout as error:
+        raise SystemExit(f"error: {error}") from error
 
     if not ALL_LAB_BATCHES:
         return
@@ -276,8 +289,12 @@ def execute_selected_batches(
     for batch_id in selected_batches:
         if batch_id not in ALL_LAB_BATCHES:
             print(f"Syncing {batch_id} from data/raw...")
-            sync_lab_metadata_from_raw([batch_id])
-            ALL_LAB_BATCHES = load_lab_ledger()
+            try:
+                with lab_lock(LAB_DIR):
+                    sync_lab_metadata_from_raw([batch_id])
+                    ALL_LAB_BATCHES = load_lab_ledger()
+            except LabLockTimeout as error:
+                raise SystemExit(f"error: {error}") from error
 
         if batch_id in ALL_LAB_BATCHES:
             print(f"\n{'='*50}")
@@ -298,10 +315,26 @@ def execute_selected_batches(
             logging.warning(message)
 
     if sync_raw:
-        print("Refreshing processed_exists flags after analysis...", flush=True)
-        sync_lab_metadata_from_raw(selected_batches)
-        if sync_markdown and refresh_markdown_after:
-            export_lab_metadata_to_markdown()
+        try:
+            with lab_lock(LAB_DIR):
+                refresh_markdown = sync_markdown and refresh_markdown_after
+                if refresh_markdown:
+                    # Fold in Markdown edits made while the batches ran, so the
+                    # export below does not overwrite them.
+                    try:
+                        sync_lab_metadata_from_markdown()
+                    except (FileNotFoundError, subprocess.CalledProcessError):
+                        refresh_markdown = False
+                        logging.warning(
+                            "data/lab/lab_metadata.md could not be read after analysis; "
+                            "left it untouched. Fix it and run `python main.py sync markdown`."
+                        )
+                print("Refreshing processed_exists flags after analysis...", flush=True)
+                sync_lab_metadata_from_raw(selected_batches)
+                if refresh_markdown:
+                    export_lab_metadata_to_markdown()
+        except LabLockTimeout as error:
+            raise SystemExit(f"error: {error}") from error
 
 
 def parse_args():
@@ -313,7 +346,7 @@ def parse_args():
         nargs="*",
         help=(
             "Batch ids to analyze. Examples: CHY-1048, 1048, CHY-1038 CHY-1040. "
-            f"If omitted, defaults to {' '.join(DEFAULT_TARGET_BATCHES)}."
+            "Required unless --all is given."
         ),
     )
     parser.add_argument(

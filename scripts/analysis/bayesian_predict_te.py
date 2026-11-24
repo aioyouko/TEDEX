@@ -29,6 +29,14 @@ os.environ.setdefault(
 )
 os.environ.setdefault("XDG_CACHE_HOME", str(_CACHE_ROOT / "xdg"))
 
+import sys
+
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
+if str(PROJECT_ROOT) not in sys.path:
+    sys.path.insert(0, str(PROJECT_ROOT))
+
+from te_analysis.run_manifest import record_output  # noqa: E402
+
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
@@ -778,6 +786,7 @@ def plot_models(models: list[LocalModelResult], target: str, output_paths: list[
     fig.tight_layout(rect=(0, 0, 1, 0.95))
     for output_path in output_paths:
         fig.savefig(output_path, dpi=220)
+        record_output(output_path)
     plt.close(fig)
 
 
@@ -821,6 +830,7 @@ def write_outputs(
         plot_paths.append(plot_path.with_suffix(".pdf"))
 
     all_candidates.to_csv(csv_path, index=False)
+    record_output(csv_path)
     plot_models(models, target, plot_paths, limit=min(top, 8))
 
     payload = {
@@ -856,6 +866,7 @@ def write_outputs(
         ],
     }
     json_path.write_text(json.dumps(payload, indent=2), encoding="utf-8")
+    record_output(json_path)
 
     md_path.write_text(
         render_markdown(
@@ -871,6 +882,7 @@ def write_outputs(
         ),
         encoding="utf-8",
     )
+    record_output(md_path)
 
     outputs = {"csv": csv_path, "json": json_path, "markdown": md_path, "plot": plot_path}
     if pdf:

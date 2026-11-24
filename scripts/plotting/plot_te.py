@@ -583,19 +583,17 @@ def parse_args():
     except ValueError as exc:
         parser.error(str(exc))
 
+    if not args.batches:
+        parser.error(
+            "no batch selected; pass a batch, sample, or CSV selector "
+            "(e.g. CHY-1048, CHY-1040-A, or data/processed/CHY-1040/Zn_dope_0.02.csv)"
+        )
+
     return args
 
 if __name__ == "__main__":
-    
-    # Select whole batches or individual samples:
-    # "CHY-1046" means all samples in CHY-1046.
-    # "CHY-1040-A" means only sample A from CHY-1040.
-    # "CHY-1046/Na_dope" or "CHY-1046:Na_dope" means one named sample.
-    my_targets = ["CHY-1048"]
-    inter_batch = False  # set True to compare all my_targets in one plot
-    
     args = parse_args()
-    target_batches = args.batches or my_targets
+    target_batches = args.batches
     selected_plot_mode = args.plot_mode or DEFAULT_PLOT_MODE
     selected_formats = normalize_output_formats(args.formats, pdf=args.pdf)
     selected_xlim = args.xlim
@@ -612,8 +610,7 @@ if __name__ == "__main__":
 
     selected_inter_batch = (
         args.inter_batch
-        or (inter_batch and not args.batches)
-        or (args.batches and len(target_batches) > 1)
+        or len(target_batches) > 1
         or selectors_need_combined_view(target_batches)
     )
     selected_output_dir = None
