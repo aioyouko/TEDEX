@@ -20,6 +20,7 @@ PROJECT_ROOT = Path(__file__).resolve().parents[1]
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
+from te_analysis.lab_store import LabLockTimeout, atomic_write_text, lab_lock  # noqa: E402
 from te_analysis.run_manifest import record_output  # noqa: E402
 
 
@@ -83,10 +84,7 @@ def read_json(path, default):
 
 
 def write_json(path, data):
-    path.parent.mkdir(parents=True, exist_ok=True)
-    with path.open("w", encoding="utf-8") as handle:
-        json.dump(data, handle, indent=4, ensure_ascii=False)
-        handle.write("\n")
+    atomic_write_text(path, json.dumps(data, indent=4, ensure_ascii=False) + "\n")
     record_output(path)
 
 
@@ -541,8 +539,7 @@ def export_markdown(args):
         print(markdown)
         return
 
-    args.markdown.parent.mkdir(parents=True, exist_ok=True)
-    args.markdown.write_text(markdown, encoding="utf-8")
+    atomic_write_text(args.markdown, markdown)
     record_output(args.markdown)
     print(f"Exported {len(batches)} batches and {len(samples)} samples to {args.markdown}")
 
@@ -603,11 +600,16 @@ def build_parser():
 def main():
     parser = build_parser()
     args = parser.parse_args()
+    action = export_markdown if args.command == "export" else import_markdown
 
-    if args.command == "export":
-        export_markdown(args)
-    else:
-        import_markdown(args)
+    if args.dry_run:
+        action(args)
+        return
+    try:
+        with lab_lock(args.samples_json.parent):
+            action(args)
+    except LabLockTimeout as error:
+        raise SystemExit(f"error: {error}") from error
 
 
 if __name__ == "__main__":

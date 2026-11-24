@@ -11,12 +11,21 @@ import json
 import logging
 import os
 
-from dotenv import load_dotenv
-from openai import OpenAI
-
 from te_analysis.agents.prompts import TE_ASSESSMENT_SYSTEM_PROMPT, TE_EXPERT_SYSTEM_PROMPT
 
-load_dotenv()
+# Optional at import time, so an environment without them can still load this
+# module and get a clear AgentError instead of an import crash.
+try:
+    from openai import OpenAI
+except ImportError:
+    OpenAI = None
+try:
+    from dotenv import load_dotenv
+except ImportError:
+    load_dotenv = None
+
+if load_dotenv is not None:
+    load_dotenv()
 
 API_KEY_ENV_VAR = "MOONSHOT_API_KEY"
 BASE_URL = "https://api.moonshot.cn/v1"
@@ -31,7 +40,13 @@ class AgentError(RuntimeError):
 def _complete(system_prompt: str, user_prompt: str, max_tokens: int) -> str:
     api_key = os.getenv(API_KEY_ENV_VAR)
     if not api_key:
-        raise AgentError(f"{API_KEY_ENV_VAR} is not set. Add it to .env or the environment.")
+        hint = "" if load_dotenv is not None else " (python-dotenv is not installed, so .env was not read)"
+        raise AgentError(f"{API_KEY_ENV_VAR} is not set. Add it to .env or the environment{hint}.")
+    if OpenAI is None:
+        raise AgentError(
+            "the openai package is not installed in this Python environment; "
+            "install it with `pip install openai python-dotenv`."
+        )
 
     client = OpenAI(api_key=api_key, base_url=BASE_URL)
     try:

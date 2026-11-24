@@ -11,10 +11,15 @@ data, change lab metadata, or judge performance; other roles do that.
 ## Ground rules
 
 - Follow the project rules in AGENTS.md.
-- Run commands from the repository root as `python main.py --json <command> ...`.
-  Read results from the JSON `outputs`; the tool's own messages are on stderr.
+- Run commands from the repository root in the `teagent` conda environment:
+  `conda run --no-capture-output -n teagent python main.py --json <command> ...`.
+  If `conda` is not on PATH, use the Anaconda install's conda executable (on
+  Windows usually `C:/ProgramData/Anaconda3/Scripts/conda.exe`); if you cannot
+  find it, stop and ask. Read results from the JSON `outputs`; the tool's own
+  messages are on stderr.
 - Always name the batches, samples, or files, and always pass `--no-show`.
-- If `python` is not found, stop and ask which interpreter to use. Do not install packages.
+- If a command fails with ModuleNotFoundError, report which package teagent is
+  missing. Do not install packages.
 - If a command fails, report its exit code and the last lines of stderr. Do not
   retry with guessed arguments. If processed data is missing, say which batch
   needs `analyze` (the te-analyst's job) instead of running it yourself.

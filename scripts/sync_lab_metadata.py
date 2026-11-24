@@ -18,6 +18,7 @@ PROJECT_ROOT = Path(__file__).resolve().parents[1]
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
+from te_analysis.lab_store import LabLockTimeout, atomic_write_text, lab_lock  # noqa: E402
 from te_analysis.run_manifest import record_output  # noqa: E402
 
 try:
@@ -72,16 +73,12 @@ def read_json(path, default):
 
 
 def write_json(path, data):
-    path.parent.mkdir(parents=True, exist_ok=True)
-    with path.open("w", encoding="utf-8") as handle:
-        json.dump(data, handle, indent=4, ensure_ascii=False)
-        handle.write("\n")
+    atomic_write_text(path, json.dumps(data, indent=4, ensure_ascii=False) + "\n")
     record_output(path)
 
 
 def write_markdown(path, batches, samples):
-    path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(render_markdown(batches, samples), encoding="utf-8")
+    atomic_write_text(path, render_markdown(batches, samples))
     record_output(path)
 
 
@@ -227,6 +224,14 @@ def main():
     if not raw_dir.exists():
         raise FileNotFoundError(f"Raw data folder does not exist: {raw_dir}")
 
+    try:
+        with lab_lock(samples_path.parent):
+            sync(args, raw_dir, batches_path, samples_path, markdown_path)
+    except LabLockTimeout as error:
+        raise SystemExit(f"error: {error}") from error
+
+
+def sync(args, raw_dir, batches_path, samples_path, markdown_path):
     if args.no_markdown_sync:
         existing_batches = read_json(batches_path, [])
         existing_samples = read_json(samples_path, [])

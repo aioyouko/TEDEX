@@ -8,7 +8,11 @@
 
 ## Running the tools
 
+- Use the `teagent` conda environment. In a terminal: `conda activate teagent`,
+  then `python main.py <command>`. From a non-interactive shell (agents):
+  `conda run --no-capture-output -n teagent python main.py <command>`.
 - Launch tools through `python main.py <command>`; `python main.py --help` lists them.
 - Always name the batches (or pass `--all`). `analyze`, `plot-te`, `assess`, and `agent` have no default batch and stop with an error when none is given.
 - Put `--json` before the command (`python main.py --json assess CHY-1048`) to get one JSON object on stdout with the exit code and every file the command wrote. Read results from those paths instead of parsing console output.
-- Don't run two `analyze` jobs at the same time: each one rewrites `data/lab/*.json` and `data/lab/lab_metadata.md`.
+- Commands may run in parallel: the ones that change `data/lab/` (analyze and the sync commands) wait their turn through a lock. Don't analyze the same batch twice at once. The lock covers one computer only, so don't run commands on two computers against the synced folder at the same time.
+- Change lab metadata with `python main.py sync workbook BATCH` (Cp and composition from `NU Lab samples lists.xlsx`) and `python main.py sync fill BATCH FIELD VALUE...` (e.g. densities in sample order), or by editing `lab_metadata.md`. Never edit `data/lab/*.json` by hand.

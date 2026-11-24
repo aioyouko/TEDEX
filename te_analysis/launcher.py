@@ -135,6 +135,20 @@ SYNC_COMMANDS = (
         examples=("python main.py sync markdown export",),
     ),
     Command(
+        name="workbook",
+        target=PROJECT_ROOT / "scripts" / "sync_lab_workbook.py",
+        description="Fill a batch's Cp values and compositions from the lab samples workbook.",
+        aliases=("samples-workbook", "cp"),
+        examples=("python main.py sync workbook CHY-1090 --dry-run",),
+    ),
+    Command(
+        name="fill",
+        target=PROJECT_ROOT / "scripts" / "fill_lab_field.py",
+        description="Set one metadata field (e.g. density) for a batch's samples in order.",
+        aliases=("set",),
+        examples=("python main.py sync fill CHY-1090 density 5.94 5.97 6.01",),
+    ),
+    Command(
         name="notion-payload",
         target=PROJECT_ROOT / "scripts" / "build_notion_sync_payload.py",
         description="Build payloads for Notion/lab metadata synchronization.",
@@ -194,6 +208,9 @@ def child_env() -> dict[str, str]:
     # a test, `| tee`), Windows would otherwise encode it with the legacy code
     # page and crash with UnicodeEncodeError.
     env.setdefault("PYTHONIOENCODING", "utf-8")
+    # Keep stdout and stderr in the order they were printed when both are
+    # captured (agents, `conda run`), instead of stdout arriving last.
+    env.setdefault("PYTHONUNBUFFERED", "1")
     return env
 
 

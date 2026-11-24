@@ -14,5 +14,5 @@ descriptions decide:
   that writes `data/lab/` and processed data.
 - `te-assessor`: assessment, Bayesian ranking, and the LLM analysis (`agent`).
 
-Plotting and assessment jobs can run in parallel. `analyze` jobs cannot, so
-give the analyst all batches in one request.
+The roles can work in parallel: commands that change `data/lab/` wait their
+turn automatically. Only avoid analyzing the same batch twice at once.

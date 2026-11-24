@@ -5,6 +5,7 @@ import re
 import subprocess
 import sys
 import argparse
+from contextlib import nullcontext
 from pathlib import Path
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
@@ -17,6 +18,7 @@ os.environ.setdefault("MPLCONFIGDIR", str(_MPL_CACHE_DIR))
 os.environ.setdefault("XDG_CACHE_HOME", str(_MPL_CACHE_DIR))
 
 from te_analysis_pipeline import te_analysis
+from te_analysis.lab_store import LabLockTimeout, lab_lock
 from te_analysis.tools.selectors import (
     normalize_batch_id,
     parse_batch_sample_selector,
@@ -31,7 +33,8 @@ from scripts.sync_lab_metadata import (
 )
 
 
-LAB_MARKDOWN_PATH = PROJECT_ROOT / "data" / "lab" / "lab_metadata.md"
+LAB_DIR = PROJECT_ROOT / "data" / "lab"
+LAB_MARKDOWN_PATH = LAB_DIR / "lab_metadata.md"
 LAB_MARKDOWN_SYNC_SCRIPT = PROJECT_ROOT / "scripts" / "sync_lab_markdown.py"
 
 
@@ -247,22 +250,28 @@ def execute_selected_batches(
         sync_markdown = False
         sync_raw = False
 
-    if sync_markdown:
-        try:
-            sync_lab_metadata_from_markdown()
-        except FileNotFoundError as error:
-            raise SystemExit(str(error)) from error
-        except subprocess.CalledProcessError as error:
-            raise SystemExit(
-                "Markdown lab metadata sync failed. Fix data/lab/lab_metadata.md "
-                "before running analysis."
-            ) from error
+    # data/lab/ is locked only while it is synced, not while batches are
+    # processed, so other commands can update it during a long analysis.
+    try:
+        with lab_lock(LAB_DIR) if (sync_markdown or sync_raw) else nullcontext():
+            if sync_markdown:
+                try:
+                    sync_lab_metadata_from_markdown()
+                except FileNotFoundError as error:
+                    raise SystemExit(str(error)) from error
+                except subprocess.CalledProcessError as error:
+                    raise SystemExit(
+                        "Markdown lab metadata sync failed. Fix data/lab/lab_metadata.md "
+                        "before running analysis."
+                    ) from error
 
-    if sync_raw:
-        print("Syncing selected raw folders -> data/lab/*.json...", flush=True)
-        sync_lab_metadata_from_raw(normalized_targets if not analyze_all else None)
+            if sync_raw:
+                print("Syncing selected raw folders -> data/lab/*.json...", flush=True)
+                sync_lab_metadata_from_raw(normalized_targets if not analyze_all else None)
 
-    ALL_LAB_BATCHES = load_lab_ledger()
+            ALL_LAB_BATCHES = load_lab_ledger()
+    except LabLockTimeout as error:
+        raise SystemExit(f"error: {error}") from error
 
     if not ALL_LAB_BATCHES:
         return
@@ -280,8 +289,12 @@ def execute_selected_batches(
     for batch_id in selected_batches:
         if batch_id not in ALL_LAB_BATCHES:
             print(f"Syncing {batch_id} from data/raw...")
-            sync_lab_metadata_from_raw([batch_id])
-            ALL_LAB_BATCHES = load_lab_ledger()
+            try:
+                with lab_lock(LAB_DIR):
+                    sync_lab_metadata_from_raw([batch_id])
+                    ALL_LAB_BATCHES = load_lab_ledger()
+            except LabLockTimeout as error:
+                raise SystemExit(f"error: {error}") from error
 
         if batch_id in ALL_LAB_BATCHES:
             print(f"\n{'='*50}")
@@ -302,10 +315,26 @@ def execute_selected_batches(
             logging.warning(message)
 
     if sync_raw:
-        print("Refreshing processed_exists flags after analysis...", flush=True)
-        sync_lab_metadata_from_raw(selected_batches)
-        if sync_markdown and refresh_markdown_after:
-            export_lab_metadata_to_markdown()
+        try:
+            with lab_lock(LAB_DIR):
+                refresh_markdown = sync_markdown and refresh_markdown_after
+                if refresh_markdown:
+                    # Fold in Markdown edits made while the batches ran, so the
+                    # export below does not overwrite them.
+                    try:
+                        sync_lab_metadata_from_markdown()
+                    except (FileNotFoundError, subprocess.CalledProcessError):
+                        refresh_markdown = False
+                        logging.warning(
+                            "data/lab/lab_metadata.md could not be read after analysis; "
+                            "left it untouched. Fix it and run `python main.py sync markdown`."
+                        )
+                print("Refreshing processed_exists flags after analysis...", flush=True)
+                sync_lab_metadata_from_raw(selected_batches)
+                if refresh_markdown:
+                    export_lab_metadata_to_markdown()
+        except LabLockTimeout as error:
+            raise SystemExit(f"error: {error}") from error
 
 
 def parse_args():
