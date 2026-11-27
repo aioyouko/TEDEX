@@ -1,24 +1,23 @@
 # Project Commands
 
-Run commands from the workspace root, in the `teagent` conda environment:
+Run commands from the workspace root:
 
 ```bash
-cd ~/Documents/te-analysis-plotting
-conda activate teagent
+cd ~/Documents/tedex
 ```
-
-From a non-interactive shell (scripts, agents), use
-`conda run --no-capture-output -n teagent python main.py ...` instead.
 
 Most user-facing tools are launched through `main.py`:
 
 | Task | Command |
 | --- | --- |
+| Workspace initialization | `python main.py init [--check\|--status\|--yes ...]` |
 | TE raw-data analysis | `python main.py analyze ...` |
 | TE plotting | `python main.py plot-te ...` |
 | XRD plotting | `python main.py plot-xrd ...` |
-| Flexible plotting | `python main.py flexible ...` |
-| SPB fitting | `python main.py spb <mode> ...` where `<mode>` is `effective-mass`, `conductivity`, or `performance` |
+| Scientific plotting (`sciplot`) | `python main.py sciplot ...` |
+| SPB fitting | `python main.py spb <mode> ...` where `<mode>` is `effective-mass`, `conductivity`, or `performance` (use `band` for `skb` / `two-band`) |
+| Physics modeling | `python main.py model <name> ...` (`callaway`, `debye-calc`, `debye-einstein`, `skb`, `two-band`) |
+| Debye $\Theta_{\mathrm{D}}$ / $v_{\mathrm{s}}$ calculator | `python main.py debye-calc ...` |
 | XRD lattice fitting | `python main.py xrd-lattice ...` |
 | Lab metadata sync | `python main.py sync metadata ...` |
 | Lab Markdown sync | `python main.py sync markdown ...` |
@@ -28,93 +27,60 @@ Most user-facing tools are launched through `main.py`:
 Use `python main.py --help` or `python main.py <command> --help` to inspect
 the current options.
 
-`analyze`, `plot-te`, `assess`, and `agent` have no default batch: name the
-batches (or pass `--all` where supported), otherwise they stop with an error.
-
-## Machine-Readable Runs (`--json`)
-
-Put `--json` before the command to get one JSON object on stdout when it
-finishes. The tool's own messages move to stderr, so stdout stays parseable:
-
-```bash
-python main.py --json assess CHY-1048
-python main.py --json plot-te CHY-1048 --zt --no-show
-```
-
-```json
-{
-  "command": "assess",
-  "args": ["CHY-1048"],
-  "exit_code": 0,
-  "ok": true,
-  "outputs": [
-    {"path": "results/assessments/assessment_CHY-1048_20261123_160501.json", "kind": "json", "exists": true}
-  ]
-}
-```
-
-`outputs` lists every file the command wrote, in write order, with paths
-relative to the workspace root (absolute when outside it). `kind` is one of
-`figure`, `table`, `json`, `markdown`, `text`, or `file`. This includes shared
-metadata such as `data/lab/batches.json` when `analyze` rewrites it.
-
-Tools report a file by calling `te_analysis.run_manifest.record_output(path)`
-right after writing it. New tools should do the same.
-
-## Working With the Role Agents (Claude Code)
-
-In Claude Code, three subagents defined in `.claude/agents/` split the work:
-
-| Agent | Handles | Writes |
-| --- | --- | --- |
-| `te-plotter` | `plot-te`, `plot-xrd`, `flexible` | figures (and new recipes when asked) |
-| `te-analyst` | `analyze`, `spb`, `sync` | `data/lab/`, processed data, SPB outputs |
-| `te-assessor` | `assess`, `bayes`, `agent` | `results/` reports |
-
-Ask in plain language; Claude delegates by each agent's description, or name
-one directly:
-
-```text
-Plot zT and Seebeck for CHY-1040 and CHY-1048 in one comparison, and the XRD stack for CHY-1056.
-Use te-analyst to process CHY-1060 and CHY-1061.
-Have te-assessor compare CHY-1040 and CHY-1048 and suggest the next composition.
-```
-
-The agents can work in parallel. The assessor runs `agent` (which sends data
-to the Moonshot API) only when you ask for an LLM analysis.
-
-### Running Commands in Parallel
-
-Commands that change `data/lab/` (`analyze`, `sync metadata`, `sync markdown`,
-`sync workbook`, `sync fill`) hold a lock while they read, change, and write
-it, so parallel runs take turns instead of overwriting each other. A waiting
-command prints `Waiting for another command to finish updating ...` and gives
-up after 120 s (set `TE_LAB_LOCK_TIMEOUT` to change that). `analyze` holds the
-lock only while it syncs metadata, not while it processes data, so analyses of
-different batches overlap. Files are swapped in whole, so commands that only
-read `data/lab/` (`plot-te`, `assess`) never see a half-written file.
-
-Two limits: don't analyze the same batch twice at once, and the lock covers
-one computer only. Running commands on two computers against the
-OneDrive-synced folder at the same time can still produce conflict copies such
-as `samples-<computer name>.json`.
-
 ## How the Launcher Works
 
 The root `main.py` is intentionally a 10-line shim: the actual launcher lives
 in `te_analysis/launcher.py` so the installed package owns it. Running
 `python main.py <command>` dispatches to the matching entry script. If the
 package is installed with `pip install -e .`, the same launcher is also
-available as the `te` command (`te plot-te ...`, `te flexible ...`).
+available as the `te` command (`te plot-te ...`, `te sciplot ...`).
 
 Where the plotting implementation now lives (each split from a former
 single-file module, with the old module names kept as import shims):
 
 | Area | Package | Entry point |
 | --- | --- | --- |
-| TE property plots | `te_analysis/tools/te_plotting/` (properties, ledger, locate) | `scripts/plotting/plot_te.py` via `python main.py plot-te` |
-| Flexible recipe plots | `te_analysis/tools/flexible/` (util, normalize, style, render, output, cli) | `python main.py flexible` |
-| XRD plots | `te_analysis/tools/xrd/` (io, pdf_cards, render) | `scripts/plotting/plot_xrd.py` via `python main.py plot-xrd` |
+| TE property plots | `te_analysis/tools/te_plotting/` (properties, ledger, locate) | `te_analysis/tools/te_plotting/cli.py` via `python main.py plot-te` |
+| Scientific recipe & chart plots (`sciplot`) | `te_analysis/tools/sciplot/` (util, normalize, style, render, output, cli) | `python main.py sciplot` |
+| XRD plots | `te_analysis/tools/xrd/` (io, pdf_cards, render) | `te_analysis/tools/xrd/cli.py` via `python main.py plot-xrd` |
+
+## Rename Exported Figures
+
+All plotting and fitting entry points support `--rename`, including `plot-te`, `plot-xrd`, `sciplot`, `spb`, `callaway`, `debye-einstein`, `skb`, `two-band`, `demo paper-te`, automatic `analyze` plots, `bayes`, FTIR plotting scripts, and palette preview scripts. It overrides only the exported figure filename stem while keeping the target output directory, raw data, CSV/JSON tables, and report filenames unchanged.
+
+```bash
+# Single XRD figure saved as [1].svg; compatible with --pick
+python main.py plot-xrd data/raw/TE-1038/XRD --pick 124 --rename "[1]" --no-show
+
+# Two XRD figures: raw counts [1].svg, normalized [2].svg
+python main.py plot-xrd data/raw/TE-1038/XRD --both --rename "[1].svg" --no-show
+
+# Multiple TE figures numbered sequentially in rendering order: [5].svg, [6].svg, [7].svg
+python main.py plot-te TE-1048 --seebeck --conductivity --zt --rename "[5]" --no-show
+
+# Custom plain names are also supported; multiple figures become XRD.svg, XRD_2.svg, ...
+python main.py plot-xrd TE-1038 --rename "XRD" --no-show
+
+# Multiple formats of the same figure share the same index: [1].svg and [1].pdf
+python main.py sciplot --recipe configs/plot_recipes/thermoelectric/temperature_vs_zt.json --rename "[1]" --formats svg pdf --no-show
+
+python main.py spb effective-mass data/demo/spb_fitting/Ag2Se/Ag2Se_series.csv --rename "[1]" --no-show
+```
+
+Quote bracketed names such as `"[1]"` so the shell does not treat them as glob patterns. `--rename "[1]"` and `--rename "[1].svg"` specify the same stem: any optional image extension is stripped, and exported formats remain controlled by `--formats` or `--pdf`. Omitting `--rename` preserves default naming.
+
+Numbering increments in actual rendering order across samples, properties, and recipes within one command; multi-format exports and sidecar copies of the same figure share the same index. Pass a filename stem only (no directory separators). `--comparison-id` and `--stem` retain their grouping, folder, and table naming roles.
+
+## Plot Color Sets
+
+`plot-te`, `plot-xrd`, `sciplot`, `spb`, and the physics fitting commands support `--color-set`. Automatic coloring defaults to `npg`; available presets are `science`, `classic`, `blue-orange`, `blue`, `teal`, `purple`, `orange`, `red`, `gray`, and `legacy`. The six monochromatic ramps generate dark-to-light gradients scaled to the series count. Explicit per-series `--color` flags in XRD or `sciplot` take precedence over `--color-set`.
+
+See [COLOR_SETS.md](COLOR_SETS.md) for swatches, cross-batch examples, and recipe syntax.
+
+```bash
+python main.py plot-te TE-1048 --zt --legend --color-set blue --no-show
+python main.py plot-xrd TE-1056-B --color-set purple --no-show
+```
 
 ## Quick Plotting Recipes
 
@@ -122,15 +88,15 @@ The three most common plotting tasks:
 
 ```bash
 # 1. Plot processed TE properties for a batch (or a direct CSV path)
-python main.py plot-te CHY-1048 --zt --no-show
+python main.py plot-te TE-1048 --zt --no-show
 python main.py plot-te path/to/sample.csv --seebeck --conductivity --zt --no-show
 
 # 2. Plot XRD patterns (batch, sample, or a direct .xy file)
-python main.py plot-xrd CHY-1056-B --no-show
+python main.py plot-xrd TE-1056-B --no-show
 python main.py plot-xrd path/to/pattern.xy --no-pdf-card --no-show --output-dir out/
 
 # 3. Render a flexible plot recipe
-python main.py flexible --recipe configs/plot_recipes/thermoeletric/temperature_vs_zt.json --no-show
+python main.py sciplot --recipe configs/plot_recipes/thermoelectric/temperature_vs_zt.json --no-show
 ```
 
 ## Running the Tests
@@ -148,7 +114,7 @@ compare against them. SPB tests require scipy.
 
 ## Run TE Analysis
 
-The selected-batch raw-data workflow is implemented in `scripts/analysis/te_analysis_pipeline.py` and
+The selected-batch raw-data workflow is implemented in `te_analysis/pipeline/te_analysis_pipeline.py` and
 called by `python main.py analyze`. This workflow processes raw ZEM/LFA data, calculates
 transport properties, extracts feature JSON, and plots TE summaries. It does not
 run any agent/LLM analysis.
@@ -156,13 +122,13 @@ run any agent/LLM analysis.
 Analyze one selected batch:
 
 ```bash
-python main.py analyze CHY-1048
+python main.py analyze TE-1048
 ```
 
 Analyze multiple selected batches:
 
 ```bash
-python main.py analyze CHY-1038 CHY-1040
+python main.py analyze TE-1038 TE-1040
 ```
 
 Short numeric batch names are accepted:
@@ -180,58 +146,41 @@ python main.py analyze --all
 Preview which batches would run without modifying files:
 
 ```bash
-python main.py analyze CHY-1038 CHY-1040 --dry-run
+python main.py analyze TE-1038 TE-1040 --dry-run
 ```
 
 Skip Markdown import before analysis:
 
 ```bash
-python main.py analyze CHY-1038 --no-markdown-sync
+python main.py analyze TE-1038 --no-markdown-sync
 ```
 
 Skip raw-folder metadata scan before and after analysis:
 
 ```bash
-python main.py analyze CHY-1038 --no-raw-sync
+python main.py analyze TE-1038 --no-raw-sync
 ```
 
 Skip refreshing `data/lab/lab_metadata.md` after analysis:
 
 ```bash
-python main.py analyze CHY-1038 --no-markdown-refresh
+python main.py analyze TE-1038 --no-markdown-refresh
 ```
 
 Fail if a requested batch is missing:
 
 ```bash
-python main.py analyze CHY-9999 --strict
+python main.py analyze TE-9999 --strict
 ```
 
 Raw TE files should be arranged like:
 
 ```text
-data/raw/CHY-1048/CHY-1048-A_ZEM.txt
-data/raw/CHY-1048/CHY-1048-A_LFA.csv
+data/raw/TE-1048/TE-1048-A_ZEM.txt
+data/raw/TE-1048/TE-1048-A_LFA.csv
 ```
 
 Before analysis, fill `density` and `cp_value` for each sample in `data/lab/lab_metadata.md` or `data/lab/samples.json`.
-
-## Run Agent (LLM) Analysis
-
-`python main.py agent` sends a processed batch's `extracted_features.json` to
-the model and saves a Markdown mechanism analysis to
-`results/reports/<batch>_Analysis.md`. It needs `MOONSHOT_API_KEY` in `.env`.
-
-```bash
-python main.py agent CHY-1040 CHY-1038
-python main.py agent CHY-1040 --matrix Cu0.8Ag0.2In0.5Ga0.5Te2
-python main.py agent data/processed/CHY-1048-processed/extracted_features.json
-```
-
-The matrix composition comes from `--matrix`, else `data/lab/batches.json`
-(then `configs/lab_batches.json`), else the samples in the features file when
-they all agree. A target without one fails instead of being analyzed blind.
-The command exits non-zero if any target fails.
 
 ## Plot TE Data
 
@@ -256,38 +205,38 @@ line to `~/.zshrc`.
 Plot one whole batch:
 
 ```bash
-python main.py plot-te CHY-1040
+python main.py plot-te TE-1040
 ```
 
 Also copy generated TE figures beside the processed data:
 
 ```bash
-python main.py plot-te CHY-1040 --data-figures
-# copies to data/processed/CHY-1040-processed/figures/
+python main.py plot-te TE-1040 --data-figures
+# copies to data/processed/TE-1040-processed/figures/
 ```
 
 Plot multiple batches together:
 
 ```bash
-python main.py plot-te CHY-1038 CHY-1040 --plot-mode combined
+python main.py plot-te TE-1038 TE-1040 --plot-mode combined
 ```
 
 Plot one named sample/composition:
 
 ```bash
-python main.py plot-te CHY-1040-Zn_dope_0.02 --seebeck
+python main.py plot-te TE-1040-Zn_dope_0.02 --seebeck
 ```
 
 Plot one direct processed CSV. The shorter folder alias is accepted:
 
 ```bash
-python main.py plot-te data/processed/CHY-1040/Zn_dope_0.02.csv --plot-mode combined
+python main.py plot-te data/processed/TE-1040/Zn_dope_0.02.csv --plot-mode combined
 ```
 
 Plot every CSV in one processed directory:
 
 ```bash
-python main.py plot-te data/processed/CHY-1040 --plot-mode combined
+python main.py plot-te data/processed/TE-1040 --plot-mode combined
 ```
 
 For direct CSV or directory inputs, figures are saved back to the source folder
@@ -303,39 +252,46 @@ Custom legend labels can be placed in the same folder using `label`, `labels`,
 `legend`, or `legends`, with optional `.txt`, `.csv`, `.tsv`, or `.md`
 suffixes. Put one label per row; CSV/TSV files use the first column. Labels are
 applied in sorted `.csv` filename order, excluding the label file itself.
+This applies to batch IDs and individual sample selectors as well as direct
+CSV/folder paths. For example, `plot-te TE-1074 --seebeck --legend` reads
+`data/processed/TE-1074-processed/legend.txt` before using ledger sample names.
+Selecting only some samples keeps their positions in the full folder order.
+Custom labels are used as written, without an added batch prefix; missing
+labels fall back to ledger names (or filenames when no ledger name exists).
+`--legend` controls visibility; it does not choose the label source.
 
 Generate combined and single-property figures:
 
 ```bash
-python main.py plot-te CHY-1040 --plot-mode both
+python main.py plot-te TE-1040 --plot-mode both
 ```
 
 Generate only one selected single-property figure. The one-dash shortcut is also
 accepted for quick interactive use:
 
 ```bash
-python main.py plot-te CHY-1040 --seebeck
-python main.py plot-te CHY-1040 --s
-python main.py plot-te CHY-1040 -seebeck
+python main.py plot-te TE-1040 --seebeck
+python main.py plot-te TE-1040 --s
+python main.py plot-te TE-1040 -seebeck
 ```
 
 Save PNG output instead of the default SVG:
 
 ```bash
-python main.py plot-te CHY-1040 --plot-mode combined --formats png
+python main.py plot-te TE-1040 --plot-mode combined --formats png
 ```
 
 Save SVG plus vector PDF output:
 
 ```bash
-python main.py plot-te CHY-1040 --plot-mode combined --pdf
+python main.py plot-te TE-1040 --plot-mode combined --pdf
 ```
 
 Generate only selected single-property figures:
 
 ```bash
-python main.py plot-te CHY-1040 --properties seebeck zt power_factor
-python main.py plot-te CHY-1040 --properties s sigma pf kl zt
+python main.py plot-te TE-1040 --properties seebeck zt power_factor
+python main.py plot-te TE-1040 --properties s sigma pf kl zt
 ```
 
 Short aliases are accepted as standalone flags and inside `--properties`:
@@ -348,8 +304,8 @@ for weighted mobility, and `--b` for quality factor.
 Add a boxed inside legend to selected single-property plots:
 
 ```bash
-python main.py plot-te CHY-1040 --seebeck --legend
-python main.py plot-te CHY-1040 --properties seebeck zt --single-legend inside --legend-font-size 8
+python main.py plot-te TE-1040 --seebeck --legend
+python main.py plot-te TE-1040 --properties seebeck zt --single-legend inside --legend-font-size 8
 python main.py plot-te data/processed/inter_batch_compare --pf --legend --legend-columns 2
 ```
 
@@ -357,25 +313,58 @@ Use `--legend-columns N` when long inter-batch legends should wrap into
 multiple columns. The aliases `--legend-cols` and `--legend-ncol` are also
 accepted. This works for single-property legends and combined summary legends.
 
+Set the y-axis scale for single-property plots and every combined subplot.
+The default is `linear`; `--yscal` is an alias for `--yscale`:
+
+```bash
+python main.py plot-te TE-1040 --conductivity --yscal log --legend
+python main.py plot-te TE-1040 --seebeck --yscal symlog --legend
+python main.py plot-te TE-1040 --plot-mode combined --yscale symlog
+```
+
+`log` displays positive values only; use positive bounds with `--ylim`.
+`symlog` displays negative values, zero, and positive values, with a linear
+region near zero and logarithmic scaling farther away. The scale changes
+axis spacing, while property units and plotted data stay the same.
+
 Place the single-property legend outside the plot frame:
 
 ```bash
-python main.py plot-te CHY-1040 --plot-mode single --single-properties zt --single-legend outside
+python main.py plot-te TE-1040 --plot-mode single --single-properties zt --single-legend outside
 ```
 
 Change the per-panel plot frame ratio. `10:8` is the default; `1:1` makes each
 combined subplot square:
 
 ```bash
-python main.py plot-te CHY-1040 --plot-mode combined --subplot-aspect 1:1
-python main.py plot-te CHY-1040 --plot-mode single --single-properties zt --subplot-aspect 10:8
+python main.py plot-te TE-1040 --plot-mode combined --subplot-aspect 1:1
+python main.py plot-te TE-1040 --plot-mode single --single-properties zt --subplot-aspect 10:8
 ```
 
+`--aspect` is a shorter alias for `--subplot-aspect` in `plot-te`, `plot-xrd`,
+`sciplot`, and all three `spb` fitting commands.
+
+The shared default canvas height per panel is 5.30 inches, with width derived
+from the selected aspect ratio: `10:8` gives 6.625 × 5.30 inches, and `10:12`
+gives about 4.417 × 5.30 inches. These dimensions apply to previews and exports;
+explicit `figsize` settings still take precedence where supported. Default axis
+tick labels are 20 pt and axis titles (x/y labels) are 24 pt in both single-panel
+and combined plots. Default markers are 10.0 pt and general plot lines are
+2.3 pt. These sizes, axis frames, ticks, and layout spacing use the same 2x
+scale as the canvas to preserve the original compact plot proportions. Explicit marker/line sizes in recipes or command-line options take
+precedence. Legends default to 15 pt, with row spacing of 0.65 times the
+font size and a handle height of 1.0 times the font size. Legends above the
+plot reserve space based on their rendered height. `--legend-font-size`
+continues to override the default where supported. XRD keeps its separate
+`--line-width` setting and its 7.5 pt trace/PDF labels; an explicit XRD
+`--legend-font-size` also sizes those labels. The 600 DPI export setting
+remains unchanged. XRD's `--tick-labelsize` overrides its tick label size.
+
 Change marker size for both combined and single-property plots. The default is
-5.0 pt, so markers keep the same visual scale across plot modes:
+10.0 pt, so markers keep the same visual scale across plot modes:
 
 ```bash
-python main.py plot-te CHY-1040 --plot-mode both --marker-size 4.5
+python main.py plot-te TE-1040 --plot-mode both --marker-size 8
 ```
 
 Use the saved selected-sample plotting script so repeated plots keep the same
@@ -385,8 +374,8 @@ sample list and y-axis limits:
 ./scripts/plot_selected_te.sh
 ```
 
-The script currently plots `CHY-1036-A`, `CHY-1040-A`, `CHY-1040-B`, and
-`CHY-1054-A`, with `power_factor` fixed to `0 15` and `conductivity` fixed to
+The script currently plots `TE-1036-A`, `TE-1040-A`, `TE-1040-B`, and
+`TE-1054-A`, with `power_factor` fixed to `0 15` and `conductivity` fixed to
 `0 300`. Extra `python main.py plot-te` options can be appended:
 
 ```bash
@@ -396,33 +385,33 @@ The script currently plots `CHY-1036-A`, `CHY-1040-A`, `CHY-1040-B`, and
 Set the shared temperature range for all TE plots:
 
 ```bash
-python main.py plot-te CHY-1040 --seebeck --xlim 300 800
+python main.py plot-te TE-1040 --seebeck --xlim 300 800
 ```
 
 By default, `python main.py plot-te` shows a matplotlib preview window after saving, useful
 when tuning axis limits:
 
 ```bash
-python main.py plot-te CHY-1040 --seebeck --xlim 300 800 --ylim -300 300
+python main.py plot-te TE-1040 --seebeck --xlim 300 800 --ylim -300 300
 ```
 
 Disable preview windows for batch output:
 
 ```bash
-python main.py plot-te CHY-1040 --seebeck --no-show
+python main.py plot-te TE-1040 --seebeck --no-show
 ```
 
 Set y-axis limits for individual TE properties:
 
 ```bash
-python main.py plot-te CHY-1040 --seebeck --ylim -300 300
-python main.py plot-te CHY-1040 --plot-mode both --ylim zt 0 1.2 --ylim seebeck -300 300
+python main.py plot-te TE-1040 --seebeck --ylim -300 300
+python main.py plot-te TE-1040 --plot-mode both --ylim zt 0 1.2 --ylim seebeck -300 300
 ```
 
 Set a custom inter-batch output folder/name:
 
 ```bash
-python main.py plot-te CHY-1038 CHY-1040 --comparison-id CHY1038_vs_CHY1040
+python main.py plot-te TE-1038 TE-1040 --comparison-id TE1038_vs_TE1040
 ```
 
 Outputs go under:
@@ -434,20 +423,20 @@ outputs/figures/te/inter-batch/<comparison-id>/
 
 ## Flexible Plotting
 
-Use `python main.py flexible` for loosely structured CSV/TXT/XLSX files or reusable
+Use `python main.py sciplot` for loosely structured CSV/TXT/XLSX files or reusable
 JSON plotting recipes. Detailed examples live in
-`docs/FLEXIBLE_PLOTTING.md`.
+`docs/SCIPLOT.md`.
 
 Run one demo recipe:
 
 ```bash
-python main.py flexible --recipe configs/flexible_plot_demos/temperature_seebeck_line.json --no-show
+python main.py sciplot --recipe configs/sciplot_demos/temperature_seebeck_line.json --no-show
 ```
 
 Direct CLI example:
 
 ```bash
-python main.py flexible \
+python main.py sciplot \
   --data data/demo/flexible_plotting/literature_comparison_loose.csv \
   --kind scatter \
   --x "Ag fraction x" \
@@ -462,7 +451,7 @@ python main.py flexible \
 Grouped bar example:
 
 ```bash
-python main.py flexible \
+python main.py sciplot \
   --data data/demo/flexible_plotting/composition_grouped_bar_summary.csv \
   --kind grouped_bar \
   --x "Composition" \
@@ -481,27 +470,27 @@ python main.py flexible \
 There are two SPB plotting paths, and they use the recipe files in
 `configs/plot_recipes/spb/` differently:
 
-- `python main.py flexible ... --recipe <recipe.json>` runs a JSON recipe
+- `python main.py sciplot ... --recipe <recipe.json>` runs a JSON recipe
   directly on a user-provided table. This is best for already-cleaned SPB
   summary tables.
 - `python main.py spb <mode> ...` runs an SPB fitting workflow first, builds the
   model/point tables internally, then uses the SPB recipe only as the plot-style
-  template. These commands do not shell out to `python main.py flexible`; they
+  template. These commands do not shell out to `python main.py sciplot`; they
   call the same flexible plotter functions inside Python.
 
 Direct flexible SPB recipes:
 
 | Recipe | Direct command | Expected key columns | Plot |
 |---|---|---|---|
-| `configs/plot_recipes/spb/carrier_concentration_vs_seebeck.json` | `python main.py flexible data.csv --recipe ...` | `n_H_cm-3`, `Seebeck_uV_K` | `$n_{\mathrm{H}}$` vs `$S$` |
-| `configs/plot_recipes/spb/carrier_concentration_vs_mobility.json` | `python main.py flexible data.csv --recipe ...` | `n_H_cm-3`, `mu_H_cm2_V-1_s-1` | `$n_{\mathrm{H}}$` vs `$\mu_{\mathrm{H}}$` |
-| `configs/plot_recipes/spb/carrier_concentration_vs_power_factor.json` | `python main.py flexible data.csv --recipe ...` | `n_H_cm-3`, `PF_uW_cm-1_K-2` | `$n_{\mathrm{H}}$` vs `$PF$` |
-| `configs/plot_recipes/spb/carrier_concentration_vs_zt.json` | `python main.py flexible data.csv --recipe ...` | `n_H_cm-3`, `zT` | `$n_{\mathrm{H}}$` vs `$zT$` |
+| `configs/plot_recipes/spb/carrier_concentration_vs_seebeck.json` | `python main.py sciplot data.csv --recipe ...` | `n_H_cm-3`, `Seebeck_uV_K` | `$n_{\mathrm{H}}$` vs `$S$` |
+| `configs/plot_recipes/spb/carrier_concentration_vs_mobility.json` | `python main.py sciplot data.csv --recipe ...` | `n_H_cm-3`, `mu_H_cm2_V-1_s-1` | `$n_{\mathrm{H}}$` vs `$\mu_{\mathrm{H}}$` |
+| `configs/plot_recipes/spb/carrier_concentration_vs_power_factor.json` | `python main.py sciplot data.csv --recipe ...` | `n_H_cm-3`, `PF_uW_cm-1_K-2` | `$n_{\mathrm{H}}$` vs `$PF$` |
+| `configs/plot_recipes/spb/carrier_concentration_vs_zt.json` | `python main.py sciplot data.csv --recipe ...` | `n_H_cm-3`, `zT` | `$n_{\mathrm{H}}$` vs `$zT$` |
 
 Example:
 
 ```bash
-python main.py flexible data/demo/spb_fitting/Ag2Se/Ag2Se_series.csv \
+python main.py sciplot data/demo/spb_fitting/Ag2Se/Ag2Se_series.csv \
   --recipe configs/plot_recipes/spb/carrier_concentration_vs_power_factor.json \
   --x nH \
   --y PF \
@@ -514,7 +503,7 @@ also copy the figure and normalized CSV beside the input data. If your table
 uses different column names, override the recipe selectors:
 
 ```bash
-python main.py flexible data/demo/spb_fitting/Ag2Se/Ag2Se_series.csv \
+python main.py sciplot data/demo/spb_fitting/Ag2Se/Ag2Se_series.csv \
   --recipe configs/plot_recipes/spb/carrier_concentration_vs_seebeck.json \
   --x nH \
   --y S \
@@ -532,7 +521,7 @@ SPB fitting command recipe mapping:
 The fitting recipes are usually internal style templates. They expect columns
 created by the fitting scripts, such as `nH_cm-3`,
 `Seebeck_model_abs_uV_K`, `Power_Factor_model_uW_cm-1_K-2`,
-`Conductivity_S_cm-1`, and `ZT_model`. You can run them with `flexible`
+`Conductivity_S_cm-1`, and `ZT_model`. You can run them with `sciplot`
 manually only if your input table already has those model/data columns.
 Grouped SPB runs also write a `*_summary_by_group.csv`. All SPB fitting
 commands copy generated figures beside the input CSV in addition to writing
@@ -587,43 +576,98 @@ python main.py spb conductivity input.csv \
   --ylim zt 0 1.2
 ```
 
+## Advanced Electronic & Phonon Physics Fitting (`callaway`, `debye-calc`, `debye-einstein`, `skb`, `two-band`)
+
+All physics tools are available both as top-level commands (`python main.py callaway ...`) and under the `model` / `physics` group (`python main.py model <name> ...`). Every fitting model exports `*_points.csv`, `*_curve.csv`, `*_summary.json` (with SVD Jacobian condition numbers, 95% parameter confidence intervals, and correlation matrices), and publication-grade figures (`#79ADD8`/`#264B73` experimental markers + `#E64B35` crimson-red best-fit curves).
+
+```bash
+# 0. Debye temperature & average sound velocity calculator (ultrasonic vl/vt or low-T Cp)
+python main.py debye-calc --vl 2600 --vt 1450 --density-g-cm3 6.15 --molar-mass 433.0 --atoms-per-fu 4
+python main.py debye-calc --cp-csv data/demo/physics_fitting/cp_rattler.csv --atoms-per-fu 4 --atomic-volume-a3 29.0
+
+# 1. Debye-Callaway multi-source phonon scattering + stage-shaded spectral kappa_s + cumulative MFP
+#    Supported mechanisms: U (Umklapp), B/GB (boundary), PD (point defect), EP (e-ph/planar), D (dislocation), NP (nanoprecipitate), RES/R (resonant rattler)
+python main.py callaway data/demo/physics_fitting/paper_demo_kl_4_300K.csv \
+  --theta-d 146 --vs 1445 --mechanisms U B PD RES \
+  --spectral-xaxis meV --spectral-norm x --rattler-damping 0 --ref-temp 300 --no-show
+
+# Run directly on a processed TE CSV (automatically subtracts electronic kappa_e via SPB Lorenz number)
+python main.py callaway data/processed/TE-1048-processed/sample.csv --theta-d 210 --vs 2200 --no-show
+
+# 2. Debye-Einstein low-T heat capacity Cp(T) & boson-peak (Cp/T^3 vs T) multi-oscillator fit
+python main.py debye-einstein data/demo/physics_fitting/cp_rattler.csv \
+  --atoms-per-fu 4 --n-einstein 2 --volume-a3-per-fu 116.0 --no-show
+
+# 3. Non-parabolic Single Kane Band (SKB, alpha = k_B T / E_g) with parabolic SPB reference overlay
+python main.py skb data/demo/physics_fitting/skb_narrow_gap.csv \
+  -T 300 --eg 0.24 --nv 4 --rho 8150 --vl 3050 --kL 0.85 --no-show
+
+# 4a. Two-Band Mode A: Isothermal light + heavy band convergence vs nH (use --fix-m1 / --fix-m2 / --fix-delta-e / --fix-b to break collinearity)
+python main.py two-band data/demo/physics_fitting/two_band_convergence.csv \
+  --mode convergence -T 300 --band1-eg 0.28 --no-show
+
+# 4b. Two-Band Mode B: Variable-temperature bipolar excitation vs T (solves charge neutrality & extracts bipolar kappa_bi)
+python main.py two-band data/demo/physics_fitting/two_band_bipolar.csv \
+  --mode bipolar --no-show
+```
+
 ## Plot XRD Data
 
 Plot one XRD batch as a normalized stacked figure, without a PDF card by default:
 
 ```bash
-python main.py plot-xrd CHY-1038
+python main.py plot-xrd TE-1038
 ```
 
 Plot one XRD sample. Normalized output is the default, so `--mode normalized`
 or `--normalized` is optional:
 
 ```bash
-python main.py plot-xrd CHY-1038-A
+python main.py plot-xrd TE-1038-A
 ```
 
 Plot raw-count/normal-intensity XRD instead of normalized intensity:
 
 ```bash
-python main.py plot-xrd CHY-1038 --raw
+python main.py plot-xrd TE-1038 --raw
 ```
 
 Save both raw-count and normalized XRD versions:
 
 ```bash
-python main.py plot-xrd CHY-1038 --both
+python main.py plot-xrd TE-1038 --both
 ```
 
 Plot all XRD files in a direct folder:
 
 ```bash
-python main.py plot-xrd data/raw/CHY-1038/XRD
+python main.py plot-xrd data/raw/TE-1038/XRD
 ```
+
+Select XRD files by 1-based index (ordered by sorted filename):
+
+```bash
+# List discovered files, 1-based indices, and resolved legend labels without plotting
+python main.py plot-xrd data/raw/TE-1038/XRD --list-files
+
+# Plot only files 1, 2, and 4, or files 2, 3, and 4
+python main.py plot-xrd data/raw/TE-1038/XRD --pick 124
+python main.py plot-xrd data/raw/TE-1038/XRD --pick 234
+
+# Use space-separated --indices when selecting two-digit indices (e.g. 1, 2, and 10)
+python main.py plot-xrd data/raw/TE-1038/XRD --indices 1 2 10
+# Select only file 10
+python main.py plot-xrd data/raw/TE-1038/XRD --indices 10
+```
+
+Omitting index flags plots all discovered files. In `--pick`, each digit is a single-digit index (`1–9`); in `--indices`, each space-separated integer is a full index (the two flags are mutually exclusive). Traces are always rendered in canonical sorted order and duplicate indices are deduplicated. Indices refer to the full loaded file list prior to `--select` filtering; inspect `--list-files` to confirm numbering across multiple folders.
+
+Folder `legend` / `label` files remain aligned row-for-row with the full sorted `.xy` file list without manual editing: for example, `--pick 124` automatically picks rows 1, 2, and 4 for both standard legends and `--right-labels`. Index-filtered stacked figures append suffixes such as `_pick_1_2_4` unless `--comparison-id` is set explicitly. Compatible with `--both` and `--layout separate`.
 
 Plot selected samples from one XRD folder:
 
 ```bash
-python main.py plot-xrd data/raw/CHY-1038/XRD --select A C
+python main.py plot-xrd data/raw/TE-1038/XRD --select A C
 ```
 
 Use custom trace labels from a file in the same XRD folder. These labels are
@@ -633,7 +677,7 @@ used by both the legend and `--right-labels`. Supported filenames include
 column. Labels are applied in sorted `.xy` filename order.
 
 ```text
-# data/raw/CHY-1038/XRD/legend
+# data/raw/TE-1038/XRD/legend
 $\mathit{CuInTe_2}$
 $\mathit{CuInTe_2}$ + 2% Sb
 $\mathit{CuInTe_2}$ + 4% Sb
@@ -642,20 +686,20 @@ $\mathit{CuInTe_2}$ + 4% Sb
 Plot each selected XRD file as a separate figure:
 
 ```bash
-python main.py plot-xrd data/raw/CHY-1038/XRD --select A C --layout separate
+python main.py plot-xrd data/raw/TE-1038/XRD --select A C --layout separate
 ```
 
 Save figures without opening the matplotlib viewer:
 
 ```bash
-python main.py plot-xrd data/raw/CHY-1038/XRD --no-show
+python main.py plot-xrd data/raw/TE-1038/XRD --no-show
 ```
 
 Also copy generated XRD figures beside the source XRD data:
 
 ```bash
-python main.py plot-xrd data/raw/CHY-1038/XRD --data-figures --no-show
-# copies to data/raw/CHY-1038/XRD/figures/
+python main.py plot-xrd data/raw/TE-1038/XRD --data-figures --no-show
+# copies to data/raw/TE-1038/XRD/figures/
 ```
 
 Use `--data-figures-dir plots` if you prefer a folder named `plots`.
@@ -663,14 +707,14 @@ Use `--data-figures-dir plots` if you prefer a folder named `plots`.
 Use a clean PDF standard CSV by basename:
 
 ```bash
-python main.py plot-xrd CHY-1038 --pdf-card CuInTe2_PDF_97_023_8958
+python main.py plot-xrd TE-1038 --pdf-card CuInTe2_PDF_97_023_8958
 ```
 
 Plot two PDF cards by repeating `--pdf-card`. The first card is placed below
 all measured XRD traces and the second is placed above them:
 
 ```bash
-python main.py plot-xrd CHY-1038 \
+python main.py plot-xrd TE-1038 \
   --pdf-card CuInTe2_PDF_97_023_8958 \
   --pdf-card Sb2Te3_PDF_97_067_0037
 ```
@@ -685,7 +729,7 @@ Use `--pdf-height-fraction` only when an explicit height override is needed.
 The default card colors are red and blue; override them independently when needed:
 
 ```bash
-python main.py plot-xrd CHY-1038 \
+python main.py plot-xrd TE-1038 \
   --pdf-card CuInTe2_PDF_97_023_8958 \
   --pdf-card Sb2Te3_PDF_97_067_0037 \
   --pdf-labels \
@@ -704,47 +748,54 @@ the direct script path:
 
 ```bash
 eval "$(register-python-argcomplete scripts/plotting/plot_xrd.py)"
-scripts/plotting/plot_xrd.py data/raw/CHY-1038/XRD --select <TAB>
-scripts/plotting/plot_xrd.py CHY-1038 --pdf-card <TAB>
+scripts/plotting/plot_xrd.py data/raw/TE-1038/XRD --select <TAB>
+scripts/plotting/plot_xrd.py TE-1038 --pdf-card <TAB>
 ```
 
 Use a clean PDF standard CSV by path:
 
 ```bash
-python main.py plot-xrd CHY-1038 --pdf-card data/pdf_card/plot_standards/CuInTe2_PDF_97_023_8958.csv
+python main.py plot-xrd TE-1038 --pdf-card data/pdf_card/plot_standards/CuInTe2_PDF_97_023_8958.csv
 ```
 
 Use an extensionless path. The script will search `data/pdf_card/plot_standards` by basename:
 
 ```bash
-python main.py plot-xrd CHY-1038 --pdf-card data/pdf_card/CuInTe2_PDF_97_023_8958
+python main.py plot-xrd TE-1038 --pdf-card data/pdf_card/CuInTe2_PDF_97_023_8958
 ```
 
 Explicitly plot without a PDF card:
 
 ```bash
-python main.py plot-xrd CHY-1038 --no-pdf-card
+python main.py plot-xrd TE-1038 --no-pdf-card
 ```
 
 Change the 2Theta range:
 
 ```bash
-python main.py plot-xrd CHY-1038 --xlim 15 75
+python main.py plot-xrd TE-1038 --xlim 15 75
 ```
 
 Clip the stacked intensity range:
 
 ```bash
-python main.py plot-xrd CHY-1038 --ylim 0 auto
+python main.py plot-xrd TE-1038 --ylim 0 auto
 ```
 
 Use the shared TE plot frame ratio and override trace styling:
 
 ```bash
-python main.py plot-xrd CHY-1038 \
+python main.py plot-xrd TE-1038 \
   --subplot-aspect 10:8 \
   --color '#d62728' --color '#1f77b4' \
   --line-width 0.9
+```
+
+Use `--aspect 10:12 --fixed-aspect` for a taller XRD plot frame that keeps its
+ratio when the window is resized:
+
+```bash
+python main.py plot-xrd TE-1038 --aspect 10:12 --fixed-aspect
 ```
 
 By default, XRD figures omit the conventional legend and PDF-card names, showing
@@ -756,19 +807,49 @@ stems are used. Use `--legend` to restore the conventional legend or
 `--no-right-labels` to hide the trace annotations.
 
 ```bash
-python main.py plot-xrd CHY-1038 --legend --pdf-labels --no-right-labels
+python main.py plot-xrd TE-1038 --legend --pdf-labels --no-right-labels
 ```
 
 Save multiple output formats:
 
 ```bash
-python main.py plot-xrd CHY-1038 --formats svg png
+python main.py plot-xrd TE-1038 --formats svg png
 ```
 
 Save PNG plus vector PDF output:
 
 ```bash
-python main.py plot-xrd CHY-1038 --pdf
+python main.py plot-xrd TE-1038 --pdf
+```
+
+### Advanced XRD Layouts: Fitting, Refinement, Zoom & Variable-Temperature
+
+`python main.py plot-xrd` supports six specialized diffraction figure types via `--layout` / `--figure` or direct shortcut flags:
+
+```bash
+# 1. Full-range stacked XRD paired with a synchronized zoomed peak-shift subpanel (--zoom LOW HIGH)
+python main.py plot-xrd TE-1038 --zoom 26.6 28.4 --pdf-card CuInTe2_PDF_97_023_8958 --no-show
+
+# 2. In-situ variable-temperature XRD 2D contour/heatmap (--vt-map, default soft-br blue-to-red palette)
+python main.py plot-xrd data/raw/TE-1048/VT_XRD --vt-map \
+  --pdf-card CuInTe2_PDF_97_023_8958 --transition-temp 635 --no-show
+
+# 3. Variable-temperature waterfall XRD colored along a blue-to-red thermal gradient (--vt-stack)
+python main.py plot-xrd data/raw/TE-1048/VT_XRD --vt-stack \
+  --guide-2theta 27.55 45.40 --pdf-card CuInTe2_PDF_97_023_8958 --no-show
+
+# 4. Rietveld / Le Bail refinement profile + Bragg tick bars + difference residual + high-angle zoom inset (--rietveld)
+python main.py plot-xrd results/rietveld_profile.csv --rietveld \
+  --pdf-card CuInTe2_PDF_97_023_8958 --pdf-card ZnSe_PDF \
+  --formula "$\mathrm{CuIn_{0.8}Ga_{0.2}Te_2}$" \
+  --cell-text "$I\overline{4}2d$: $a=6.142$ Å, $c=12.298$ Å" \
+  --zoom 44.0 47.5 --no-show
+
+# 5. Multi-peak pseudo-Voigt deconvolution + residual subpanel (--peak-fit, exports fitted peak table)
+python main.py plot-xrd TE-1038-A --peak-fit --xlim 44.2 46.8 --no-show
+
+# 6. Williamson-Hall crystallite size D and microstrain epsilon linear regression (--williamson-hall / --wh)
+python main.py plot-xrd TE-1038-A --wh --pdf-card CuInTe2_PDF_97_023_8958 --instr-fwhm 0.05 --no-show
 ```
 
 ## Fit XRD Lattice Parameters
@@ -778,15 +859,15 @@ Fit lattice parameters for one measured XRD `.xy` file using a PDF-card text exp
 ```bash
 python main.py xrd-lattice \
   --pdf-card "data/pdf_card/CuInTe2 PDF#97-023-8958.txt" \
-  --xrd data/raw/CHY-1038/XRD/CHY-1038-A_XRD.xy \
-  --sample-name CHY-1038-A \
+  --xrd data/raw/TE-1038/XRD/TE-1038-A_XRD.xy \
+  --sample-name TE-1038-A \
   --output-dir results/xrd_lattice
 ```
 
 Try lattice fitting for every XRD `.xy` file in one raw batch folder:
 
 ```bash
-batch_id=CHY-1038
+batch_id=TE-1038
 for xrd in data/raw/${batch_id}/XRD/*.xy; do
   sample=$(basename "$xrd" .xy)
   sample=${sample%_XRD}
@@ -804,7 +885,7 @@ The fitting command reads numeric XRD `.xy` data, detects observed peaks, matche
 XRD files should be arranged like:
 
 ```text
-data/raw/CHY-1038/XRD/CHY-1038-A_XRD.xy
+data/raw/TE-1038/XRD/TE-1038-A_XRD.xy
 ```
 
 Clean PDF standards for plotting should go in:
@@ -888,55 +969,9 @@ python main.py sync metadata
 python main.py sync markdown export
 # edit data/lab/lab_metadata.md
 python main.py sync markdown
-python main.py analyze CHY-1048
-python main.py plot-te CHY-1048 --seebeck
-python main.py plot-xrd CHY-1038
-```
-
-### Fill Cp and Composition From the Lab Workbook
-
-`sync workbook` reads the batch's sheet in `NU Lab samples lists.xlsx` (looked
-up in `data/lab/`, then the workspace root) and fills `cp_value` and
-`sample_composition` for the samples already in the metadata:
-
-```bash
-python main.py sync workbook CHY-1090 --dry-run   # show the changes
-python main.py sync workbook CHY-1090             # write them
-```
-
-The sheet must be named after the batch. For each `Sample ID` block the
-composition is the cell below the sample ID in column A, and Cp is the value in
-column G between 0.05 and 1.5 J/g/K (the other G values are the molar mass and
-atoms per formula unit, in either order). Cp is checked against Dulong-Petit
-(3R x atoms / molar mass) and written with 9 decimals. Sample IDs from other
-batches on the sheet are skipped, and blocks with an empty sample-ID cell are
-reported by row rather than guessed. Close the workbook in Excel first: Excel
-locks it against reading.
-
-### Set a Field in Sample Order (Density, Labels, ...)
-
-`sync fill` writes one value per sample, in sample-ID order (A, B, C, ...):
-
-```bash
-python main.py sync fill CHY-1090 density 5.94 5.97 6.01 5.88 5.90 5.92
-python main.py sync fill CHY-1090 density 5.94 6.01 --samples A C
-python main.py sync fill CHY-1090 sample_name Ga0.8 Ag_alloy Se_alloy_0.025 --samples A B C
-```
-
-The number of values must match the number of samples. Both commands import
-your Markdown edits first, then write `samples.json` and re-export
-`lab_metadata.md`, changing only the fields they set. If a field already holds a
-different value, nothing is written and the command exits 1 so you can check;
-add `--overwrite` to replace it. A `sample_name` that is still the raw-scan
-placeholder (the sample letter) counts as empty.
-
-New-batch workflow:
-
-```bash
-python main.py sync metadata                       # after raw files are in data/raw/CHY-1090/
-python main.py sync workbook CHY-1090              # Cp + composition
-python main.py sync fill CHY-1090 density 5.94 5.97 6.01 5.88 5.90 5.92
-python main.py analyze CHY-1090
+python main.py analyze TE-1048
+python main.py plot-te TE-1048 --seebeck
+python main.py plot-xrd TE-1038
 ```
 
 ### Markdown Layout (v2)

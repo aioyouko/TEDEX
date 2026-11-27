@@ -70,6 +70,21 @@ def _require_scipy():
         skip("scipy not installed in this environment")
 
 
+def _strip_volatile_paths(obj):
+    """Normalize temp-directory path prefixes across OSes while keeping relative out/ paths."""
+    if isinstance(obj, dict):
+        return {k: _strip_volatile_paths(v) for k, v in obj.items()}
+    if isinstance(obj, list):
+        return [_strip_volatile_paths(x) for x in obj]
+    if isinstance(obj, str):
+        posix = obj.replace("\\", "/")
+        if "/out/" in posix:
+            return "out/" + posix.split("/out/", 1)[1]
+        if posix.startswith(("/var/folders/", "/private/var/", "/tmp/")) or ":/Users/" in posix or "/AppData/Local/Temp/" in posix:
+            return Path(posix).name
+    return obj
+
+
 def _run_case(name: str):
     _require_scipy()
     case = CASES[name]
@@ -81,7 +96,11 @@ def _run_case(name: str):
         result = run_cli(case["args"](tmp) + [str(out_dir)])
         assert result.returncode == 0, (result.stderr or result.stdout)[-2000:]
 
-        summaries = sorted(out_dir.glob(case["summary_glob"]))
+        # Sort by case-sensitive POSIX relative path so WindowsPath lowercase ordering matches POSIX baselines
+        summaries = sorted(
+            out_dir.glob(case["summary_glob"]),
+            key=lambda p: p.relative_to(out_dir).as_posix(),
+        )
         assert summaries, f"no summary JSON produced under {out_dir}"
         actual = {p.name: json.loads(p.read_text()) for p in summaries}
 
@@ -92,7 +111,7 @@ def _run_case(name: str):
             skip(f"baseline captured: {golden_path.name} — rerun to compare")
 
         expected = json.loads(golden_path.read_text())
-        assert_close(actual, expected, path=name)
+        assert_close(_strip_volatile_paths(actual), _strip_volatile_paths(expected), path=name)
 
 
 def test_spb_effective_mass_fit():

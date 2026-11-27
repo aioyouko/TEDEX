@@ -1,0 +1,30 @@
+{
+  "name": "boxplot_distribution",
+  "plot": {
+    "kind": "boxplot",
+    "show_points": true,
+    "show_mean": true,
+    "x": {
+      "column": "Sample",
+      "label": "Sample"
+    },
+    "series": [
+      {
+        "y": {
+          "column": "Hardness_GPa",
+          "label": "Hardness, $H_{\\mathrm{V}}$ (GPa)"
+        },
+        "property": "hardness"
+      }
+    ],
+    "xlabel": "Sample",
+    "ylabel": "Hardness, $H_{\\mathrm{V}}$ (GPa)"
+  },
+  "output": {
+    "dir": "outputs/figures/flexible",
+    "stem": "boxplot_distribution",
+    "formats": ["png", "pdf"],
+    "normalized_csv": true,
+    "copy_to_data_dir": true
+  }
+}

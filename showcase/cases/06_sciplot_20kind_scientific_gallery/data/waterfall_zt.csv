@@ -1,0 +1,9 @@
+Step,Value,Step_Type
+Pristine,0.42,start
+"+Ga solid
+solution",0.28,delta
+"+Cu vacancy
+tuning",0.36,delta
+"+ZnSe
+nanophase",0.39,delta
+Optimized,1.45,total

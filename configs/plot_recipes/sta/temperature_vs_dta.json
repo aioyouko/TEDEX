@@ -1,0 +1,53 @@
+{
+  "name": "sta_temperature_vs_dta",
+  "source_defaults": {
+    "encoding": "latin1",
+    "header_startswith": "##"
+  },
+  "plot": {
+    "kind": "line",
+    "x": {
+      "column": [
+        "##Temp./°C",
+        "Temp./°C",
+        "Temperature/°C",
+        "Temperature"
+      ],
+      "label": "$T$ (°C)"
+    },
+    "series": [
+      {
+        "y": {
+          "column": [
+            "DTA/(µV/mg)",
+            "DTA/(uV/mg)",
+            "DTA/(μV/mg)",
+            "DTA"
+          ],
+          "label": "DTA ($\\mu$V mg$^{-1}$)"
+        },
+        "property": "dta",
+        "marker": "None",
+        "line_width": 2.2
+      }
+    ],
+    "xlabel": "$T$ (°C)",
+    "x_major": 100,
+    "x_minor": 50,
+    "ylabel": "DTA ($\\mu$V mg$^{-1}$)",
+    "legend": "inside",
+    "legend_loc": "best",
+    "x_margin": 0.06,
+    "y_margin": 0.12
+  },
+  "output": {
+    "dir": "outputs/figures/flexible",
+    "stem": "sta_temperature_vs_dta",
+    "formats": [
+      "png",
+      "pdf"
+    ],
+    "normalized_csv": true,
+    "copy_to_data_dir": false
+  }
+}

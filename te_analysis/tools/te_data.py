@@ -5,7 +5,7 @@ import csv
 from scipy.interpolate import interp1d
 
 try:
-    from te_analysis.tools.spb.lattice_cal import add_lattice_thermal_conductivity
+    from te_analysis.tools.physics.lorenz import add_lattice_thermal_conductivity
     HAS_LATTICE_CALC = True
 except ImportError:
     HAS_LATTICE_CALC = False
@@ -122,13 +122,27 @@ def _has_lfa_mean_rows(file_path):
 
 def load_lfa(file_path):
     """
-    laod LFA data
+    Load LFA CSV or XLSX data; XLSX uses the first sheet, skipping row 1.
     """
     if not file_path or not os.path.exists(file_path):
         print(f"❌Cannot find LFA file: {file_path}")
         return None
 
     errors = []
+
+    if os.path.splitext(file_path)[1].lower() == '.xlsx':
+        try:
+            # Row 1 is ignored; columns A/B are temperature (C) and diffusivity.
+            df = pd.read_excel(
+                file_path, sheet_name=0, skiprows=1, header=None,
+                usecols=[0, 1], engine='openpyxl',
+            )
+            df = _finalize_lfa_dataframe(df)
+            print(f"✅Successfully extract LFA data: {os.path.basename(file_path)}")
+            return df
+        except Exception as e:
+            print(f"❌Failed to extract LFA data from: {file_path}. {e}")
+            return None
 
     if _has_lfa_mean_rows(file_path):
         try:

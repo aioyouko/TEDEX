@@ -1,0 +1,35 @@
+{
+  "name": "arrhenius_conductivity",
+  "plot": {
+    "kind": "arrhenius",
+    "fit_arrhenius": true,
+    "top_temperature_axis": true,
+    "x": {
+      "semantic": "temperature",
+      "label": "$1000 / T$ (K$^{-1}$)"
+    },
+    "group": {
+      "semantic": "sample"
+    },
+    "series": [
+      {
+        "y": {
+          "semantic": "conductivity",
+          "label": "$\\sigma$ (S cm$^{-1}$)"
+        },
+        "property": "conductivity"
+      }
+    ],
+    "xlabel": "$1000 / T$ (K$^{-1}$)",
+    "ylabel": "$\\sigma$ (S cm$^{-1}$)",
+    "legend": "inside",
+    "legend_loc": "upper right"
+  },
+  "output": {
+    "dir": "outputs/figures/flexible",
+    "stem": "arrhenius_conductivity",
+    "formats": ["png", "pdf"],
+    "normalized_csv": true,
+    "copy_to_data_dir": true
+  }
+}

@@ -1,0 +1,91 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1120 520" font-family="Arial, Helvetica, sans-serif">
+  <rect width="1120" height="520" rx="16" fill="#F8FAFC"/>
+  <text x="40" y="46" font-size="22" font-weight="bold" fill="#0F172A">TEDEX Architecture Evolution &amp; Plugin Roadmap (v1.0 → v2.0)</text>
+  <text x="40" y="72" font-size="13" fill="#475569">Mode-B Decoupling: Software/Plugin Engine Layer vs. Clean User Data Workspace</text>
+
+  <!-- Connector Line -->
+  <line x1="125" y1="138" x2="995" y2="138" stroke="#CBD5E1" stroke-width="4"/>
+  <line x1="125" y1="138" x2="775" y2="138" stroke="#264B73" stroke-width="4"/>
+
+  <!-- Stage 1 -->
+  <g transform="translate(35, 102)">
+    <rect width="185" height="150" rx="12" fill="#FFFFFF" stroke="#94A3B8" stroke-width="1.5"/>
+    <circle cx="92" cy="36" r="16" fill="#00A087"/>
+    <text x="92" y="41" font-size="14" font-weight="bold" fill="#FFFFFF" text-anchor="middle">✓</text>
+    <text x="92" y="72" font-size="11" font-weight="bold" fill="#64748B" text-anchor="middle">STAGE 1 · v1.0</text>
+    <text x="92" y="92" font-size="14" font-weight="bold" fill="#0F172A" text-anchor="middle">Ad-hoc Lab Scripts</text>
+    <text x="92" y="114" font-size="11" fill="#475569" text-anchor="middle">ZEM + LFA batch scripts</text>
+    <text x="92" y="132" font-size="11" fill="#475569" text-anchor="middle">Hardcoded prefixes &amp; paths</text>
+  </g>
+
+  <!-- Stage 2 -->
+  <g transform="translate(252, 102)">
+    <rect width="185" height="150" rx="12" fill="#FFFFFF" stroke="#94A3B8" stroke-width="1.5"/>
+    <circle cx="92" cy="36" r="16" fill="#00A087"/>
+    <text x="92" y="41" font-size="14" font-weight="bold" fill="#FFFFFF" text-anchor="middle">✓</text>
+    <text x="92" y="72" font-size="11" font-weight="bold" fill="#64748B" text-anchor="middle">STAGE 2 · v1.3–1.4</text>
+    <text x="92" y="92" font-size="14" font-weight="bold" fill="#0F172A" text-anchor="middle">Plot &amp; Physics Core</text>
+    <text x="92" y="114" font-size="11" fill="#475569" text-anchor="middle">20+ charts &amp; XRD suite</text>
+    <text x="92" y="132" font-size="11" fill="#475569" text-anchor="middle">Callaway / SPB / SKB / 2-Band</text>
+  </g>
+
+  <!-- Stage 3 -->
+  <g transform="translate(468, 102)">
+    <rect width="185" height="150" rx="12" fill="#FFFFFF" stroke="#94A3B8" stroke-width="1.5"/>
+    <circle cx="92" cy="36" r="16" fill="#00A087"/>
+    <text x="92" y="41" font-size="14" font-weight="bold" fill="#FFFFFF" text-anchor="middle">✓</text>
+    <text x="92" y="72" font-size="11" font-weight="bold" fill="#64748B" text-anchor="middle">STAGE 3 · v1.4.2</text>
+    <text x="92" y="92" font-size="14" font-weight="bold" fill="#0F172A" text-anchor="middle">Repo Agent Harness</text>
+    <text x="92" y="114" font-size="11" fill="#475569" text-anchor="middle">AGENTS.md &amp; 3 domain skills</text>
+    <text x="92" y="132" font-size="11" fill="#475569" text-anchor="middle">Exit-code 2 safety &amp; SVD</text>
+  </g>
+
+  <!-- Stage 4 (Current Highlight) -->
+  <g transform="translate(684, 96)">
+    <rect width="195" height="162" rx="12" fill="#FFF7F5" stroke="#E64B35" stroke-width="2.5"/>
+    <circle cx="97" cy="42" r="17" fill="#E64B35"/>
+    <text x="97" y="47" font-size="14" font-weight="bold" fill="#FFFFFF" text-anchor="middle">★</text>
+    <text x="97" y="78" font-size="11" font-weight="bold" fill="#E64B35" text-anchor="middle">STAGE 4 · v1.5 (COMPLETED)</text>
+    <text x="97" y="98" font-size="14" font-weight="bold" fill="#0F172A" text-anchor="middle">Mode-B Plugin &amp; Init</text>
+    <text x="97" y="120" font-size="11" fill="#334155" text-anchor="middle">configs/workspace.json + paths.py</text>
+    <text x="97" y="138" font-size="11" fill="#334155" text-anchor="middle">te init + plugin/tedex/ bundle</text>
+  </g>
+
+  <!-- Stage 5 -->
+  <g transform="translate(905, 102)">
+    <rect width="180" height="150" rx="12" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1.5" stroke-dasharray="6 4"/>
+    <circle cx="90" cy="36" r="16" fill="#E2E8F0"/>
+    <text x="90" y="41" font-size="13" font-weight="bold" fill="#475569" text-anchor="middle">5</text>
+    <text x="90" y="72" font-size="11" font-weight="bold" fill="#64748B" text-anchor="middle">STAGE 5 · v2.0 NEXT</text>
+    <text x="90" y="92" font-size="14" font-weight="bold" fill="#334155" text-anchor="middle">Ecosystem &amp; Store</text>
+    <text x="90" y="114" font-size="11" fill="#64748B" text-anchor="middle">Multi-vendor instrument schemas</text>
+    <text x="90" y="132" font-size="11" fill="#64748B" text-anchor="middle">PyPI + Marketplace release</text>
+  </g>
+
+  <!-- Bottom Architecture Box: Mode B Decoupling -->
+  <g transform="translate(35, 286)">
+    <rect width="495" height="198" rx="12" fill="#EFF6FF" stroke="#79ADD8" stroke-width="1.8"/>
+    <text x="24" y="32" font-size="15" font-weight="bold" fill="#1E3A8A">1. Software &amp; Plugin Layer (ENGINE_ROOT — Installed Once)</text>
+    <text x="24" y="58" font-size="12" font-family="Consolas, monospace" fill="#1E293B">• plugin/tedex/plugin.json + rules/AGENTS.md</text>
+    <text x="24" y="80" font-size="12" font-family="Consolas, monospace" fill="#1E293B">• skills/{te-onboarding, te-lab-workflow, te-physics-models, te-plotting-xrd}</text>
+    <text x="24" y="102" font-size="12" font-family="Consolas, monospace" fill="#1E293B">• Python CLI (`te` / `te-init`) + te_analysis/paths.py</text>
+    <text x="24" y="132" font-size="12" fill="#334155">Upgrades cleanly in software space without touching user files.</text>
+    <rect x="24" y="148" width="445" height="34" rx="6" fill="#DBEAFE"/>
+    <text x="36" y="170" font-size="12" font-weight="bold" fill="#1E40AF">Onboarding Check: `te init --check` → prompts locations &amp; data types</text>
+  </g>
+
+  <!-- Arrow between boxes -->
+  <path d="M542 385 L578 385" stroke="#E64B35" stroke-width="3.5" stroke-linecap="round"/>
+  <polygon points="578,378 592,385 578,392" fill="#E64B35"/>
+
+  <g transform="translate(600, 286)">
+    <rect width="485" height="198" rx="12" fill="#F0FDF4" stroke="#00A087" stroke-width="1.8"/>
+    <text x="24" y="32" font-size="15" font-weight="bold" fill="#065F46">2. Clean User Project Folder (WORKSPACE_ROOT — Zero .py / Skills)</text>
+    <text x="24" y="58" font-size="12" font-family="Consolas, monospace" fill="#1E293B">• configs/workspace.json  (Single Source of Truth + schemas/ + recipes/)</text>
+    <text x="24" y="80" font-size="12" font-family="Consolas, monospace" fill="#1E293B">• data/{raw, processed, metadata, references/literature, references/xrd_cards}</text>
+    <text x="24" y="102" font-size="12" font-family="Consolas, monospace" fill="#1E293B">• outputs/{figures, models, reports, cache}</text>
+    <rect x="24" y="122" width="437" height="58" rx="6" fill="#DCFCE7"/>
+    <text x="36" y="143" font-size="12" font-weight="bold" fill="#065F46">Built-in Subfolder Grouping Modes (`project.grouping_mode`):</text>
+    <text x="36" y="164" font-size="11.5" font-family="Consolas, monospace" fill="#166534">by_batch (&lt;batch&gt;) | by_system_batch (&lt;system&gt;/&lt;batch&gt;) | by_project</text>
+  </g>
+</svg>

@@ -1,0 +1,33 @@
+{
+  "name": "grain_size_histogram",
+  "plot": {
+    "kind": "histogram",
+    "bins": 15,
+    "fit_dist": "lognormal",
+    "density": true,
+    "x": {
+      "column": "Diameter_nm",
+      "label": "Precipitate Diameter (nm)"
+    },
+    "series": [
+      {
+        "y": {
+          "column": "Diameter_nm",
+          "label": "Precipitate Diameter (nm)"
+        },
+        "property": "diameter",
+        "group_value": "Measured",
+        "legend_label": "Measured"
+      }
+    ],
+    "xlabel": "Precipitate Diameter (nm)",
+    "ylabel": "Probability Density"
+  },
+  "output": {
+    "dir": "outputs/figures/flexible",
+    "stem": "grain_size_histogram",
+    "formats": ["png", "pdf"],
+    "normalized_csv": true,
+    "copy_to_data_dir": true
+  }
+}

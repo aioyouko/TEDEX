@@ -14,6 +14,7 @@ from pathlib import Path
 
 import pandas as pd
 
+from te_analysis.paths import get_workspace
 from te_analysis.tools.plot import TE_PLOT_SPECS
 from te_analysis.tools.selectors import (
     normalize_sample_selector as normalize_selector,
@@ -23,11 +24,28 @@ from te_analysis.tools.te_plotting.properties import standardize_te_dataframe_co
 from te_analysis.tools.te_plotting.ledger import ALL_LAB_BATCHES, load_flat_lab_ledger, load_flat_reference_ledger, load_json, load_lab_ledger
 
 
-TE_FIGURE_DIR = Path("data") / "processed" / "figures"
+TE_FIGURE_DIR = get_workspace().figures_dir
+_DEFAULT_TE_FIGURE_DIR = TE_FIGURE_DIR
 TE_LABEL_FILE_STEMS = ("label", "labels", "legend", "legends")
 TE_LABEL_FILE_SUFFIXES = ("", ".txt", ".csv", ".tsv", ".md")
+
+
+def _active_lab_batches():
+    try:
+        import te_analysis.tools.te_plotting as _pkg
+
+        pkg_batches = getattr(_pkg, "ALL_LAB_BATCHES", None)
+        if pkg_batches is not None and pkg_batches is not ALL_LAB_BATCHES:
+            return pkg_batches
+    except Exception:
+        pass
+    return ALL_LAB_BATCHES
+
+
 def get_batch_plot_dir(batch_id):
-    return str(Path(get_processed_dir(batch_id)) / "figures")
+    if Path(TE_FIGURE_DIR) != Path(_DEFAULT_TE_FIGURE_DIR):
+        return str(Path(TE_FIGURE_DIR) / batch_id)
+    return str(get_workspace().te_batch_figure_dir(batch_id))
 
 
 def get_single_plot_dir(batch_id):
@@ -42,7 +60,9 @@ def get_interbatch_comparison_id(target_batches):
 
 
 def get_interbatch_plot_dir(comparison_id):
-    return str(TE_FIGURE_DIR / "inter-batch" / comparison_id)
+    if Path(TE_FIGURE_DIR) != Path(_DEFAULT_TE_FIGURE_DIR):
+        return str(Path(TE_FIGURE_DIR) / "inter-batch" / comparison_id)
+    return str(get_workspace().te_comparison_figure_dir(comparison_id))
 
 
 def get_interbatch_single_plot_dir(comparison_id):
@@ -122,7 +142,7 @@ def load_te_label_overrides(csv_files):
 
 
 def get_processed_csv_paths(batch_id):
-    processed_dir = os.path.join("data", "processed", f"{batch_id}-processed")
+    processed_dir = get_processed_dir(batch_id)
 
     if not os.path.exists(processed_dir):
         print(f"⚠️ cannot find {processed_dir}, run_analysis.py before this step")
@@ -137,7 +157,7 @@ def get_processed_csv_paths(batch_id):
 
 
 def get_processed_dir(batch_id):
-    return os.path.join("data", "processed", f"{batch_id}-processed")
+    return str(get_workspace().processed_batch_dir(batch_id))
 
 
 
@@ -172,7 +192,7 @@ def selector_is_definite_path(selector):
 
 
 def selector_is_whole_batch(selector):
-    return normalize_selector(selector) in ALL_LAB_BATCHES
+    return normalize_selector(selector) in _active_lab_batches()
 
 
 def selectors_need_combined_view(selectors):
@@ -224,9 +244,9 @@ def get_processed_path_aliases(path_like):
     """
     Return possible filesystem paths for a direct processed CSV/dir selector.
 
-    This accepts both the project layout, e.g.
-    data/processed/CHY-1040-processed/Zn_dope_0.02.csv, and the shorter form
-    data/processed/CHY-1040/Zn_dope_0.02.csv.
+    This accepts both the legacy layout, e.g.
+    data/processed/TE-102-processed/Zn_dope_0.02.csv, and the shorter form
+    data/processed/TE-102/Zn_dope_0.02.csv.
     """
     raw_path = Path(path_like)
     candidates = [raw_path]
@@ -238,13 +258,20 @@ def get_processed_path_aliases(path_like):
     for idx, part in enumerate(parts):
         if part == "processed" and idx + 1 < len(parts):
             batch_part = parts[idx + 1]
-            if batch_part.startswith("CHY-") and not batch_part.endswith("-processed"):
+            if not batch_part.endswith("-processed"):
                 alias_parts = parts[:]
                 alias_parts[idx + 1] = f"{batch_part}-processed"
                 alias_path = Path(*alias_parts)
                 candidates.append(alias_path)
                 if alias_path.suffix == "":
                     candidates.append(alias_path.with_suffix(".csv"))
+            else:
+                clean_parts = parts[:]
+                clean_parts[idx + 1] = batch_part.removesuffix("-processed")
+                clean_path = Path(*clean_parts)
+                candidates.append(clean_path)
+                if clean_path.suffix == "":
+                    candidates.append(clean_path.with_suffix(".csv"))
 
     unique_candidates = []
     seen = set()
@@ -279,9 +306,25 @@ def read_te_dataframe(csv_path):
 
 
 def infer_batch_from_processed_path(csv_path):
-    for part in Path(csv_path).parts:
-        if part.startswith("CHY-"):
-            return part.replace("-processed", "")
+    ws = get_workspace()
+    path_obj = Path(csv_path)
+    prefix = ws.batch_prefix
+    if prefix:
+        for part in path_obj.parts:
+            if part.startswith(f"{prefix}-"):
+                return part.removesuffix("-processed")
+    active_batches = _active_lab_batches()
+    for part in path_obj.parts:
+        if part.endswith("-processed"):
+            return part.removesuffix("-processed")
+        if part in active_batches:
+            return part
+    try:
+        rel = path_obj.resolve().relative_to(ws.processed_dir.resolve())
+        if len(rel.parts) >= 2:
+            return rel.parts[-2].removesuffix("-processed")
+    except ValueError:
+        pass
     return ""
 
 
@@ -417,18 +460,18 @@ def resolve_single_property_keys(processed_data, property_keys=None):
 
 
 def get_selected_processed_data(selectors, include_batch=False):
-    processed_data = {}
+    """Prefer folder labels for every selector; use ledger names as fallback."""
+    selected_csvs = []
 
     for raw_selector in selectors:
         path_matches = resolve_processed_path_selector(raw_selector)
         if path_matches:
-            label_overrides = load_te_label_overrides(path_matches)
             for csv_path in path_matches:
-                plot_label = label_overrides.get(
-                    csv_path.resolve(),
+                selected_csvs.append((
+                    csv_path,
                     get_path_sample_label(csv_path, include_batch=include_batch),
-                )
-                add_processed_csv(processed_data, csv_path, plot_label)
+                    csv_path.stem,
+                ))
             continue
 
         if selector_is_definite_path(raw_selector):
@@ -447,10 +490,20 @@ def get_selected_processed_data(selectors, include_batch=False):
             if include_batch:
                 plot_label = f"{batch_id}/{plot_label}"
 
-            if plot_label in processed_data:
-                plot_label = f"{plot_label} ({sample_info.get('sample_id', sample_name)})"
+            selected_csvs.append((
+                Path(csv_path),
+                plot_label,
+                sample_info.get("sample_id", sample_name),
+            ))
 
-            add_processed_csv(processed_data, csv_path, plot_label)
+    # Resolve labels against all CSVs in each folder, even for sample subsets.
+    label_overrides = load_te_label_overrides([path for path, _, _ in selected_csvs])
+    processed_data = {}
+    for csv_path, fallback_label, sample_id in selected_csvs:
+        plot_label = label_overrides.get(csv_path.resolve(), fallback_label)
+        if plot_label in processed_data:
+            plot_label = f"{plot_label} ({sample_id})"
+        add_processed_csv(processed_data, csv_path, plot_label)
 
     return processed_data
 
@@ -540,5 +593,4 @@ def load_batch_processed_data(batch_id, include_batch=False):
 
 def load_interbatch_processed_data(target_batches):
     return get_selected_processed_data(target_batches, include_batch=True)
-
 

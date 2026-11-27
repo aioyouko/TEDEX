@@ -39,8 +39,7 @@ def run_cli(args: list[str], timeout: int = 600) -> subprocess.CompletedProcess:
         cwd=REPO_ROOT,
         env=env,
         capture_output=True,
-        encoding="utf-8",  # the launcher makes tools print UTF-8
-        errors="replace",
+        text=True,
         timeout=timeout,
     )
 

@@ -1,0 +1,82 @@
+{
+ "performance_summary.json": {
+  "config": {
+   "curve_points": 300,
+   "curve_xlim": null,
+   "deformation_potential_eV": null,
+   "density_kg_m3": null,
+   "eta_max": 80.0,
+   "eta_min": -60.0,
+   "figure_formats": [
+    "png"
+   ],
+   "kappa_lattice": "0.5",
+   "mobility_cm2_vs": null,
+   "mobility_model": "spb_u0",
+   "mobility_u0_cm2_vs": null,
+   "mstar_max": 20.0,
+   "mstar_min": 0.02,
+   "mstar_over_me": null,
+   "nh_column": null,
+   "nh_unit": "cm^-3",
+   "pf_column": null,
+   "pf_unit": "uW cm^-1 K^-2",
+   "properties": [
+    "pf",
+    "zt"
+   ],
+   "scattering_lambda": 0.0,
+   "seebeck_column": null,
+   "seebeck_unit": "uV/K",
+   "sound_velocity_m_s": null,
+   "temperature": 300.0,
+   "use_hall_factor": true,
+   "valley_degeneracy": 1.0,
+   "zt_column": null
+  },
+  "group_by": "curve_id",
+  "groups": [
+   {
+    "curve_id": "Ag2Se",
+    "curve_path": "/var/folders/v5/xn601fnn1k3by34l3ljt59hh0000gn/T/tmp3bw6bwm_/out/groups/Ag2Se/performance_curve.csv",
+    "kappa_lattice_W_m-1_K-1": 0.4,
+    "label": "Ag2Se",
+    "mobility_model": "spb_u0",
+    "mstar_mode": "fixed_mstar",
+    "mstar_over_me": 0.25,
+    "mu0_cm2_vs": 2000.0,
+    "mu_ref_cm2_vs": 2000.0,
+    "n_points": 8,
+    "points_path": "/var/folders/v5/xn601fnn1k3by34l3ljt59hh0000gn/T/tmp3bw6bwm_/out/groups/Ag2Se/performance_points.csv",
+    "properties": "pf,zt",
+    "summary_path": "/var/folders/v5/xn601fnn1k3by34l3ljt59hh0000gn/T/tmp3bw6bwm_/out/groups/Ag2Se/performance_summary.json",
+    "temperature_K": 300.0
+   },
+   {
+    "curve_id": "Ag2STe",
+    "curve_path": "/var/folders/v5/xn601fnn1k3by34l3ljt59hh0000gn/T/tmp3bw6bwm_/out/groups/Ag2STe/performance_curve.csv",
+    "kappa_lattice_W_m-1_K-1": 0.2,
+    "label": "Ag2STe",
+    "mobility_model": "spb_u0",
+    "mstar_mode": "fixed_mstar",
+    "mstar_over_me": 0.2,
+    "mu0_cm2_vs": 750.0,
+    "mu_ref_cm2_vs": 750.0,
+    "n_points": 5,
+    "points_path": "/var/folders/v5/xn601fnn1k3by34l3ljt59hh0000gn/T/tmp3bw6bwm_/out/groups/Ag2STe/performance_points.csv",
+    "properties": "pf,zt",
+    "summary_path": "/var/folders/v5/xn601fnn1k3by34l3ljt59hh0000gn/T/tmp3bw6bwm_/out/groups/Ag2STe/performance_summary.json",
+    "temperature_K": 300.0
+   }
+  ],
+  "input_csv": "/var/folders/v5/xn601fnn1k3by34l3ljt59hh0000gn/T/tmp3bw6bwm_/Ag2Se_series.csv",
+  "mode": "multi",
+  "n_groups": 2,
+  "params_csv": "/var/folders/v5/xn601fnn1k3by34l3ljt59hh0000gn/T/tmp3bw6bwm_/Ag2Se_params.csv",
+  "properties": [
+   "pf",
+   "zt"
+  ],
+  "temperature_column": null
+ }
+}

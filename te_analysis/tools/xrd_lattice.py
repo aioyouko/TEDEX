@@ -14,7 +14,6 @@ import json
 import math
 import os
 import re
-import sys
 from dataclasses import asdict, dataclass
 from pathlib import Path
 from typing import Any, Dict, Iterable, List, Optional, Sequence, Tuple
@@ -22,14 +21,10 @@ from typing import Any, Dict, Iterable, List, Optional, Sequence, Tuple
 import numpy as np
 from scipy.signal import find_peaks, peak_widths, savgol_filter
 
-ROOT = Path(__file__).resolve().parents[2]
-if str(ROOT) not in sys.path:
-    sys.path.insert(0, str(ROOT))
-
-from te_analysis.run_manifest import record_output  # noqa: E402
+from te_analysis.paths import get_workspace
 
 
-DEFAULT_WAVELENGTH_ANGSTROM = 1.5406
+DEFAULT_WAVELENGTH_ANGSTROM = get_workspace().xrd_wavelength_angstrom
 
 
 @dataclass
@@ -315,7 +310,6 @@ def write_standard_pdf_card(
     json_path = Path(output_json_path)
     json_path.parent.mkdir(parents=True, exist_ok=True)
     json_path.write_text(json.dumps(card, indent=2), encoding="utf-8")
-    record_output(json_path)
 
     if output_peaks_csv_path is not None:
         csv_path = Path(output_peaks_csv_path)
@@ -338,7 +332,6 @@ def write_standard_pdf_card(
             writer.writeheader()
             for peak in peaks:
                 writer.writerow({field: peak.get(field) for field in fieldnames})
-        record_output(csv_path)
 
 
 def load_xrd_xy(xrd_path: os.PathLike[str] | str) -> Tuple[np.ndarray, np.ndarray, Optional[float]]:
@@ -808,7 +801,6 @@ def run_lattice_fit(
         "observed_peaks_csv": str(observed_csv),
     }
     result_json.write_text(json.dumps(result, indent=2), encoding="utf-8")
-    record_output(result_json)
     return result
 
 
@@ -817,7 +809,6 @@ def _write_rows_csv(path: os.PathLike[str] | str, rows: Sequence[Dict[str, Any]]
     path.parent.mkdir(parents=True, exist_ok=True)
     if not rows:
         path.write_text("", encoding="utf-8")
-        record_output(path)
         return
     fieldnames: List[str] = []
     for row in rows:
@@ -828,7 +819,6 @@ def _write_rows_csv(path: os.PathLike[str] | str, rows: Sequence[Dict[str, Any]]
         writer = csv.DictWriter(handle, fieldnames=fieldnames)
         writer.writeheader()
         writer.writerows(rows)
-    record_output(path)
 
 
 def main(argv: Optional[Sequence[str]] = None) -> int:
@@ -837,7 +827,11 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
     )
     parser.add_argument("--pdf-card", required=True, help="Path to the PDF card text export.")
     parser.add_argument("--xrd", required=True, help="Path to measured XRD .xy data.")
-    parser.add_argument("--output-dir", default="results/xrd_lattice", help="Output directory.")
+    parser.add_argument(
+        "--output-dir",
+        default=str(get_workspace().model_output_dir("xrd_lattice")),
+        help="Output directory.",
+    )
     parser.add_argument("--sample-name", default=None, help="Optional sample name.")
     parser.add_argument("--match-tolerance-deg", type=float, default=0.8)
     parser.add_argument("--min-reference-intensity", type=float, default=2.0)

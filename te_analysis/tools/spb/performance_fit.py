@@ -19,7 +19,7 @@ ROOT = Path(__file__).resolve().parents[3]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-from te_analysis.run_manifest import record_output  # noqa: E402
+from te_analysis.tools.figure_naming import add_rename_argument, figure_output_naming  # noqa: E402
 
 from te_analysis.tools.spb.effective_mass_fit import (  # noqa: E402
     DEFAULT_NH_COLUMN_CANDIDATES,
@@ -138,7 +138,7 @@ class PerformanceFitConfig:
     valley_degeneracy: float = 1.0
     kappa_lattice: str | float | None = None
     properties: tuple[str, ...] | None = None
-    figure_formats: tuple[str, ...] = ("png", "pdf")
+    figure_formats: tuple[str, ...] = ("svg",)
 
 
 def normalize_unit(unit: str) -> str:
@@ -825,6 +825,7 @@ def build_property_normalized_table(
     point_group_column = "point_series_id" if "point_series_id" in points.columns else None
     point_groups = list(points.groupby(point_group_column, sort=False)) if point_group_column else [(None, points)]
     multi_group = len(curve_groups) > 1 or len(point_groups) > 1
+    color_count = max(len(curve_groups), len(point_groups))
 
     for curve_index, (_, curve_group) in enumerate(curve_groups):
         legend_label = curve_spec.get("legend_label", curve_spec.get("group_value", "SPB model"))
@@ -848,8 +849,8 @@ def build_property_normalized_table(
         )
         for key in SPB_FIT_STYLE_KEYS:
             curve_frame[key] = series_style(curve_spec, key)
-        if multi_group:
-            curve_frame["color"] = group_color(curve_index)
+        if multi_group or plot.get("color_set"):
+            curve_frame["color"] = group_color(curve_index, plot.get("color_set"), color_count)
         frames.append(curve_frame)
 
     if columns["experimental"] in points.columns:
@@ -875,8 +876,8 @@ def build_property_normalized_table(
             )
             for key in SPB_FIT_STYLE_KEYS:
                 point_frame[key] = series_style(point_spec, key)
-            if multi_group:
-                point_frame["color"] = group_color(point_index)
+            if multi_group or plot.get("color_set"):
+                point_frame["color"] = group_color(point_index, plot.get("color_set"), color_count)
                 point_frame["marker"] = group_marker(point_index)
             frames.append(point_frame)
 
@@ -907,8 +908,8 @@ def plot_property_fit(
     os.environ.setdefault("MPLCONFIGDIR", str(cache_dir))
     os.environ.setdefault("XDG_CACHE_HOME", str(cache_dir))
 
-    from te_analysis.tools.flexible_plot import plot_line_or_scatter
-    from te_analysis.tools.plot import save_figure
+    from te_analysis.tools.flexible import plot_line_or_scatter
+    from te_analysis.tools.plot import save_figure_outputs
 
     import matplotlib.pyplot as plt
 
@@ -917,13 +918,13 @@ def plot_property_fit(
     fig, _ = plot_line_or_scatter(normalized, metadata, recipe)
 
     output_stem = PROPERTY_COLUMNS[property_key]["output_stem"]
-    save_figure(fig, f"{output_stem}.png", save_dir=str(output_dir), formats=formats)
+    figure_paths = save_figure_outputs(fig, f"{output_stem}.png", save_dir=str(output_dir), formats=formats)
     keep_open_for_group_show = show and defer_show
     if show and not defer_show:
         plt.show()
     if not keep_open_for_group_show:
         plt.close(fig)
-    return [str(output_dir / f"{output_stem}.{file_format}") for file_format in formats]
+    return figure_paths
 
 
 def plot_overrides_for_property(plot_overrides: dict | None, property_key: str) -> dict | None:
@@ -988,12 +989,9 @@ def run_performance_fit(
     curve_path = output_dir / "performance_curve.csv"
     summary_path = output_dir / "performance_summary.json"
     points.to_csv(points_path, index=False)
-    record_output(points_path)
     curve.to_csv(curve_path, index=False)
-    record_output(curve_path)
     with open(summary_path, "w", encoding="utf-8") as handle:
         json.dump(summary, handle, indent=2)
-    record_output(summary_path)
 
     plot_paths: dict[str, list[str]] = {}
     data_dir_plot_paths: dict[str, list[str]] = {}
@@ -1134,7 +1132,6 @@ def run_performance_fit_multi(
         group_dir.mkdir(parents=True, exist_ok=True)
         group_input_path = group_dir / "input.csv"
         group_df.to_csv(group_input_path, index=False)
-        record_output(group_input_path)
 
         result = run_performance_fit(
             group_input_path,
@@ -1207,20 +1204,15 @@ def run_performance_fit_multi(
     summary_path = output_dir / "performance_summary.json"
     summary_by_group_path = output_dir / "performance_summary_by_group.csv"
     combined_points.to_csv(points_path, index=False)
-    record_output(points_path)
     combined_curve.to_csv(curve_path, index=False)
-    record_output(curve_path)
     pd.DataFrame(group_results).to_csv(summary_by_group_path, index=False)
-    record_output(summary_by_group_path)
     with open(summary_path, "w", encoding="utf-8") as handle:
         json.dump(summary, handle, indent=2)
-    record_output(summary_path)
 
     plot_paths: dict[str, list[str]] = {}
     data_dir_plot_paths: dict[str, list[str]] = {}
     combined_plot_overrides = dict(plot_overrides or {})
-    combined_plot_overrides.setdefault("legend_font_size", 7.5)
-    combined_plot_overrides.setdefault("legend", "outside")
+    combined_plot_overrides.setdefault("legend", "inside")
     for property_key in properties_seen:
         plot_paths[property_key] = plot_property_fit(
             combined_points,
@@ -1255,10 +1247,12 @@ def build_arg_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         description="Fit SPB power-factor and zT curves from nH, Seebeck, PF, and zT data.",
     )
+    from te_analysis.paths import get_workspace
+
     parser.add_argument("csv_path", help="Input CSV containing Hall nH, Seebeck, PF, and optionally zT columns.")
     parser.add_argument(
         "--output-dir",
-        default="results/spb_fitting/performance_fit",
+        default=str(get_workspace().model_output_dir("spb/performance_fit")),
         help="Directory for output CSV/JSON/PNG files.",
     )
     parser.add_argument("--temperature", "--T", type=float, default=300.0, help="Measurement temperature in K.")
@@ -1361,8 +1355,8 @@ def build_arg_parser() -> argparse.ArgumentParser:
     parser.add_argument(
         "--formats",
         nargs="+",
-        default=("png", "pdf"),
-        help="Figure formats to export. Default: png pdf.",
+        default=("svg",),
+        help="Figure formats to export. Default: svg.",
     )
     parser.add_argument(
         "--no-hall-factor",
@@ -1395,15 +1389,23 @@ def build_arg_parser() -> argparse.ArgumentParser:
     parser.add_argument("--legend", choices=("inside", "outside", "none"), help="Override legend placement.")
     parser.add_argument("--legend-loc", help='Matplotlib legend location, e.g. "best", "upper right", "lower left".')
     parser.add_argument("--legend-font-size", type=float, help="Override legend font size.")
-    parser.add_argument("--subplot-aspect", help='Override axes aspect ratio, e.g. "10:8" or "1:1".')
+    parser.add_argument("--subplot-aspect", "--aspect", help='Override axes aspect ratio, e.g. "10:8" or "1:1".')
     parser.add_argument("--figsize", nargs=2, type=float, metavar=("WIDTH", "HEIGHT"), help="Override figure size in inches.")
     parser.add_argument("--title", help="Override plot title text.")
     parser.add_argument("--show-title", action="store_true", help="Show the plot title.")
+    from te_analysis.tools.colors import add_color_set_argument
+    add_color_set_argument(parser, default=None)
+    add_rename_argument(parser)
     return parser
 
 
 def main(argv: list[str] | None = None) -> int:
     args = build_arg_parser().parse_args(argv)
+    with figure_output_naming(args.rename):
+        return _run_cli(args)
+
+
+def _run_cli(args: argparse.Namespace) -> int:
     mobility_model = args.mobility_model
     deformation_potential_args_given = any(
         value is not None

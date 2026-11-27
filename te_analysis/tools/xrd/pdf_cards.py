@@ -40,11 +40,12 @@ from te_analysis.tools.plot import (
     save_figure,
 )
 
+from te_analysis.paths import get_workspace
 from te_analysis.tools.xrd.io import _read_json, safe_filename
 
 
-DEFAULT_PDF_CARD_DIR = Path("data/pdf_card")
-DEFAULT_PDF_STANDARD_DIR = DEFAULT_PDF_CARD_DIR / "plot_standards"
+DEFAULT_PDF_CARD_DIR = get_workspace().xrd_cards_dir
+DEFAULT_PDF_STANDARD_DIR = get_workspace().xrd_standard_dir
 PDF_PEAK_PATTERN = re.compile(
     r"^\s*([0-9.]+)\s+([0-9.]+)\s+(\S+)\s+"
     r"\(\s*(-?\d+)\s+(-?\d+)\s+(-?\d+)\)"

@@ -1,0 +1,648 @@
+{
+  "python_cold_import_s": 4.947,
+  "cases": [
+    {
+      "case_id": "01_Mg3_2Bi2_semimetal_r_ac",
+      "label": "Mg3.2Bi2 (半金属逐点反演, r=-0.5 声学散射)",
+      "mode": "semimetal",
+      "n_rows": 11,
+      "timings_ms": {
+        "read_data_ms": 12.28,
+        "select_dispatch_ms": 0.0,
+        "compute_fit_ms": 34.1,
+        "plot_build_ms": 1371.9,
+        "output_save_ms": 2511.4,
+        "in_process_total_ms": 3929.69,
+        "estimated_cli_total_s": 8.88
+      },
+      "fit": {
+        "mode": "semimetal",
+        "closure": "hall-split",
+        "scattering_r": -0.5,
+        "m_e_dos_over_me": 0.53,
+        "m_h_dos_over_me": 0.276,
+        "n_dop_cm-3": 0.0,
+        "reference_T_K": 300.0,
+        "Eg_at_ref_T_eV": -0.10049404665481133,
+        "Eg_mean_eV": -0.09302760328830956,
+        "Se_at_ref_T_uV_K": -149.99278109875942,
+        "Sh_at_ref_T_uV_K": 89.0071358515721,
+        "mu_e_at_ref_T_cm2_Vs": 364.3835895852061,
+        "mu_h_at_ref_T_cm2_Vs": 84.50529930368093,
+        "mu_e_over_mu_h_at_ref_T": 4.311961410558948,
+        "weighted_mobility_ratio_A_at_ref_T": 11.474269519585333,
+        "RH_calc_over_exp_at_ref_T": 1.246982481452333,
+        "seebeck_rmse_uV_K": 0.0,
+        "diagnostics": {
+          "n_temperatures": 11,
+          "physical_partial_mobilities": true,
+          "identifiability_warnings": []
+        }
+      },
+      "figures": [
+        "outputs/models/mao2019_refit_benchmark/01_Mg3_2Bi2_semimetal_r_ac/Mg3_2Bi2_semimetal_two_band_semimetal.svg",
+        "outputs/models/mao2019_refit_benchmark/01_Mg3_2Bi2_semimetal_r_ac/Mg3_2Bi2_semimetal_two_band_semimetal.png"
+      ],
+      "summary_json": "outputs/models/mao2019_refit_benchmark/01_Mg3_2Bi2_semimetal_r_ac/Mg3_2Bi2_semimetal_two_band_semimetal_summary.json"
+    },
+    {
+      "case_id": "02_Mg3_2Bi2_semimetal_r0",
+      "label": "Mg3.2Bi2 (半金属逐点反演, r=0.0 混合散射)",
+      "mode": "semimetal",
+      "n_rows": 11,
+      "timings_ms": {
+        "read_data_ms": 12.53,
+        "select_dispatch_ms": 0.0,
+        "compute_fit_ms": 26.93,
+        "plot_build_ms": 322.78,
+        "output_save_ms": 2414.4,
+        "in_process_total_ms": 2776.65,
+        "estimated_cli_total_s": 7.72
+      },
+      "fit": {
+        "mode": "semimetal",
+        "closure": "hall-split",
+        "scattering_r": 0.0,
+        "m_e_dos_over_me": 0.53,
+        "m_h_dos_over_me": 0.276,
+        "n_dop_cm-3": 0.0,
+        "reference_T_K": 300.0,
+        "Eg_at_ref_T_eV": -0.10049404665481133,
+        "Eg_mean_eV": -0.09302760328830956,
+        "Se_at_ref_T_uV_K": -186.64143778831274,
+        "Sh_at_ref_T_uV_K": 118.78839561516183,
+        "mu_e_at_ref_T_cm2_Vs": 328.90082522231546,
+        "mu_h_at_ref_T_cm2_Vs": 119.98806366657074,
+        "mu_e_over_mu_h_at_ref_T": 2.7411128671622094,
+        "weighted_mobility_ratio_A_at_ref_T": 7.294190468496198,
+        "RH_calc_over_exp_at_ref_T": 0.9307994326741008,
+        "seebeck_rmse_uV_K": 0.0,
+        "diagnostics": {
+          "n_temperatures": 11,
+          "physical_partial_mobilities": true,
+          "identifiability_warnings": []
+        }
+      },
+      "figures": [
+        "outputs/models/mao2019_refit_benchmark/02_Mg3_2Bi2_semimetal_r0/Mg3_2Bi2_semimetal_two_band_semimetal.svg",
+        "outputs/models/mao2019_refit_benchmark/02_Mg3_2Bi2_semimetal_r0/Mg3_2Bi2_semimetal_two_band_semimetal.png"
+      ],
+      "summary_json": "outputs/models/mao2019_refit_benchmark/02_Mg3_2Bi2_semimetal_r0/Mg3_2Bi2_semimetal_two_band_semimetal_summary.json"
+    },
+    {
+      "case_id": "03_Mg3_2Bi2_bipolar_global",
+      "label": "Mg3.2Bi2 (半金属负带隙全局拟合, Matthiessen + nH)",
+      "mode": "bipolar",
+      "n_rows": 11,
+      "timings_ms": {
+        "read_data_ms": 2.0,
+        "select_dispatch_ms": 0.0,
+        "compute_fit_ms": 3532.03,
+        "plot_build_ms": 328.59,
+        "output_save_ms": 1204.33,
+        "in_process_total_ms": 5066.94,
+        "estimated_cli_total_s": 10.01
+      },
+      "fit": {
+        "mode": "bipolar",
+        "majority_carrier": "n-type",
+        "allow_semimetal": true,
+        "scattering_r": -0.5,
+        "goldsmid_sharp_Eg_eV": 0.0756,
+        "fitted_Eg0_eV": -0.09176775007838256,
+        "Eg_300K_eV": -0.13976775007838255,
+        "n_dop_cm-3": 0.0,
+        "m_maj_dos_over_me": 0.53,
+        "m_min_dos_over_me": 0.276,
+        "mu0_maj_300K_cm2_Vs": 481.06295192166175,
+        "mu_imp_maj_cm2_Vs": 6069.516508829215,
+        "b_mu_min_over_maj": 0.2288,
+        "weighted_mobility_ratio_A0_e_over_h": 11.630386868957679,
+        "weighted_mobility_ratio_A_drift_300K_e_over_h": 14.511795768571671,
+        "seebeck_rmse_uV_K": 13.016324684707042,
+        "diagnostics": {
+          "n_observations": 33,
+          "n_free_parameters": 3,
+          "degrees_of_freedom": 30,
+          "condition_number": 189.22337728020486,
+          "parameter_uncertainties": {
+            "mu0_maj_300K_cm2_Vs": {
+              "value": 481.06295192166175,
+              "std_error": 23.626705143821713,
+              "ci95_halfwidth": 48.252169148377845,
+              "relative_se_pct": 4.911354127238878
+            },
+            "Eg0_eV": {
+              "value": -0.09176775007838256,
+              "std_error": 0.0017424523405811664,
+              "ci95_halfwidth": 0.0035585624215865386,
+              "relative_se_pct": 1.8987632791398583
+            },
+            "mu_imp_maj_cm2_Vs": {
+              "value": 6069.516508829215,
+              "std_error": 1694.8385535226957,
+              "ci95_halfwidth": 3461.322095736832,
+              "relative_se_pct": 27.923781919980694
+            }
+          },
+          "correlation_matrix": {
+            "mu0_maj_300K_cm2_Vs": {
+              "mu0_maj_300K_cm2_Vs": 1.0,
+              "Eg0_eV": 0.2081,
+              "mu_imp_maj_cm2_Vs": -0.7907
+            },
+            "Eg0_eV": {
+              "mu0_maj_300K_cm2_Vs": 0.2081,
+              "Eg0_eV": 1.0,
+              "mu_imp_maj_cm2_Vs": 0.1257
+            },
+            "mu_imp_maj_cm2_Vs": {
+              "mu0_maj_300K_cm2_Vs": -0.7907,
+              "Eg0_eV": 0.1257,
+              "mu_imp_maj_cm2_Vs": 1.0
+            }
+          },
+          "collinear_pairs": [],
+          "identifiability_warnings": []
+        }
+      },
+      "figures": [
+        "outputs/models/mao2019_refit_benchmark/03_Mg3_2Bi2_bipolar_global/Mg3_2Bi2_semimetal_two_band_bipolar.svg",
+        "outputs/models/mao2019_refit_benchmark/03_Mg3_2Bi2_bipolar_global/Mg3_2Bi2_semimetal_two_band_bipolar.png"
+      ],
+      "summary_json": "outputs/models/mao2019_refit_benchmark/03_Mg3_2Bi2_bipolar_global/Mg3_2Bi2_semimetal_two_band_bipolar_summary.json"
+    },
+    {
+      "case_id": "04_Mg3_2Bi1_998Te0_002_bipolar",
+      "label": "Mg3.2Bi1.998Te0.002 (Te掺杂半金属全局拟合 + 热导分解)",
+      "mode": "bipolar",
+      "n_rows": 11,
+      "timings_ms": {
+        "read_data_ms": 7.02,
+        "select_dispatch_ms": 0.01,
+        "compute_fit_ms": 3944.87,
+        "plot_build_ms": 491.07,
+        "output_save_ms": 1315.91,
+        "in_process_total_ms": 5758.87,
+        "estimated_cli_total_s": 10.71
+      },
+      "fit": {
+        "mode": "bipolar",
+        "majority_carrier": "n-type",
+        "allow_semimetal": true,
+        "scattering_r": 0.0,
+        "goldsmid_sharp_Eg_eV": 0.09114,
+        "fitted_Eg0_eV": -0.1,
+        "Eg_300K_eV": -0.1,
+        "n_dop_cm-3": 1.3073116885114399e+19,
+        "m_maj_dos_over_me": 0.53,
+        "m_min_dos_over_me": 0.276,
+        "mu0_maj_300K_cm2_Vs": 400.18465357986736,
+        "mu_imp_maj_cm2_Vs": 1054.2789329493598,
+        "b_mu_min_over_maj": 0.2288,
+        "weighted_mobility_ratio_A0_e_over_h": 11.630386868957679,
+        "weighted_mobility_ratio_A_drift_300K_e_over_h": 11.630386868957677,
+        "seebeck_rmse_uV_K": 11.465663387165634,
+        "diagnostics": {
+          "n_observations": 44,
+          "n_free_parameters": 5,
+          "degrees_of_freedom": 39,
+          "condition_number": 24.47197142416497,
+          "parameter_uncertainties": {
+            "n_dop_1e19_cm3": {
+              "value": 1.30731168851144,
+              "std_error": 0.08020186427236374,
+              "ci95_halfwidth": 0.1622235826337308,
+              "relative_se_pct": 6.134869364144135
+            },
+            "mu0_maj_300K_cm2_Vs": {
+              "value": 400.18465357986736,
+              "std_error": 24.98769882942917,
+              "ci95_halfwidth": 50.54239153489957,
+              "relative_se_pct": 6.244042245473618
+            },
+            "mu_imp_maj_cm2_Vs": {
+              "value": 1054.2789329493598,
+              "std_error": 97.97358467431097,
+              "ci95_halfwidth": 198.17028012418152,
+              "relative_se_pct": 9.292947208973295
+            },
+            "kL_A_W_m": {
+              "value": 260.68854385572075,
+              "std_error": 31.87153786337574,
+              "ci95_halfwidth": 64.46627024385792,
+              "relative_se_pct": 12.22590659028545
+            },
+            "kL_inf_W_mK": {
+              "value": 0.3246960315429451,
+              "std_error": 0.1799814724089836,
+              "ci95_halfwidth": 0.36404689001649787,
+              "relative_se_pct": 55.430758286055244
+            }
+          },
+          "correlation_matrix": {
+            "n_dop_1e19_cm3": {
+              "n_dop_1e19_cm3": 1.0,
+              "mu0_maj_300K_cm2_Vs": -0.2499,
+              "mu_imp_maj_cm2_Vs": -0.3184,
+              "kL_A_W_m": -0.0483,
+              "kL_inf_W_mK": 0.0783
+            },
+            "mu0_maj_300K_cm2_Vs": {
+              "n_dop_1e19_cm3": -0.2499,
+              "mu0_maj_300K_cm2_Vs": 1.0,
+              "mu_imp_maj_cm2_Vs": -0.7026,
+              "kL_A_W_m": 0.227,
+              "kL_inf_W_mK": -0.2607
+            },
+            "mu_imp_maj_cm2_Vs": {
+              "n_dop_1e19_cm3": -0.3184,
+              "mu0_maj_300K_cm2_Vs": -0.7026,
+              "mu_imp_maj_cm2_Vs": 1.0,
+              "kL_A_W_m": -0.179,
+              "kL_inf_W_mK": 0.1481
+            },
+            "kL_A_W_m": {
+              "n_dop_1e19_cm3": -0.0483,
+              "mu0_maj_300K_cm2_Vs": 0.227,
+              "mu_imp_maj_cm2_Vs": -0.179,
+              "kL_A_W_m": 1.0,
+              "kL_inf_W_mK": -0.9226
+            },
+            "kL_inf_W_mK": {
+              "n_dop_1e19_cm3": 0.0783,
+              "mu0_maj_300K_cm2_Vs": -0.2607,
+              "mu_imp_maj_cm2_Vs": 0.1481,
+              "kL_A_W_m": -0.9226,
+              "kL_inf_W_mK": 1.0
+            }
+          },
+          "collinear_pairs": [
+            {
+              "param_a": "kL_A_W_m",
+              "param_b": "kL_inf_W_mK",
+              "r": -0.9226
+            }
+          ],
+          "identifiability_warnings": [
+            "Strong parameter collinearity between kL_A_W_m and kL_inf_W_mK (r = -0.923); consider fixing one from independent Hall/optical/DFT data."
+          ]
+        }
+      },
+      "figures": [
+        "outputs/models/mao2019_refit_benchmark/04_Mg3_2Bi1_998Te0_002_bipolar/Mg3_2Bi1_998Te0_002_two_band_bipolar.svg",
+        "outputs/models/mao2019_refit_benchmark/04_Mg3_2Bi1_998Te0_002_bipolar/Mg3_2Bi1_998Te0_002_two_band_bipolar.png"
+      ],
+      "summary_json": "outputs/models/mao2019_refit_benchmark/04_Mg3_2Bi1_998Te0_002_bipolar/Mg3_2Bi1_998Te0_002_two_band_bipolar_summary.json"
+    },
+    {
+      "case_id": "05_Mg3_2Bi1_698Sb0_3Te0_002_bipolar",
+      "label": "Mg3.2Bi1.698Sb0.3Te0.002 (x=0.3 窄带隙半导体全局拟合)",
+      "mode": "bipolar",
+      "n_rows": 11,
+      "timings_ms": {
+        "read_data_ms": 2.03,
+        "select_dispatch_ms": 0.0,
+        "compute_fit_ms": 6712.36,
+        "plot_build_ms": 170.69,
+        "output_save_ms": 1619.27,
+        "in_process_total_ms": 8504.35,
+        "estimated_cli_total_s": 13.45
+      },
+      "fit": {
+        "mode": "bipolar",
+        "majority_carrier": "n-type",
+        "allow_semimetal": false,
+        "scattering_r": -0.5,
+        "goldsmid_sharp_Eg_eV": 0.1295,
+        "fitted_Eg0_eV": 0.063,
+        "Eg_300K_eV": 0.063,
+        "n_dop_cm-3": 1.47e+19,
+        "m_maj_dos_over_me": 0.8025095532331677,
+        "m_min_dos_over_me": 0.276,
+        "mu0_maj_300K_cm2_Vs": 489.3029739634411,
+        "mu_imp_maj_cm2_Vs": 2613.208722895744,
+        "b_mu_min_over_maj": 2.0037283744564762,
+        "weighted_mobility_ratio_A0_e_over_h": 2.4744167408535342,
+        "weighted_mobility_ratio_A_drift_300K_e_over_h": 2.2498576005742765,
+        "seebeck_rmse_uV_K": 6.557487159956029,
+        "diagnostics": {
+          "n_observations": 44,
+          "n_free_parameters": 6,
+          "degrees_of_freedom": 38,
+          "condition_number": 21.564964920972894,
+          "parameter_uncertainties": {
+            "m_maj_dos_over_me": {
+              "value": 0.8025095532331677,
+              "std_error": 0.046557313096087155,
+              "ci95_halfwidth": 0.09425035291914112,
+              "relative_se_pct": 5.801465279574063
+            },
+            "mu0_maj_300K_cm2_Vs": {
+              "value": 489.3029739634411,
+              "std_error": 27.30934055806521,
+              "ci95_halfwidth": 55.28486964603164,
+              "relative_se_pct": 5.581274182099221
+            },
+            "b_mu_min_over_maj": {
+              "value": 2.0037283744564762,
+              "std_error": 0.1622720306567385,
+              "ci95_halfwidth": 0.32850255182764554,
+              "relative_se_pct": 8.09850440435849
+            },
+            "mu_imp_maj_cm2_Vs": {
+              "value": 2613.208722895744,
+              "std_error": 393.0124196790015,
+              "ci95_halfwidth": 795.612048743092,
+              "relative_se_pct": 15.039457668865321
+            },
+            "kL_A_W_m": {
+              "value": 145.31091521164717,
+              "std_error": 16.8325387291902,
+              "ci95_halfwidth": 34.075693167194835,
+              "relative_se_pct": 11.583808900159632
+            },
+            "kL_inf_W_mK": {
+              "value": 0.19703809758487761,
+              "std_error": 0.09759142955936159,
+              "ci95_halfwidth": 0.19756352044779762,
+              "relative_se_pct": 49.52921833673428
+            }
+          },
+          "correlation_matrix": {
+            "m_maj_dos_over_me": {
+              "m_maj_dos_over_me": 1.0,
+              "mu0_maj_300K_cm2_Vs": -0.1615,
+              "b_mu_min_over_maj": -0.5454,
+              "mu_imp_maj_cm2_Vs": -0.1955,
+              "kL_A_W_m": 0.1368,
+              "kL_inf_W_mK": -0.1464
+            },
+            "mu0_maj_300K_cm2_Vs": {
+              "m_maj_dos_over_me": -0.1615,
+              "mu0_maj_300K_cm2_Vs": 1.0,
+              "b_mu_min_over_maj": -0.0005,
+              "mu_imp_maj_cm2_Vs": -0.786,
+              "kL_A_W_m": 0.2312,
+              "kL_inf_W_mK": -0.2623
+            },
+            "b_mu_min_over_maj": {
+              "m_maj_dos_over_me": -0.5454,
+              "mu0_maj_300K_cm2_Vs": -0.0005,
+              "b_mu_min_over_maj": 1.0,
+              "mu_imp_maj_cm2_Vs": 0.1638,
+              "kL_A_W_m": 0.0932,
+              "kL_inf_W_mK": -0.1444
+            },
+            "mu_imp_maj_cm2_Vs": {
+              "m_maj_dos_over_me": -0.1955,
+              "mu0_maj_300K_cm2_Vs": -0.786,
+              "b_mu_min_over_maj": 0.1638,
+              "mu_imp_maj_cm2_Vs": 1.0,
+              "kL_A_W_m": -0.263,
+              "kL_inf_W_mK": 0.2456
+            },
+            "kL_A_W_m": {
+              "m_maj_dos_over_me": 0.1368,
+              "mu0_maj_300K_cm2_Vs": 0.2312,
+              "b_mu_min_over_maj": 0.0932,
+              "mu_imp_maj_cm2_Vs": -0.263,
+              "kL_A_W_m": 1.0,
+              "kL_inf_W_mK": -0.9277
+            },
+            "kL_inf_W_mK": {
+              "m_maj_dos_over_me": -0.1464,
+              "mu0_maj_300K_cm2_Vs": -0.2623,
+              "b_mu_min_over_maj": -0.1444,
+              "mu_imp_maj_cm2_Vs": 0.2456,
+              "kL_A_W_m": -0.9277,
+              "kL_inf_W_mK": 1.0
+            }
+          },
+          "collinear_pairs": [
+            {
+              "param_a": "kL_A_W_m",
+              "param_b": "kL_inf_W_mK",
+              "r": -0.9277
+            }
+          ],
+          "identifiability_warnings": [
+            "Strong parameter collinearity between kL_A_W_m and kL_inf_W_mK (r = -0.928); consider fixing one from independent Hall/optical/DFT data."
+          ]
+        }
+      },
+      "figures": [
+        "outputs/models/mao2019_refit_benchmark/05_Mg3_2Bi1_698Sb0_3Te0_002_bipolar/Mg3_2Bi1_698Sb0_3Te0_002_two_band_bipolar.svg",
+        "outputs/models/mao2019_refit_benchmark/05_Mg3_2Bi1_698Sb0_3Te0_002_bipolar/Mg3_2Bi1_698Sb0_3Te0_002_two_band_bipolar.png"
+      ],
+      "summary_json": "outputs/models/mao2019_refit_benchmark/05_Mg3_2Bi1_698Sb0_3Te0_002_bipolar/Mg3_2Bi1_698Sb0_3Te0_002_two_band_bipolar_summary.json"
+    },
+    {
+      "case_id": "06_Mg3_2Bi1_498Sb0_5Te0_002_bipolar",
+      "label": "Mg3.2Bi1.498Sb0.5Te0.002 (x=0.5 峰值ZT=0.9制冷器件腿材料)",
+      "mode": "bipolar",
+      "n_rows": 11,
+      "timings_ms": {
+        "read_data_ms": 1.86,
+        "select_dispatch_ms": 0.0,
+        "compute_fit_ms": 6848.64,
+        "plot_build_ms": 318.68,
+        "output_save_ms": 1662.09,
+        "in_process_total_ms": 8831.28,
+        "estimated_cli_total_s": 13.78
+      },
+      "fit": {
+        "mode": "bipolar",
+        "majority_carrier": "n-type",
+        "allow_semimetal": false,
+        "scattering_r": -0.5,
+        "goldsmid_sharp_Eg_eV": 0.1645,
+        "fitted_Eg0_eV": 0.126,
+        "Eg_300K_eV": 0.126,
+        "n_dop_cm-3": 1.32e+19,
+        "m_maj_dos_over_me": 0.8571903436453427,
+        "m_min_dos_over_me": 0.276,
+        "mu0_maj_300K_cm2_Vs": 385.9931772846244,
+        "mu_imp_maj_cm2_Vs": 1553.0590061382445,
+        "b_mu_min_over_maj": 3.7111241853303567,
+        "weighted_mobility_ratio_A0_e_over_h": 1.4748464071154945,
+        "weighted_mobility_ratio_A_drift_300K_e_over_h": 1.3535725414483635,
+        "seebeck_rmse_uV_K": 11.415967808577458,
+        "diagnostics": {
+          "n_observations": 44,
+          "n_free_parameters": 6,
+          "degrees_of_freedom": 38,
+          "condition_number": 9.940301753448407,
+          "parameter_uncertainties": {
+            "m_maj_dos_over_me": {
+              "value": 0.8571903436453427,
+              "std_error": 0.05878470410134548,
+              "ci95_halfwidth": 0.11900341191005577,
+              "relative_se_pct": 6.857835548094705
+            },
+            "mu0_maj_300K_cm2_Vs": {
+              "value": 385.9931772846244,
+              "std_error": 21.580588593312136,
+              "ci95_halfwidth": 43.68761760208629,
+              "relative_se_pct": 5.590924882436199
+            },
+            "b_mu_min_over_maj": {
+              "value": 3.7111241853303567,
+              "std_error": 0.49818260213983034,
+              "ci95_halfwidth": 1.0085179523343508,
+              "relative_se_pct": 13.424034800804792
+            },
+            "mu_imp_maj_cm2_Vs": {
+              "value": 1553.0590061382445,
+              "std_error": 190.36057868058074,
+              "ci95_halfwidth": 385.3648445198728,
+              "relative_se_pct": 12.257137554220906
+            },
+            "kL_A_W_m": {
+              "value": 102.70820728681747,
+              "std_error": 14.196710352534536,
+              "ci95_halfwidth": 28.739737584419547,
+              "relative_se_pct": 13.822371870331217
+            },
+            "kL_inf_W_mK": {
+              "value": 0.3765405387791688,
+              "std_error": 0.08072142113871261,
+              "ci95_halfwidth": 0.16341197385589004,
+              "relative_se_pct": 21.437644244210748
+            }
+          },
+          "correlation_matrix": {
+            "m_maj_dos_over_me": {
+              "m_maj_dos_over_me": 1.0,
+              "mu0_maj_300K_cm2_Vs": -0.047,
+              "b_mu_min_over_maj": -0.3563,
+              "mu_imp_maj_cm2_Vs": -0.2996,
+              "kL_A_W_m": 0.1024,
+              "kL_inf_W_mK": -0.1024
+            },
+            "mu0_maj_300K_cm2_Vs": {
+              "m_maj_dos_over_me": -0.047,
+              "mu0_maj_300K_cm2_Vs": 1.0,
+              "b_mu_min_over_maj": -0.0442,
+              "mu_imp_maj_cm2_Vs": -0.794,
+              "kL_A_W_m": 0.1543,
+              "kL_inf_W_mK": -0.173
+            },
+            "b_mu_min_over_maj": {
+              "m_maj_dos_over_me": -0.3563,
+              "mu0_maj_300K_cm2_Vs": -0.0442,
+              "b_mu_min_over_maj": 1.0,
+              "mu_imp_maj_cm2_Vs": 0.1454,
+              "kL_A_W_m": 0.1271,
+              "kL_inf_W_mK": -0.1793
+            },
+            "mu_imp_maj_cm2_Vs": {
+              "m_maj_dos_over_me": -0.2996,
+              "mu0_maj_300K_cm2_Vs": -0.794,
+              "b_mu_min_over_maj": 0.1454,
+              "mu_imp_maj_cm2_Vs": 1.0,
+              "kL_A_W_m": -0.1772,
+              "kL_inf_W_mK": 0.1622
+            },
+            "kL_A_W_m": {
+              "m_maj_dos_over_me": 0.1024,
+              "mu0_maj_300K_cm2_Vs": 0.1543,
+              "b_mu_min_over_maj": 0.1271,
+              "mu_imp_maj_cm2_Vs": -0.1772,
+              "kL_A_W_m": 1.0,
+              "kL_inf_W_mK": -0.9254
+            },
+            "kL_inf_W_mK": {
+              "m_maj_dos_over_me": -0.1024,
+              "mu0_maj_300K_cm2_Vs": -0.173,
+              "b_mu_min_over_maj": -0.1793,
+              "mu_imp_maj_cm2_Vs": 0.1622,
+              "kL_A_W_m": -0.9254,
+              "kL_inf_W_mK": 1.0
+            }
+          },
+          "collinear_pairs": [
+            {
+              "param_a": "kL_A_W_m",
+              "param_b": "kL_inf_W_mK",
+              "r": -0.9254
+            }
+          ],
+          "identifiability_warnings": [
+            "Strong parameter collinearity between kL_A_W_m and kL_inf_W_mK (r = -0.925); consider fixing one from independent Hall/optical/DFT data."
+          ]
+        }
+      },
+      "figures": [
+        "outputs/models/mao2019_refit_benchmark/06_Mg3_2Bi1_498Sb0_5Te0_002_bipolar/Mg3_2Bi1_498Sb0_5Te0_002_two_band_bipolar.svg",
+        "outputs/models/mao2019_refit_benchmark/06_Mg3_2Bi1_498Sb0_5Te0_002_bipolar/Mg3_2Bi1_498Sb0_5Te0_002_two_band_bipolar.png"
+      ],
+      "summary_json": "outputs/models/mao2019_refit_benchmark/06_Mg3_2Bi1_498Sb0_5Te0_002_bipolar/Mg3_2Bi1_498Sb0_5Te0_002_two_band_bipolar_summary.json"
+    },
+    {
+      "case_id": "07_Mg3Bi2_300K_isothermal_bipolar",
+      "label": "Mg3+dBi2-xTex (300 K 等温双极 Pisarenko + A0 二维云图)",
+      "mode": "isothermal-bipolar",
+      "n_rows": 5,
+      "timings_ms": {
+        "read_data_ms": 3.72,
+        "select_dispatch_ms": 0.01,
+        "compute_fit_ms": 662.3,
+        "plot_build_ms": 260.74,
+        "output_save_ms": 1222.46,
+        "in_process_total_ms": 2149.23,
+        "estimated_cli_total_s": 7.1
+      },
+      "fit": {
+        "mode": "isothermal-bipolar",
+        "Temperature_K": 300.0,
+        "majority_carrier": "n-type",
+        "scattering_r": 0.0,
+        "m_maj_dos_over_me": 0.53,
+        "m_min_dos_over_me": 0.276,
+        "Eg_eV": -0.1,
+        "Eg_in_kBT": -3.868172707183361,
+        "b_mu_min_over_maj": 0.33,
+        "weighted_mobility_ratio_A0_e_over_h": 8.063734895810656,
+        "mu0_maj_cm2_Vs": 285.606725991566,
+        "seebeck_rmse_uV_K": 13.4783461969377,
+        "diagnostics": {
+          "n_observations": 10,
+          "n_free_parameters": 1,
+          "degrees_of_freedom": 9,
+          "condition_number": 1.0,
+          "parameter_uncertainties": {
+            "mu0_maj_cm2_Vs": {
+              "value": 285.606725991566,
+              "std_error": 22.160205553839283,
+              "ci95_halfwidth": 50.12986772393673,
+              "relative_se_pct": 7.758992886775949
+            }
+          },
+          "correlation_matrix": {
+            "mu0_maj_cm2_Vs": {
+              "mu0_maj_cm2_Vs": 1.0
+            }
+          },
+          "collinear_pairs": [],
+          "identifiability_warnings": []
+        }
+      },
+      "figures": [
+        "outputs/models/mao2019_refit_benchmark/07_Mg3Bi2_300K_isothermal_bipolar/Mg3Bi2_Te_300K_series_two_band_isothermal_bipolar.svg",
+        "outputs/models/mao2019_refit_benchmark/07_Mg3Bi2_300K_isothermal_bipolar/Mg3Bi2_Te_300K_series_two_band_isothermal_bipolar.png"
+      ],
+      "summary_json": "outputs/models/mao2019_refit_benchmark/07_Mg3Bi2_300K_isothermal_bipolar/Mg3Bi2_Te_300K_series_two_band_isothermal_bipolar_summary.json"
+    }
+  ],
+  "cli_subprocess_verification": {
+    "cli_subprocess_semimetal": {
+      "wall_clock_s": 7.856,
+      "stdout": "Two-Band (semimetal:hall-split) @ 300 K -> E_g=-0.100 eV, S_e=-150.0 uV/K, S_h=+89.0 uV/K, mu_e=364.4, mu_h=84.5 cm^2/Vs (mu_e/mu_h=4.31, A=11.47)"
+    },
+    "cli_subprocess_sb05_bipolar": {
+      "wall_clock_s": 13.104,
+      "stdout": "Two-Band (bipolar) fit -> E_g0=+0.126 eV (GS=0.165 eV), N_dop=1.32e+19 cm^-3, b=3.71, A_0=1.47, RMSE(S)=11.42 uV/K\nwarning: Strong parameter collinearity between kL_A_W_m and kL_inf_W_mK (r = -0.925); consider fixing one from independent Hall/optical/DFT data."
+    }
+  }
+}

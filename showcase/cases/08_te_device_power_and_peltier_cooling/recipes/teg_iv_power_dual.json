@@ -1,0 +1,106 @@
+{
+  "name": "01_teg_iv_power_dual_axis",
+  "sources": [
+    {
+      "path": "showcase/cases/08_te_device_power_and_peltier_cooling/data/teg_iv_power/teg_dt_500K.csv",
+      "metadata": {
+        "sample": "$\\Delta T = 500$ K"
+      }
+    },
+    {
+      "path": "showcase/cases/08_te_device_power_and_peltier_cooling/data/teg_iv_power/teg_dt_420K.csv",
+      "metadata": {
+        "sample": "$\\Delta T = 420$ K"
+      }
+    },
+    {
+      "path": "showcase/cases/08_te_device_power_and_peltier_cooling/data/teg_iv_power/teg_dt_350K.csv",
+      "metadata": {
+        "sample": "$\\Delta T = 350$ K"
+      }
+    },
+    {
+      "path": "showcase/cases/08_te_device_power_and_peltier_cooling/data/teg_iv_power/teg_dt_250K.csv",
+      "metadata": {
+        "sample": "$\\Delta T = 250$ K"
+      }
+    },
+    {
+      "path": "showcase/cases/08_te_device_power_and_peltier_cooling/data/teg_iv_power/teg_dt_150K.csv",
+      "metadata": {
+        "sample": "$\\Delta T = 150$ K"
+      }
+    }
+  ],
+  "plot": {
+    "kind": "dual_line",
+    "color_set": "science",
+    "x": {
+      "column": "Current_mA",
+      "label": "$I$ (mA)"
+    },
+    "group": {
+      "column": "sample"
+    },
+    "series": [
+      {
+        "y": {
+          "column": "Voltage_V",
+          "label": "Voltage $V$ (V)"
+        },
+        "property": "voltage",
+        "marker": "o",
+        "line_width": 2.3,
+        "legend_label": {
+          "column": "sample"
+        }
+      },
+      {
+        "y": {
+          "column": "Power_mW",
+          "label": "Output Power $P$ (mW)"
+        },
+        "property": "power",
+        "marker": "s",
+        "linestyle": "--",
+        "line_width": 2.3,
+        "legend_label": {
+          "column": "sample"
+        }
+      }
+    ],
+    "xlabel": "$I$ (mA)",
+    "ylabel": "Voltage $V$ (V, solid)",
+    "right_ylabel": "Power $P$ (mW, dashed)",
+    "ylim": [
+      0,
+      3.1
+    ],
+    "right_ylim": [
+      0,
+      6.2
+    ],
+    "legend": "inside",
+    "legend_loc": "upper right",
+    "x_margin": 0.06,
+    "y_margin": 0.12,
+    "group_order": [
+      "$\\Delta T = 500$ K",
+      "$\\Delta T = 420$ K",
+      "$\\Delta T = 350$ K",
+      "$\\Delta T = 250$ K",
+      "$\\Delta T = 150$ K"
+    ],
+    "axis_color_mode": "plain"
+  },
+  "output": {
+    "dir": "showcase/cases/08_te_device_power_and_peltier_cooling/figures",
+    "stem": "01_teg_iv_power_dual_axis",
+    "formats": [
+      "svg",
+      "png"
+    ],
+    "normalized_csv": false,
+    "copy_to_data_dir": false
+  }
+}

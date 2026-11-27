@@ -1,0 +1,37 @@
+{
+  "name": "contour_phase_map",
+  "plot": {
+    "kind": "contour",
+    "cmap": "soft-br",
+    "levels": 16,
+    "contour_lines": true,
+    "x": {
+      "semantic": "temperature",
+      "label": "$T$ (K)"
+    },
+    "z": {
+      "semantic": "zt",
+      "label": "$zT$"
+    },
+    "series": [
+      {
+        "y": {
+          "column": "Composition_x",
+          "aliases": ["x", "doping", "fraction"],
+          "label": "Doping fraction, $x$"
+        },
+        "property": "composition"
+      }
+    ],
+    "xlabel": "$T$ (K)",
+    "ylabel": "Doping fraction, $x$",
+    "zlabel": "$zT$"
+  },
+  "output": {
+    "dir": "outputs/figures/flexible",
+    "stem": "contour_phase_map",
+    "formats": ["png", "pdf"],
+    "normalized_csv": true,
+    "copy_to_data_dir": true
+  }
+}

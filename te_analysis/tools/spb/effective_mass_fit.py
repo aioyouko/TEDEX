@@ -24,7 +24,7 @@ ROOT = Path(__file__).resolve().parents[3]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-from te_analysis.run_manifest import record_output  # noqa: E402
+from te_analysis.tools.figure_naming import add_rename_argument, figure_output_naming  # noqa: E402
 
 
 DEFAULT_NH_COLUMN_CANDIDATES = (
@@ -64,7 +64,7 @@ class EffectiveMassFitConfig:
     curve_points: int = 300
     curve_xlim: tuple[float | None, float | None] | None = None
     manual_mstar_values: tuple[float, ...] | None = None
-    figure_formats: tuple[str, ...] = ("png", "pdf")
+    figure_formats: tuple[str, ...] = ("svg",)
 
 
 def _normalize_column_name(name: str) -> str:
@@ -581,10 +581,10 @@ def group_label_from_params(group_key: str, params_row: pd.Series | None = None)
     return str(label) if label is not None else str(group_key)
 
 
-def group_style(index: int) -> tuple[str, str]:
+def group_style(index: int, color_set=None, count=None) -> tuple[str, str]:
     from te_analysis.tools.plot import get_style_cycles
 
-    colors, markers = get_style_cycles()
+    colors, markers = get_style_cycles(color_set, count)
     color = marker = None
     for _ in range(index + 1):
         color = next(colors)
@@ -592,8 +592,8 @@ def group_style(index: int) -> tuple[str, str]:
     return str(color), str(marker)
 
 
-def group_color(index: int) -> str:
-    return group_style(index)[0]
+def group_color(index: int, color_set=None, count=None) -> str:
+    return group_style(index, color_set, count)[0]
 
 
 def group_marker(index: int) -> str:
@@ -659,7 +659,7 @@ def build_spb_fit_normalized_table(
     summary: dict,
     recipe: dict,
 ) -> tuple[pd.DataFrame, dict]:
-    """Build the normalized table expected by flexible_plot plotters."""
+    """Build the normalized table expected by the flexible plotters."""
 
     plot = recipe.get("plot", {})
     series_specs = plot.get("series") or default_spb_fit_recipe()["plot"]["series"]
@@ -675,6 +675,7 @@ def build_spb_fit_normalized_table(
     point_group_column = "point_series_id" if "point_series_id" in points.columns else None
     point_group_count = points[point_group_column].nunique() if point_group_column else 1
     multi_group = len(curve_groups) > 1 or point_group_count > 1
+    color_count = max(len(curve_groups), point_group_count)
 
     for curve_index, (_, curve_group) in enumerate(curve_groups):
         mstar_ratio = float(curve_group["mstar_over_me"].iloc[0])
@@ -701,8 +702,8 @@ def build_spb_fit_normalized_table(
         )
         for key in SPB_FIT_STYLE_KEYS:
             frame[key] = series_style(curve_spec, key)
-        if multi_group:
-            frame["color"] = group_color(curve_index)
+        if multi_group or plot.get("color_set"):
+            frame["color"] = group_color(curve_index, plot.get("color_set"), color_count)
         frames.append(frame)
 
     if point_group_column:
@@ -732,8 +733,8 @@ def build_spb_fit_normalized_table(
         )
         for key in SPB_FIT_STYLE_KEYS:
             point_frame[key] = series_style(point_spec, key)
-        if multi_group:
-            point_frame["color"] = group_color(point_index)
+        if multi_group or plot.get("color_set"):
+            point_frame["color"] = group_color(point_index, plot.get("color_set"), color_count)
             point_frame["marker"] = group_marker(point_index)
         frames.append(point_frame)
 
@@ -754,7 +755,7 @@ def plot_pisarenko_fit(
     curve: pd.DataFrame,
     summary: dict,
     save_path: str | os.PathLike,
-    formats: tuple[str, ...] = ("png", "pdf"),
+    formats: tuple[str, ...] = ("svg",),
     show: bool = False,
     plot_overrides: dict | None = None,
 ) -> list[str]:
@@ -765,8 +766,8 @@ def plot_pisarenko_fit(
     os.environ.setdefault("MPLCONFIGDIR", str(cache_dir))
     os.environ.setdefault("XDG_CACHE_HOME", str(cache_dir))
 
-    from te_analysis.tools.flexible_plot import plot_line_or_scatter
-    from te_analysis.tools.plot import save_figure
+    from te_analysis.tools.flexible import plot_line_or_scatter
+    from te_analysis.tools.plot import save_figure_outputs
 
     import matplotlib.pyplot as plt
 
@@ -775,7 +776,7 @@ def plot_pisarenko_fit(
     fig, _ = plot_line_or_scatter(normalized, metadata, recipe)
 
     save_path = Path(save_path)
-    save_figure(
+    figure_paths = save_figure_outputs(
         fig,
         save_path.name,
         save_dir=str(save_path.parent),
@@ -785,7 +786,7 @@ def plot_pisarenko_fit(
         plt.show()
     plt.close(fig)
 
-    return [str(save_path.with_suffix(f".{file_format}")) for file_format in formats]
+    return figure_paths
 
 
 def copy_figures_to_input_data_dir(
@@ -805,7 +806,6 @@ def copy_figures_to_input_data_dir(
         target = data_dir / source.name
         if source.resolve() != target.resolve():
             shutil.copy2(source, target)
-            record_output(target)
         copied_paths.append(str(target))
     return copied_paths
 
@@ -867,12 +867,9 @@ def run_effective_mass_fit(
     plot_path = output_dir / "pisarenko_fit.png"
 
     points.to_csv(points_path, index=False)
-    record_output(points_path)
     curve.to_csv(curve_path, index=False)
-    record_output(curve_path)
     with open(summary_path, "w", encoding="utf-8") as handle:
         json.dump(summary, handle, indent=2)
-    record_output(summary_path)
     plot_paths = plot_pisarenko_fit(
         points,
         curve,
@@ -953,7 +950,6 @@ def run_effective_mass_fit_multi(
         group_dir.mkdir(parents=True, exist_ok=True)
         group_input_path = group_dir / "input.csv"
         group_df.to_csv(group_input_path, index=False)
-        record_output(group_input_path)
 
         result = run_effective_mass_fit(
             group_input_path,
@@ -1025,18 +1021,13 @@ def run_effective_mass_fit_multi(
     plot_path = output_dir / "pisarenko_fit.png"
 
     combined_points.to_csv(points_path, index=False)
-    record_output(points_path)
     combined_curve.to_csv(curve_path, index=False)
-    record_output(curve_path)
     pd.DataFrame(group_results).to_csv(summary_by_group_path, index=False)
-    record_output(summary_by_group_path)
     with open(summary_path, "w", encoding="utf-8") as handle:
         json.dump(summary, handle, indent=2)
-    record_output(summary_path)
 
     combined_plot_overrides = dict(plot_overrides or {})
-    combined_plot_overrides.setdefault("legend_font_size", 7.5)
-    combined_plot_overrides.setdefault("legend", "outside")
+    combined_plot_overrides.setdefault("legend", "inside")
     plot_paths = plot_pisarenko_fit(
         combined_points,
         combined_curve,
@@ -1063,10 +1054,12 @@ def build_arg_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         description="Fit SPB density-of-states effective mass from Hall nH and Seebeck data.",
     )
+    from te_analysis.paths import get_workspace
+
     parser.add_argument("csv_path", help="Input CSV containing Hall nH and Seebeck columns.")
     parser.add_argument(
         "--output-dir",
-        default="results/spb_fitting/effective_mass_fit",
+        default=str(get_workspace().model_output_dir("spb/effective_mass_fit")),
         help="Directory for output CSV/JSON/PNG files.",
     )
     parser.add_argument("--temperature", "--T", type=float, default=300.0, help="Measurement temperature in K.")
@@ -1081,8 +1074,8 @@ def build_arg_parser() -> argparse.ArgumentParser:
     parser.add_argument(
         "--formats",
         nargs="+",
-        default=("png", "pdf"),
-        help="Figure formats to export. Default: png pdf.",
+        default=("svg",),
+        help="Figure formats to export. Default: svg.",
     )
     parser.add_argument(
         "--m",
@@ -1118,10 +1111,13 @@ def build_arg_parser() -> argparse.ArgumentParser:
     parser.add_argument("--legend", choices=("inside", "outside", "none"), help="Override legend placement.")
     parser.add_argument("--legend-loc", help='Matplotlib legend location, e.g. "best", "upper right", "lower left".')
     parser.add_argument("--legend-font-size", type=float, help="Override legend font size.")
-    parser.add_argument("--subplot-aspect", help='Override axes aspect ratio, e.g. "10:8" or "1:1".')
+    parser.add_argument("--subplot-aspect", "--aspect", help='Override axes aspect ratio, e.g. "10:8" or "1:1".')
     parser.add_argument("--figsize", nargs=2, type=float, metavar=("WIDTH", "HEIGHT"), help="Override figure size in inches.")
     parser.add_argument("--title", help="Override plot title text.")
     parser.add_argument("--show-title", action="store_true", help="Show the plot title.")
+    from te_analysis.tools.colors import add_color_set_argument
+    add_color_set_argument(parser, default=None)
+    add_rename_argument(parser)
     return parser
 
 
@@ -1147,7 +1143,7 @@ def parse_manual_mstar_values(tokens: list[str] | None) -> tuple[float, ...] | N
 
 def parse_output_formats(tokens: list[str] | tuple[str, ...] | None) -> tuple[str, ...]:
     if not tokens:
-        return ("png", "pdf")
+        return ("svg",)
 
     formats = []
     for token in tokens:
@@ -1156,7 +1152,7 @@ def parse_output_formats(tokens: list[str] | tuple[str, ...] | None) -> tuple[st
             if clean_format and clean_format not in formats:
                 formats.append(clean_format)
 
-    return tuple(formats) or ("png", "pdf")
+    return tuple(formats) or ("svg",)
 
 
 def parse_axis_limit(values: list[str] | tuple[str, ...] | None) -> list[float | None] | None:
@@ -1246,6 +1242,8 @@ def parse_property_axis_limits(
 
 def build_plot_overrides(args: argparse.Namespace) -> dict:
     overrides = {}
+    if getattr(args, "color_set", None) is not None:
+        overrides["color_set"] = args.color_set
 
     for attr in (
         "xscale",
@@ -1302,6 +1300,11 @@ def parsed_x_curve_xlim(args: argparse.Namespace) -> tuple[float | None, float |
 
 def main(argv: list[str] | None = None) -> int:
     args = build_arg_parser().parse_args(argv)
+    with figure_output_naming(args.rename):
+        return _run_cli(args)
+
+
+def _run_cli(args: argparse.Namespace) -> int:
     config = EffectiveMassFitConfig(
         temperature=args.temperature,
         nh_unit=args.nh_unit,

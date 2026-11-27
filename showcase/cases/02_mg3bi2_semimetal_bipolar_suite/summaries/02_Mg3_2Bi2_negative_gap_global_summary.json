@@ -1,0 +1,99 @@
+{
+  "model": "Two-Band (bipolar)",
+  "input_csv": "showcase/cases/02_mg3bi2_semimetal_bipolar_suite/data/Mg3_2Bi2_semimetal.csv",
+  "fit": {
+    "mode": "bipolar",
+    "majority_carrier": "n-type",
+    "allow_semimetal": true,
+    "scattering_r": -0.5,
+    "goldsmid_sharp_Eg_eV": 0.0756,
+    "fitted_Eg0_eV": -0.08621847183936507,
+    "Eg_300K_eV": -0.08621847183936507,
+    "n_dop_cm-3": 0.0,
+    "m_maj_dos_over_me": 0.53,
+    "m_min_dos_over_me": 0.276,
+    "mu0_maj_300K_cm2_Vs": 667.3515655513235,
+    "mu_imp_maj_cm2_Vs": 4104.055861123527,
+    "b_mu_min_over_maj": 0.47818478662590863,
+    "weighted_mobility_ratio_A0_e_over_h": 5.564862350376871,
+    "weighted_mobility_ratio_A_drift_300K_e_over_h": 6.634665745923094,
+    "seebeck_rmse_uV_K": 19.22251760750984,
+    "diagnostics": {
+      "n_observations": 33,
+      "n_free_parameters": 4,
+      "degrees_of_freedom": 29,
+      "condition_number": 155.73202511065116,
+      "parameter_uncertainties": {
+        "mu0_maj_300K_cm2_Vs": {
+          "value": 667.3515655513235,
+          "std_error": 58.853739306415996,
+          "ci95_halfwidth": 120.36941217983258,
+          "relative_se_pct": 8.819000710336953
+        },
+        "b_mu_min_over_maj": {
+          "value": 0.47818478662590863,
+          "std_error": 0.054361559019157554,
+          "ci95_halfwidth": 0.11118187189852742,
+          "relative_se_pct": 11.36831629519938
+        },
+        "Eg0_eV": {
+          "value": -0.08621847183936507,
+          "std_error": 0.0084643982092826,
+          "ci95_halfwidth": 0.017311638120439742,
+          "relative_se_pct": 9.817383709900064
+        },
+        "mu_imp_maj_cm2_Vs": {
+          "value": 4104.055861123527,
+          "std_error": 1145.645716222177,
+          "ci95_halfwidth": 2343.1085781999473,
+          "relative_se_pct": 27.914964001209885
+        }
+      },
+      "correlation_matrix": {
+        "mu0_maj_300K_cm2_Vs": {
+          "mu0_maj_300K_cm2_Vs": 1.0,
+          "b_mu_min_over_maj": 0.3242,
+          "Eg0_eV": 0.3633,
+          "mu_imp_maj_cm2_Vs": -0.5232
+        },
+        "b_mu_min_over_maj": {
+          "mu0_maj_300K_cm2_Vs": 0.3242,
+          "b_mu_min_over_maj": 1.0,
+          "Eg0_eV": 0.9649,
+          "mu_imp_maj_cm2_Vs": 0.4398
+        },
+        "Eg0_eV": {
+          "mu0_maj_300K_cm2_Vs": 0.3633,
+          "b_mu_min_over_maj": 0.9649,
+          "Eg0_eV": 1.0,
+          "mu_imp_maj_cm2_Vs": 0.4624
+        },
+        "mu_imp_maj_cm2_Vs": {
+          "mu0_maj_300K_cm2_Vs": -0.5232,
+          "b_mu_min_over_maj": 0.4398,
+          "Eg0_eV": 0.4624,
+          "mu_imp_maj_cm2_Vs": 1.0
+        }
+      },
+      "collinear_pairs": [
+        {
+          "param_a": "b_mu_min_over_maj",
+          "param_b": "Eg0_eV",
+          "r": 0.9649
+        }
+      ],
+      "identifiability_warnings": [
+        "Strong parameter collinearity between b_mu_min_over_maj and Eg0_eV (r = +0.965); consider fixing one from independent Hall/optical/DFT data."
+      ]
+    }
+  },
+  "outputs": {
+    "points_csv": "showcase/cases/02_mg3bi2_semimetal_bipolar_suite/_tmp_03/Mg3_2Bi2_semimetal_two_band_bipolar_points.csv",
+    "curve_csv": "showcase/cases/02_mg3bi2_semimetal_bipolar_suite/_tmp_03/Mg3_2Bi2_semimetal_two_band_bipolar_curve.csv",
+    "figures": [
+      "showcase/cases/02_mg3bi2_semimetal_bipolar_suite/_tmp_03/Mg3_2Bi2_semimetal_two_band_bipolar.svg",
+      "showcase/cases/02_mg3bi2_semimetal_bipolar_suite/_tmp_03/Mg3_2Bi2_semimetal_two_band_bipolar.png"
+    ],
+    "data_dir_figures": []
+  }
+}

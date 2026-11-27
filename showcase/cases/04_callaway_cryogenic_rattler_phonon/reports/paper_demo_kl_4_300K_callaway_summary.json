@@ -1,0 +1,247 @@
+{
+  "model": "Debye-Callaway",
+  "input_csv": "showcase/cases/04_callaway_cryogenic_rattler_phonon/data/paper_demo_kl_4_300K.csv",
+  "material": {
+    "theta_d_k": 146.0,
+    "sound_velocity_m_s": 1445.0,
+    "atomic_volume_a3": null,
+    "gruneisen_gamma": 1.6,
+    "np_density_contrast": 0.25,
+    "rattler_damping": 0.0,
+    "normal_ratio_beta": 0.0,
+    "umklapp_div": 3.0
+  },
+  "fitted_scattering": {
+    "b_umklapp_1e18_s_k": 58.97859455013252,
+    "umklapp_exp_k": null,
+    "grain_size_nm": 171.63450902366083,
+    "a_pd_1e41_s3": 6.7926008589326266,
+    "ep_e_1e3": 0.0,
+    "dislocation_density_1e11_cm2": 0.0,
+    "np_volume_fraction": 0.0,
+    "np_radius_nm": 4.0,
+    "rattler_c_1e35_s3": 16.207626114816073,
+    "rattler_theta_e_k": 29.52317949372354
+  },
+  "fit_metrics": {
+    "mode": "fit",
+    "converged": true,
+    "active_mechanisms": [
+      "U",
+      "GB",
+      "PD",
+      "R"
+    ],
+    "fitted_mechanisms": [
+      "U",
+      "GB",
+      "PD",
+      "R",
+      "TE"
+    ],
+    "rmse_W_mK": 0.015259913216524187,
+    "mae_W_mK": 0.012425337709825233,
+    "r2": 0.9917834739866699,
+    "derived_point_defect_Gamma": 0.1006641651521045,
+    "resolved_atomic_volume_A3": 25.584362794706905,
+    "diagnostics": {
+      "n_observations": 67,
+      "n_free_parameters": 5,
+      "degrees_of_freedom": 62,
+      "condition_number": 97.4018540557226,
+      "parameter_uncertainties": {
+        "b_umklapp_1e18_s_k": {
+          "value": 58.97859455013252,
+          "std_error": 1.7035341083203344,
+          "ci95_halfwidth": 3.4053161608272027,
+          "relative_se_pct": 2.8883938678333707
+        },
+        "grain_size_nm": {
+          "value": 171.63450902366083,
+          "std_error": 88.33487048784224,
+          "ci95_halfwidth": 176.57889006602903,
+          "relative_se_pct": 51.46684719193898
+        },
+        "a_pd_1e41_s3": {
+          "value": 6.7926008589326266,
+          "std_error": 0.3492344822726172,
+          "ci95_halfwidth": 0.6981097828288602,
+          "relative_se_pct": 5.141395608625459
+        },
+        "rattler_c_1e35_s3": {
+          "value": 16.207626114816073,
+          "std_error": 1.4579952056123688,
+          "ci95_halfwidth": 2.9144908879903495,
+          "relative_se_pct": 8.995735681979696
+        },
+        "rattler_theta_e_k": {
+          "value": 29.52317949372354,
+          "std_error": 1.6546024564889683,
+          "ci95_halfwidth": 3.3075031825349077,
+          "relative_se_pct": 5.604418239711368
+        }
+      },
+      "correlation_matrix": {
+        "b_umklapp_1e18_s_k": {
+          "b_umklapp_1e18_s_k": 1.0,
+          "grain_size_nm": -0.3816,
+          "a_pd_1e41_s3": -0.7778,
+          "rattler_c_1e35_s3": 0.3558,
+          "rattler_theta_e_k": 0.5282
+        },
+        "grain_size_nm": {
+          "b_umklapp_1e18_s_k": -0.3816,
+          "grain_size_nm": 1.0,
+          "a_pd_1e41_s3": 0.5698,
+          "rattler_c_1e35_s3": 0.3171,
+          "rattler_theta_e_k": -0.929
+        },
+        "a_pd_1e41_s3": {
+          "b_umklapp_1e18_s_k": -0.7778,
+          "grain_size_nm": 0.5698,
+          "a_pd_1e41_s3": 1.0,
+          "rattler_c_1e35_s3": -0.5328,
+          "rattler_theta_e_k": -0.7916
+        },
+        "rattler_c_1e35_s3": {
+          "b_umklapp_1e18_s_k": 0.3558,
+          "grain_size_nm": 0.3171,
+          "a_pd_1e41_s3": -0.5328,
+          "rattler_c_1e35_s3": 1.0,
+          "rattler_theta_e_k": 0.043
+        },
+        "rattler_theta_e_k": {
+          "b_umklapp_1e18_s_k": 0.5282,
+          "grain_size_nm": -0.929,
+          "a_pd_1e41_s3": -0.7916,
+          "rattler_c_1e35_s3": 0.043,
+          "rattler_theta_e_k": 1.0
+        }
+      },
+      "collinear_pairs": [
+        {
+          "param_a": "grain_size_nm",
+          "param_b": "rattler_theta_e_k",
+          "r": -0.929
+        }
+      ],
+      "identifiability_warnings": [
+        "Strong parameter collinearity between grain_size_nm and rattler_theta_e_k (r = -0.929); consider fixing one from independent Hall/optical/DFT data."
+      ]
+    },
+    "paper_unit_equivalents": {
+      "omega_D_THz_rad_s": 19.114369512540396,
+      "nu_D_THz": 3.042146392005826,
+      "hbar_omega_D_meV": 12.581306562731958,
+      "grain_size_um": 0.17163450902366081,
+      "b_umklapp_1e17_s_K": 5.897859455013252,
+      "rattler_C_1e36_s3": 1.6207626114816072,
+      "omega_RES_THz_rad_s": 3.865184671425253,
+      "nu_RES_THz": 0.6151632464203524,
+      "hbar_omega_RES_meV": 2.5441107665554625,
+      "nu_RES_cm-1": 20.519637154784238,
+      "point_defect_Gamma": 0.1006641651521045
+    }
+  },
+  "mechanism_contributions": [
+    {
+      "Temperature_K": 4.1,
+      "Pure_First_Stage": "U",
+      "kappa_L_U_W_mK": 505146.18720835267,
+      "kappa_L_total_fit_W_mK": 0.03431584031205364,
+      "kappa_L_U + B_W_mK": 0.23097390041538407,
+      "Delta_kappa_B_W_mK": 505145.95623445226,
+      "Share_of_Drop_from_U_B_pct": 99.99996106907696,
+      "kappa_L_U + B + PD_W_mK": 0.1633117216116304,
+      "Delta_kappa_PD_W_mK": 0.06766217880375366,
+      "Share_of_Drop_from_U_PD_pct": 1.3394574702056808e-05,
+      "kappa_L_U + B + PD + RES_W_mK": 0.03431584031205364,
+      "Delta_kappa_RES_W_mK": 0.12899588129957676,
+      "Share_of_Drop_from_U_RES_pct": 2.5536348354022837e-05
+    },
+    {
+      "Temperature_K": 10.0,
+      "Pure_First_Stage": "U",
+      "kappa_L_U_W_mK": 459.12257235822585,
+      "kappa_L_total_fit_W_mK": 0.11429856721316356,
+      "kappa_L_U + B_W_mK": 3.265159257539626,
+      "Delta_kappa_B_W_mK": 455.85741310068624,
+      "Share_of_Drop_from_U_B_pct": 99.31355034969128,
+      "kappa_L_U + B + PD_W_mK": 0.727126393442864,
+      "Delta_kappa_PD_W_mK": 2.5380328640967624,
+      "Share_of_Drop_from_U_PD_pct": 0.5529383693097292,
+      "kappa_L_U + B + PD + RES_W_mK": 0.11429856721316356,
+      "Delta_kappa_RES_W_mK": 0.6128278262297004,
+      "Share_of_Drop_from_U_RES_pct": 0.13351128099898305
+    },
+    {
+      "Temperature_K": 48.4,
+      "Pure_First_Stage": "U",
+      "kappa_L_U_W_mK": 7.104959710764506,
+      "kappa_L_total_fit_W_mK": 0.5876247754543166,
+      "kappa_L_U + B_W_mK": 5.331333706651314,
+      "Delta_kappa_B_W_mK": 1.7736260041131917,
+      "Share_of_Drop_from_U_B_pct": 27.213976598070555,
+      "kappa_L_U + B + PD_W_mK": 1.2943293540084897,
+      "Delta_kappa_PD_W_mK": 4.037004352642825,
+      "Share_of_Drop_from_U_PD_pct": 61.942563834962485,
+      "kappa_L_U + B + PD + RES_W_mK": 0.5876247754543166,
+      "Delta_kappa_RES_W_mK": 0.7067045785541731,
+      "Share_of_Drop_from_U_RES_pct": 10.843459566966967
+    },
+    {
+      "Temperature_K": 300.0,
+      "Pure_First_Stage": "U",
+      "kappa_L_U_W_mK": 0.6109924505946116,
+      "kappa_L_total_fit_W_mK": 0.30880532522866333,
+      "kappa_L_U + B_W_mK": 0.5741426773669764,
+      "Delta_kappa_B_W_mK": 0.03684977322763516,
+      "Share_of_Drop_from_U_B_pct": 12.1943557929578,
+      "kappa_L_U + B + PD_W_mK": 0.39811277265620093,
+      "Delta_kappa_PD_W_mK": 0.1760299047107755,
+      "Share_of_Drop_from_U_PD_pct": 58.25195381755708,
+      "kappa_L_U + B + PD + RES_W_mK": 0.30880532522866333,
+      "Delta_kappa_RES_W_mK": 0.0893074474275376,
+      "Share_of_Drop_from_U_RES_pct": 29.553690389485116
+    },
+    {
+      "Temperature_K": 302.7,
+      "Pure_First_Stage": "U",
+      "kappa_L_U_W_mK": 0.6047371184705116,
+      "kappa_L_total_fit_W_mK": 0.30698825236082794,
+      "kappa_L_U + B_W_mK": 0.5684529157242773,
+      "Delta_kappa_B_W_mK": 0.03628420274623434,
+      "Share_of_Drop_from_U_B_pct": 12.186176632782908,
+      "kappa_L_U + B + PD_W_mK": 0.3952205802866095,
+      "Delta_kappa_PD_W_mK": 0.17323233543766775,
+      "Share_of_Drop_from_U_PD_pct": 58.18068686577401,
+      "kappa_L_U + B + PD + RES_W_mK": 0.30698825236082794,
+      "Delta_kappa_RES_W_mK": 0.08823232792578156,
+      "Share_of_Drop_from_U_RES_pct": 29.633136501443087
+    }
+  ],
+  "spectral_mfp_summary": {
+    "reference_temperature_K": 300.0,
+    "spectral_norm": "x",
+    "mfp_10pct_nm": 0.15040737694704026,
+    "mfp_50pct_median_nm": 0.6764774855461386,
+    "mfp_90pct_nm": 6.209878580064895
+  },
+  "outputs": {
+    "points_csv": "showcase/cases/04_callaway_cryogenic_rattler_phonon/_tmp_cal/paper_demo_kl_4_300K_callaway_points.csv",
+    "curve_csv": "showcase/cases/04_callaway_cryogenic_rattler_phonon/_tmp_cal/paper_demo_kl_4_300K_callaway_curve.csv",
+    "spectral_csv": "showcase/cases/04_callaway_cryogenic_rattler_phonon/_tmp_cal/paper_demo_kl_4_300K_callaway_spectral.csv",
+    "contributions_csv": "showcase/cases/04_callaway_cryogenic_rattler_phonon/_tmp_cal/paper_demo_kl_4_300K_callaway_contributions.csv",
+    "shares_csv": "showcase/cases/04_callaway_cryogenic_rattler_phonon/_tmp_cal/paper_demo_kl_4_300K_callaway_shares.csv",
+    "report_md": "showcase/cases/04_callaway_cryogenic_rattler_phonon/_tmp_cal/paper_demo_kl_4_300K_callaway_report.md",
+    "figures": [
+      "showcase/cases/04_callaway_cryogenic_rattler_phonon/_tmp_cal/paper_demo_kl_4_300K_callaway_fit.svg",
+      "showcase/cases/04_callaway_cryogenic_rattler_phonon/_tmp_cal/paper_demo_kl_4_300K_callaway_fit.png",
+      "showcase/cases/04_callaway_cryogenic_rattler_phonon/_tmp_cal/paper_demo_kl_4_300K_callaway_contributions.svg",
+      "showcase/cases/04_callaway_cryogenic_rattler_phonon/_tmp_cal/paper_demo_kl_4_300K_callaway_contributions.png",
+      "showcase/cases/04_callaway_cryogenic_rattler_phonon/_tmp_cal/paper_demo_kl_4_300K_callaway_spectral_mfp.svg",
+      "showcase/cases/04_callaway_cryogenic_rattler_phonon/_tmp_cal/paper_demo_kl_4_300K_callaway_spectral_mfp.png"
+    ],
+    "data_dir_figures": []
+  }
+}

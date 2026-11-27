@@ -1,0 +1,59 @@
+{
+  "model": "Two-Band (convergence)",
+  "input_csv": "showcase/cases/03_bi2sbte3_two_band_convergence/data/kim2017_x075_full300K_pf.csv",
+  "fit": {
+    "mode": "convergence",
+    "Temperature_K": 300.0,
+    "carrier_type": "p-type",
+    "band1_Eg_eV": null,
+    "m1_dos_over_me": 0.326,
+    "m2_dos_over_me": 0.916,
+    "delta_E_eV": 0.025,
+    "delta_E_in_kBT": 0.9670431767958403,
+    "mu0_1_cm2_Vs": 691.3448270909653,
+    "mu0_2_cm2_Vs": 251.88211757446334,
+    "b_mu1_over_mu2": 2.744715797010022,
+    "seebeck_rmse_uV_K": 31.95152448844567,
+    "diagnostics": {
+      "n_observations": 36,
+      "n_free_parameters": 2,
+      "degrees_of_freedom": 34,
+      "condition_number": 9.44517393528812,
+      "parameter_uncertainties": {
+        "b_mu1_over_mu2": {
+          "value": 2.744715797010022,
+          "std_error": 1.2218040169985283,
+          "ci95_halfwidth": 2.483004505007591,
+          "relative_se_pct": 44.51477338125536
+        },
+        "mu0_1_cm2_Vs": {
+          "value": 691.3448270909653,
+          "std_error": 76.60859861409882,
+          "ci95_halfwidth": 155.68740390002728,
+          "relative_se_pct": 11.081098116615962
+        }
+      },
+      "correlation_matrix": {
+        "b_mu1_over_mu2": {
+          "b_mu1_over_mu2": 1.0,
+          "mu0_1_cm2_Vs": 0.8947
+        },
+        "mu0_1_cm2_Vs": {
+          "b_mu1_over_mu2": 0.8947,
+          "mu0_1_cm2_Vs": 1.0
+        }
+      },
+      "collinear_pairs": [],
+      "identifiability_warnings": []
+    }
+  },
+  "outputs": {
+    "points_csv": "showcase/cases/03_bi2sbte3_two_band_convergence/_tmp_conv/kim2017_x075_full300K_pf_two_band_convergence_points.csv",
+    "curve_csv": "showcase/cases/03_bi2sbte3_two_band_convergence/_tmp_conv/kim2017_x075_full300K_pf_two_band_convergence_curve.csv",
+    "figures": [
+      "showcase/cases/03_bi2sbte3_two_band_convergence/_tmp_conv/kim2017_x075_full300K_pf_two_band_convergence.svg",
+      "showcase/cases/03_bi2sbte3_two_band_convergence/_tmp_conv/kim2017_x075_full300K_pf_two_band_convergence.png"
+    ],
+    "data_dir_figures": []
+  }
+}

@@ -1,0 +1,38 @@
+{
+  "name": "temperature_vs_zt_errorband",
+  "plot": {
+    "kind": "line",
+    "error_mode": "band",
+    "yerr_pct": 10.0,
+    "band_alpha": 0.18,
+    "x": {
+      "semantic": "temperature",
+      "label": "$T$ (K)"
+    },
+    "group": {
+      "semantic": "sample"
+    },
+    "series": [
+      {
+        "y": {
+          "semantic": "zt",
+          "label": "$zT$"
+        },
+        "property": "zt"
+      }
+    ],
+    "xlabel": "$T$ (K)",
+    "ylabel": "$zT$",
+    "x_major": 100,
+    "x_minor": 50,
+    "legend": "inside",
+    "legend_loc": "upper left"
+  },
+  "output": {
+    "dir": "outputs/figures/flexible",
+    "stem": "temperature_vs_zt_errorband",
+    "formats": ["png", "pdf"],
+    "normalized_csv": true,
+    "copy_to_data_dir": true
+  }
+}

@@ -1,0 +1,108 @@
+{
+  "name": "kim2017_mu_compare",
+  "data": [
+    "showcase/cases/03_bi2sbte3_two_band_convergence/data/tedex_tb_extended_curves.csv"
+  ],
+  "plot": {
+    "kind": "line",
+    "x": {
+      "column": "nH_cm-3",
+      "label": "$n_{\\mathrm{H}}$ (cm$^{-3}$)"
+    },
+    "series": [
+      {
+        "source": "showcase/cases/03_bi2sbte3_two_band_convergence/data/kim2017_paper_tb_curve.csv",
+        "y": {
+          "column": "muH_Kim_TB",
+          "label": "$\\mu_{\\mathrm{H}}$ (cm$^2$ V$^{-1}$ s$^{-1}$)"
+        },
+        "property": "mobility",
+        "group_value": "Kim et al. (2017) TB Model",
+        "color": "#F39B7F",
+        "marker": "None",
+        "linestyle": "-",
+        "line_width": 2.4
+      },
+      {
+        "source": "showcase/cases/03_bi2sbte3_two_band_convergence/data/tedex_tb_extended_curves.csv",
+        "y": {
+          "column": "muH_TB_sym_cm2_Vs",
+          "label": "$\\mu_{\\mathrm{H}}$ (cm$^2$ V$^{-1}$ s$^{-1}$)"
+        },
+        "property": "mobility",
+        "group_value": "TEDEX Two-Band (Sym. $\\alpha=0$)",
+        "color": "#E64B35",
+        "marker": "None",
+        "linestyle": "--",
+        "line_width": 2.0
+      },
+      {
+        "source": "showcase/cases/03_bi2sbte3_two_band_convergence/data/performance_curve.csv",
+        "y": {
+          "column": "Hall_Mobility_model_cm2_V-1_s-1",
+          "label": "$\\mu_{\\mathrm{H}}$ (cm$^2$ V$^{-1}$ s$^{-1}$)"
+        },
+        "property": "mobility",
+        "group_value": "TEDEX SPB ($\\alpha=0$)",
+        "color": "#00A087",
+        "marker": "None",
+        "linestyle": "-.",
+        "line_width": 1.8
+      },
+      {
+        "source": "showcase/cases/03_bi2sbte3_two_band_convergence/data/kim2017_x075_full300K_skb_curve.csv",
+        "y": {
+          "column": "Hall_Mobility_SKB_cm2_V-1_s-1",
+          "label": "$\\mu_{\\mathrm{H}}$ (cm$^2$ V$^{-1}$ s$^{-1}$)"
+        },
+        "property": "mobility",
+        "group_value": "TEDEX SKB ($E_{\\mathrm{g}}=0.194$ eV)",
+        "color": "#3C5488",
+        "marker": "None",
+        "linestyle": ":",
+        "line_width": 2.0
+      },
+      {
+        "source": "showcase/cases/03_bi2sbte3_two_band_convergence/data/kim2017_x075_full300K.csv",
+        "y": {
+          "column": "Hall_Mobility_cm2_V-1_s-1",
+          "label": "$\\mu_{\\mathrm{H}}$ (cm$^2$ V$^{-1}$ s$^{-1}$)"
+        },
+        "property": "mobility",
+        "group_value": "Exp. + Lit. ($x=0.75$, 300 K)",
+        "color": "#79ADD8",
+        "marker": "o",
+        "marker_size": 6.0,
+        "alpha": 0.9,
+        "linestyle": "none",
+        "line_width": 0.0
+      }
+    ],
+    "xlabel": "$n_{\\mathrm{H}}$ (cm$^{-3}$)",
+    "ylabel": "$\\mu_{\\mathrm{H}}$ (cm$^2$ V$^{-1}$ s$^{-1}$)",
+    "xscale": "log",
+    "yscale": "log",
+    "xlim": [
+      5e+18,
+      5e+20
+    ],
+    "ylim": [
+      40,
+      1000
+    ],
+    "x_log_ticks": "decade",
+    "y_log_ticks": "decade",
+    "legend": "inside",
+    "legend_loc": "lower left"
+  },
+  "output": {
+    "dir": "showcase/cases/03_bi2sbte3_two_band_convergence/figures",
+    "stem": "fig4c_mobility_model_comparison",
+    "formats": [
+      "svg",
+      "png"
+    ],
+    "copy_to_data_dir": false,
+    "normalized_csv": false
+  }
+}

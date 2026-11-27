@@ -1,0 +1,106 @@
+{
+  "name": "kim2017_zt_compare",
+  "data": [
+    "showcase/cases/03_bi2sbte3_two_band_convergence/data/tedex_tb_extended_curves.csv"
+  ],
+  "plot": {
+    "kind": "line",
+    "x": {
+      "column": "nH_cm-3",
+      "label": "$n_{\\mathrm{H}}$ (cm$^{-3}$)"
+    },
+    "series": [
+      {
+        "source": "showcase/cases/03_bi2sbte3_two_band_convergence/data/kim2017_paper_tb_curve.csv",
+        "y": {
+          "column": "zT_Kim_TB",
+          "label": "$zT$"
+        },
+        "property": "zt",
+        "group_value": "Kim et al. (2017) TB ($zT_{\\max}=1.03$)",
+        "color": "#F39B7F",
+        "marker": "None",
+        "linestyle": "-",
+        "line_width": 2.5
+      },
+      {
+        "source": "showcase/cases/03_bi2sbte3_two_band_convergence/data/tedex_tb_extended_curves.csv",
+        "y": {
+          "column": "zT_TB_sym",
+          "label": "$zT$"
+        },
+        "property": "zt",
+        "group_value": "TEDEX Two-Band (Sym., $\\kappa_{\\mathrm{L}}=0.97$)",
+        "color": "#E64B35",
+        "marker": "None",
+        "linestyle": "--",
+        "line_width": 2.1
+      },
+      {
+        "source": "showcase/cases/03_bi2sbte3_two_band_convergence/data/performance_curve.csv",
+        "y": {
+          "column": "ZT_model",
+          "label": "$zT$"
+        },
+        "property": "zt",
+        "group_value": "TEDEX SPB ($zT_{\\max}=1.01$)",
+        "color": "#00A087",
+        "marker": "None",
+        "linestyle": "-.",
+        "line_width": 1.9
+      },
+      {
+        "source": "showcase/cases/03_bi2sbte3_two_band_convergence/data/kim2017_x075_full300K_skb_curve.csv",
+        "y": {
+          "column": "ZT_SKB",
+          "label": "$zT$"
+        },
+        "property": "zt",
+        "group_value": "TEDEX SKB ($E_{\\mathrm{g}}=0.194$ eV)",
+        "color": "#3C5488",
+        "marker": "None",
+        "linestyle": ":",
+        "line_width": 1.9
+      },
+      {
+        "source": "showcase/cases/03_bi2sbte3_two_band_convergence/data/kim2017_x075_tableS2.csv",
+        "y": {
+          "column": "ZT",
+          "label": "$zT$"
+        },
+        "property": "zt",
+        "group_value": "Kim et al. Zone-Levelled (Table S2)",
+        "color": "#79ADD8",
+        "marker": "o",
+        "marker_size": 6.8,
+        "alpha": 0.95,
+        "linestyle": "none",
+        "line_width": 0.0
+      }
+    ],
+    "xlabel": "$n_{\\mathrm{H}}$ (cm$^{-3}$)",
+    "ylabel": "$zT$ (300 K)",
+    "xscale": "log",
+    "xlim": [
+      5e+18,
+      1.2e+20
+    ],
+    "ylim": [
+      0,
+      1.25
+    ],
+    "x_log_ticks": "decade",
+    "legend": "inside",
+    "legend_loc": "lower left"
+  },
+  "output": {
+    "dir": "showcase/cases/03_bi2sbte3_two_band_convergence/figures",
+    "stem": "fig5a_zt_model_comparison",
+    "formats": [
+      "svg",
+      "png"
+    ],
+    "copy_to_data_dir": false,
+    "normalized_csv": false
+  }
+}

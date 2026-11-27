@@ -1,0 +1,36 @@
+{
+  "name": "heatmap_xyz",
+  "plot": {
+    "kind": "heatmap",
+    "cmap": "soft-br",
+    "annotate_cells": true,
+    "cell_format": "{:.2f}",
+    "x": {
+      "column": "X",
+      "label": "X"
+    },
+    "z": {
+      "column": "Z",
+      "label": "$zT$"
+    },
+    "series": [
+      {
+        "y": {
+          "column": "Y",
+          "label": "Y"
+        },
+        "property": "y"
+      }
+    ],
+    "xlabel": "X",
+    "ylabel": "Y",
+    "zlabel": "$zT$"
+  },
+  "output": {
+    "dir": "outputs/figures/flexible",
+    "stem": "heatmap_xyz",
+    "formats": ["png", "pdf"],
+    "normalized_csv": true,
+    "copy_to_data_dir": true
+  }
+}

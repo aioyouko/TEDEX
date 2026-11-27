@@ -1,0 +1,43 @@
+{
+  "name": "te_temperature_vs_seebeck",
+  "plot": {
+    "kind": "line",
+    "x": {
+      "column": "Temperature",
+      "label": "$T$ (K)"
+    },
+    "group": {
+      "semantic": "sample"
+    },
+    "series": [
+      {
+        "y": {
+          "column": "Seebeck",
+          "scale": 1000000.0,
+          "label": "$S$ (µV K$^{-1}$)"
+        },
+        "property": "seebeck",
+        "marker": "o",
+        "line_width": 2.2
+      }
+    ],
+    "xlabel": "$T$ (K)",
+    "x_major": 100,
+    "x_minor": 50,
+    "ylabel": "$S$ (µV K$^{-1}$)",
+    "legend": "inside",
+    "legend_loc": "best",
+    "x_margin": 0.06,
+    "y_margin": 0.12
+  },
+  "output": {
+    "dir": "outputs/figures/te",
+    "stem": "te_temperature_vs_seebeck",
+    "formats": [
+      "png",
+      "pdf"
+    ],
+    "normalized_csv": true,
+    "copy_to_data_dir": true
+  }
+}

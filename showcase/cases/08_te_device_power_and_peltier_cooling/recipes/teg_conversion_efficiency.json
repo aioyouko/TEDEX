@@ -1,0 +1,68 @@
+{
+  "name": "02_teg_conversion_efficiency",
+  "sources": [
+    {
+      "path": "showcase/cases/08_te_device_power_and_peltier_cooling/data/teg_efficiency/eff_dt_550K.csv",
+      "metadata": {
+        "sample": "$\\Delta T = 550$ K"
+      }
+    },
+    {
+      "path": "showcase/cases/08_te_device_power_and_peltier_cooling/data/teg_efficiency/eff_dt_500K.csv",
+      "metadata": {
+        "sample": "$\\Delta T = 500$ K"
+      }
+    },
+    {
+      "path": "showcase/cases/08_te_device_power_and_peltier_cooling/data/teg_efficiency/eff_dt_450K.csv",
+      "metadata": {
+        "sample": "$\\Delta T = 450$ K"
+      }
+    },
+    {
+      "path": "showcase/cases/08_te_device_power_and_peltier_cooling/data/teg_efficiency/eff_dt_350K.csv",
+      "metadata": {
+        "sample": "$\\Delta T = 350$ K"
+      }
+    }
+  ],
+  "plot": {
+    "kind": "line",
+    "color_set": "science",
+    "x": {
+      "column": "Current_A",
+      "label": "$I$ (A)"
+    },
+    "group": {
+      "column": "sample"
+    },
+    "series": [
+      {
+        "y": {
+          "column": "Efficiency_pct",
+          "label": "$\\eta$ (%)"
+        },
+        "property": "efficiency"
+      }
+    ],
+    "xlabel": "$I$ (A)",
+    "ylabel": "$\\eta$ (%)",
+    "ylim": [
+      0,
+      14.0
+    ],
+    "legend": "inside",
+    "x_margin": 0.06,
+    "y_margin": 0.12
+  },
+  "output": {
+    "dir": "showcase/cases/08_te_device_power_and_peltier_cooling/figures",
+    "stem": "02_teg_conversion_efficiency",
+    "formats": [
+      "svg",
+      "png"
+    ],
+    "normalized_csv": false,
+    "copy_to_data_dir": false
+  }
+}

@@ -1,0 +1,77 @@
+{
+  "model": "Single-Kane-Band (SKB)",
+  "input_csv": "data/processed/PbSe_SPB_SKB/isothermal/x0_fit/rt_303K_x0_only.csv",
+  "config": {
+    "temperature_k": 303.0,
+    "eg_ev": 0.2712,
+    "fit_eg": false,
+    "fixed_mstar": null,
+    "valley_degeneracy": 4.0,
+    "anisotropy_k": 1.0,
+    "use_hall_factor": false,
+    "density_kg_m3": null,
+    "sound_velocity_m_s": null,
+    "kappa_lattice_w_mk": null,
+    "nh_unit": "cm^-3",
+    "seebeck_unit": "auto",
+    "sigma_unit": "auto",
+    "pf_unit": "auto",
+    "curve_points": 240
+  },
+  "fit": {
+    "Temperature_K": 303.0,
+    "Eg_eV": 0.2712,
+    "nonparabolicity_alpha": 0.09627772781821495,
+    "mstar_dos_over_me": 0.28085526912356507,
+    "spb_apparent_mstar_over_me": 0.2717138815142065,
+    "mstar_band_over_me": 0.11145748741438974,
+    "mstar_inertial_over_me": 0.11145748741438972,
+    "mu0_cm2_Vs": 5092.260601627808,
+    "deformation_potential_Xi_eV": null,
+    "seebeck_rmse_uV_K": 1.4210854715202004e-13,
+    "seebeck_mae_uV_K": 1.4210854715202004e-13,
+    "diagnostics": {
+      "n_observations": 2,
+      "n_free_parameters": 2,
+      "degrees_of_freedom": 0,
+      "condition_number": 1.6226265863128495,
+      "parameter_uncertainties": {
+        "mstar_dos_over_me": {
+          "value": 0.28085526912356507,
+          "std_error": 3.9796086394900925e-16,
+          "ci95_halfwidth": 7.800032933400581e-16,
+          "relative_se_pct": 1.4169606473500856e-13
+        },
+        "mu0_cm2_Vs": {
+          "value": 5092.260601627808,
+          "std_error": 9.392713469887778e-12,
+          "ci95_halfwidth": 1.8409718400980044e-11,
+          "relative_se_pct": 1.8445076174784288e-13
+        }
+      },
+      "correlation_matrix": {
+        "mstar_dos_over_me": {
+          "mstar_dos_over_me": 1.0,
+          "mu0_cm2_Vs": -0.3811
+        },
+        "mu0_cm2_Vs": {
+          "mstar_dos_over_me": -0.3811,
+          "mu0_cm2_Vs": 1.0
+        }
+      },
+      "collinear_pairs": [],
+      "identifiability_warnings": [
+        "Number of observations (2) <= fitted parameters (2); solution is underdetermined."
+      ]
+    }
+  },
+  "outputs": {
+    "points_csv": "outputs\\PbSe_SPB_SKB\\x0_no_hall_factor\\rt_mobility_skb_303K\\rt_303K_x0_only_skb_points.csv",
+    "curve_csv": "outputs\\PbSe_SPB_SKB\\x0_no_hall_factor\\rt_mobility_skb_303K\\rt_303K_x0_only_skb_curve.csv",
+    "figures": [
+      "outputs\\PbSe_SPB_SKB\\x0_no_hall_factor\\rt_mobility_skb_303K\\rt_303K_x0_only_skb_fit.png",
+      "outputs\\PbSe_SPB_SKB\\x0_no_hall_factor\\rt_mobility_skb_303K\\rt_303K_x0_only_skb_fit.svg"
+    ],
+    "data_dir_figures": []
+  }
+}

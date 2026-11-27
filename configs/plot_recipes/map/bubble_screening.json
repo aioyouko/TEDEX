@@ -1,0 +1,42 @@
+{
+  "name": "bubble_screening",
+  "plot": {
+    "kind": "bubble",
+    "cmap": "soft-br",
+    "size_range": [80, 540],
+    "x": {
+      "column": "kappa_L",
+      "label": "$\\kappa_{\\mathrm{L}}$ (W m$^{-1}$ K$^{-1}$)"
+    },
+    "z": {
+      "column": "T_K",
+      "label": "$T$ (K)"
+    },
+    "size": {
+      "column": "ZT"
+    },
+    "label": {
+      "column": "Material"
+    },
+    "series": [
+      {
+        "y": {
+          "column": "PF",
+          "label": "$PF$ ($\\mu$W cm$^{-1}$ K$^{-2}$)"
+        },
+        "property": "power_factor"
+      }
+    ],
+    "annotate": true,
+    "xlabel": "$\\kappa_{\\mathrm{L}}$ (W m$^{-1}$ K$^{-1}$)",
+    "ylabel": "$PF$ ($\\mu$W cm$^{-1}$ K$^{-2}$)",
+    "zlabel": "$T$ (K)"
+  },
+  "output": {
+    "dir": "outputs/figures/flexible",
+    "stem": "bubble_screening",
+    "formats": ["png", "pdf"],
+    "normalized_csv": true,
+    "copy_to_data_dir": true
+  }
+}

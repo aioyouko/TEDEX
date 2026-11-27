@@ -15,7 +15,7 @@
         "property": "carrier_concentration",
         "group_value": "$n_{\\mathrm{H}}$",
         "marker": "o",
-        "line_width": 1.4
+        "line_width": 2.2
       }
     ],
     "xlabel": "$T$ (K)",
@@ -25,13 +25,16 @@
     "yscale": "log",
     "y_tick_format": "plain",
     "legend": "none",
-    "x_margin": 0.04,
-    "y_margin": 0.08
+    "x_margin": 0.06,
+    "y_margin": 0.12
   },
   "output": {
     "dir": "outputs/figures/flexible",
     "stem": "temperature_vs_carrier_concentration",
-    "formats": ["png", "pdf"],
+    "formats": [
+      "png",
+      "pdf"
+    ],
     "normalized_csv": true,
     "copy_to_data_dir": true
   }

@@ -1,0 +1,36 @@
+{
+  "name": "temperature_vs_zt_benchmark",
+  "plot": {
+    "kind": "benchmark",
+    "x": {
+      "semantic": "temperature",
+      "label": "$T$ (K)"
+    },
+    "group": {
+      "semantic": "sample"
+    },
+    "series": [
+      {
+        "y": {
+          "semantic": "zt",
+          "label": "$zT$"
+        },
+        "property": "zt"
+      }
+    ],
+    "highlight": ["This work"],
+    "xlabel": "$T$ (K)",
+    "ylabel": "$zT$",
+    "x_major": 100,
+    "x_minor": 50,
+    "legend": "inside",
+    "legend_loc": "upper left"
+  },
+  "output": {
+    "dir": "outputs/figures/flexible",
+    "stem": "temperature_vs_zt_benchmark",
+    "formats": ["png", "pdf"],
+    "normalized_csv": true,
+    "copy_to_data_dir": true
+  }
+}

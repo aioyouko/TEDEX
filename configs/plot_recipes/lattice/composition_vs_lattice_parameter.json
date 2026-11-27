@@ -15,19 +15,22 @@
         "property": "lattice_parameter",
         "group_value": "Lattice parameter",
         "marker": "o",
-        "marker_size": 5.5
+        "marker_size": 11.0
       }
     ],
     "xlabel": "Content",
     "ylabel": "Lattice Parameter ($\\AA$)",
     "legend": "none",
     "x_margin": 0.06,
-    "y_margin": 0.08
+    "y_margin": 0.12
   },
   "output": {
     "dir": "outputs/figures/flexible",
     "stem": "lattice_composition_vs_lattice_parameter",
-    "formats": ["png", "pdf"],
+    "formats": [
+      "png",
+      "pdf"
+    ],
     "normalized_csv": true,
     "copy_to_data_dir": true
   }

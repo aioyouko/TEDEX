@@ -1,0 +1,47 @@
+{
+  "name": "fit_with_residual",
+  "plot": {
+    "kind": "fit_residual",
+    "fill_components": true,
+    "x": {
+      "column": "X",
+      "label": "$2\\theta$ (degree)"
+    },
+    "series": [
+      {
+        "y": { "column": "Observed", "label": "Intensity (a.u.)" },
+        "role": "observed",
+        "group_value": { "value": "Observed" },
+        "legend_label": { "value": "Observed" }
+      },
+      {
+        "y": { "column": "Calculated", "label": "Intensity (a.u.)" },
+        "role": "calculated",
+        "group_value": { "value": "Calculated" },
+        "legend_label": { "value": "Calculated" }
+      },
+      {
+        "y": { "column": "Peak_1", "label": "Intensity (a.u.)" },
+        "role": "component",
+        "group_value": { "value": "Peak 1" },
+        "legend_label": { "value": "Peak 1" }
+      },
+      {
+        "y": { "column": "Peak_2", "label": "Intensity (a.u.)" },
+        "role": "component",
+        "group_value": { "value": "Peak 2" },
+        "legend_label": { "value": "Peak 2" }
+      }
+    ],
+    "xlabel": "$2\\theta$ (degree)",
+    "ylabel": "Intensity (a.u.)",
+    "residual_ylabel": "$I_{\\mathrm{obs}} - I_{\\mathrm{calc}}$"
+  },
+  "output": {
+    "dir": "outputs/figures/flexible",
+    "stem": "fit_with_residual",
+    "formats": ["png", "pdf"],
+    "normalized_csv": true,
+    "copy_to_data_dir": true
+  }
+}

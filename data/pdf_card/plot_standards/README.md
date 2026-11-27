@@ -34,9 +34,9 @@ Best practice:
 Example commands:
 
 ```bash
-python main.py plot-xrd CHY-1038 --pdf-card CuInTe2_PDF_97_023_8958
-python main.py plot-xrd CHY-1038 --pdf-card data/pdf_card/plot_standards/CuInTe2_PDF_97_023_8958.csv
-python main.py plot-xrd CHY-1038 --pdf-card CuInTe2_PDF_97_023_8958 --pdf-card Sb2Te3_PDF_97_067_0037
+python main.py plot-xrd TE-1038 --pdf-card CuInTe2_PDF_97_023_8958
+python main.py plot-xrd TE-1038 --pdf-card data/pdf_card/plot_standards/CuInTe2_PDF_97_023_8958.csv
+python main.py plot-xrd TE-1038 --pdf-card CuInTe2_PDF_97_023_8958 --pdf-card Sb2Te3_PDF_97_067_0037
 ```
 
 With two `--pdf-card` options, the first card is drawn below the measured XRD

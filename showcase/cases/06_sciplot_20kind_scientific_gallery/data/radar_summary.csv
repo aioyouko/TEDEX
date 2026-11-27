@@ -1,0 +1,11 @@
+Material,Metric,Score
+Pristine CuInTe$_2$,$zT_{\max}$,0.62
+Pristine CuInTe$_2$,$zT_{\mathrm{avg}}$,0.34
+Pristine CuInTe$_2$,$\sigma_{300\mathrm{K}}$,95.0
+Pristine CuInTe$_2$,$1/\kappa_{\mathrm{L}}$,0.68
+Pristine CuInTe$_2$,$H_{\mathrm{V}}$,1.82
+Optimized (This work),$zT_{\max}$,1.48
+Optimized (This work),$zT_{\mathrm{avg}}$,0.86
+Optimized (This work),$\sigma_{300\mathrm{K}}$,235.0
+Optimized (This work),$1/\kappa_{\mathrm{L}}$,1.92
+Optimized (This work),$H_{\mathrm{V}}$,2.51

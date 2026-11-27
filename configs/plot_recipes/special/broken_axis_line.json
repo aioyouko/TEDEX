@@ -1,0 +1,34 @@
+{
+  "name": "broken_axis_line",
+  "plot": {
+    "kind": "broken_y",
+    "broken_subkind": "line",
+    "ylim": [0, 320],
+    "ylim_top": [1100, 1500],
+    "x": {
+      "semantic": "temperature",
+      "label": "$T$ (K)"
+    },
+    "group": {
+      "semantic": "sample"
+    },
+    "series": [
+      {
+        "y": {
+          "semantic": "conductivity",
+          "label": "$\\sigma$ (S cm$^{-1}$)"
+        },
+        "property": "conductivity"
+      }
+    ],
+    "xlabel": "$T$ (K)",
+    "ylabel": "$\\sigma$ (S cm$^{-1}$)"
+  },
+  "output": {
+    "dir": "outputs/figures/flexible",
+    "stem": "broken_axis_line",
+    "formats": ["png", "pdf"],
+    "normalized_csv": true,
+    "copy_to_data_dir": true
+  }
+}

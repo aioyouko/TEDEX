@@ -1,0 +1,117 @@
+{
+  "model": "Two-Band (bipolar)",
+  "input_csv": "showcase/cases/03_bi2sbte3_two_band_convergence/data/kim2017_x075_2.64E19_bipolar.csv",
+  "fit": {
+    "mode": "bipolar",
+    "majority_carrier": "p-type",
+    "allow_semimetal": false,
+    "scattering_r": -0.5,
+    "goldsmid_sharp_Eg_eV": 0.16119,
+    "fitted_Eg0_eV": 0.194,
+    "Eg_300K_eV": 0.194,
+    "n_dop_cm-3": 3.4960684336253485e+19,
+    "m_maj_dos_over_me": 1.14,
+    "m_min_dos_over_me": 0.78,
+    "mu0_maj_300K_cm2_Vs": 401.60713265022105,
+    "mu_imp_maj_cm2_Vs": null,
+    "b_mu_min_over_maj": 3.507057441643644,
+    "weighted_mobility_ratio_A0_e_over_h": 1.9848491526146015,
+    "weighted_mobility_ratio_A_drift_300K_e_over_h": 2.283122554327687,
+    "seebeck_rmse_uV_K": 10.19572295404407,
+    "diagnostics": {
+      "n_observations": 30,
+      "n_free_parameters": 5,
+      "degrees_of_freedom": 25,
+      "condition_number": 654.5660369906913,
+      "parameter_uncertainties": {
+        "n_dop_1e19_cm3": {
+          "value": 3.4960684336253487,
+          "std_error": 0.29927846510232525,
+          "ci95_halfwidth": 0.6163755368870701,
+          "relative_se_pct": 8.560429258874086
+        },
+        "mu0_maj_300K_cm2_Vs": {
+          "value": 401.60713265022105,
+          "std_error": 32.83215107419839,
+          "ci95_halfwidth": 67.61908090713207,
+          "relative_se_pct": 8.175191226694047
+        },
+        "b_mu_min_over_maj": {
+          "value": 3.507057441643644,
+          "std_error": 0.603968332431295,
+          "ci95_halfwidth": 1.2438960652843698,
+          "relative_se_pct": 17.221512406943486
+        },
+        "kL_A_W_m": {
+          "value": 268.4061078939089,
+          "std_error": 321.329908789972,
+          "ci95_halfwidth": 661.791335305647,
+          "relative_se_pct": 119.71780795576456
+        },
+        "kL_inf_W_mK": {
+          "value": 0.05000000000000076,
+          "std_error": 0.9067687845422079,
+          "ci95_halfwidth": 1.8675252701979224,
+          "relative_se_pct": 1813.5375690843882
+        }
+      },
+      "correlation_matrix": {
+        "n_dop_1e19_cm3": {
+          "n_dop_1e19_cm3": 1.0,
+          "mu0_maj_300K_cm2_Vs": -0.8792,
+          "b_mu_min_over_maj": 0.1011,
+          "kL_A_W_m": -0.4698,
+          "kL_inf_W_mK": 0.5031
+        },
+        "mu0_maj_300K_cm2_Vs": {
+          "n_dop_1e19_cm3": -0.8792,
+          "mu0_maj_300K_cm2_Vs": 1.0,
+          "b_mu_min_over_maj": -0.1577,
+          "kL_A_W_m": 0.432,
+          "kL_inf_W_mK": -0.4771
+        },
+        "b_mu_min_over_maj": {
+          "n_dop_1e19_cm3": 0.1011,
+          "mu0_maj_300K_cm2_Vs": -0.1577,
+          "b_mu_min_over_maj": 1.0,
+          "kL_A_W_m": 0.477,
+          "kL_inf_W_mK": -0.5146
+        },
+        "kL_A_W_m": {
+          "n_dop_1e19_cm3": -0.4698,
+          "mu0_maj_300K_cm2_Vs": 0.432,
+          "b_mu_min_over_maj": 0.477,
+          "kL_A_W_m": 1.0,
+          "kL_inf_W_mK": -0.9886
+        },
+        "kL_inf_W_mK": {
+          "n_dop_1e19_cm3": 0.5031,
+          "mu0_maj_300K_cm2_Vs": -0.4771,
+          "b_mu_min_over_maj": -0.5146,
+          "kL_A_W_m": -0.9886,
+          "kL_inf_W_mK": 1.0
+        }
+      },
+      "collinear_pairs": [
+        {
+          "param_a": "kL_A_W_m",
+          "param_b": "kL_inf_W_mK",
+          "r": -0.9886
+        }
+      ],
+      "identifiability_warnings": [
+        "Strong parameter collinearity between kL_A_W_m and kL_inf_W_mK (r = -0.989); consider fixing one from independent Hall/optical/DFT data.",
+        "High Jacobian condition number (654.6); check parameter uncertainties and correlations."
+      ]
+    }
+  },
+  "outputs": {
+    "points_csv": "showcase/cases/03_bi2sbte3_two_band_convergence/_tmp_bip/kim2017_x075_2.64E19_bipolar_two_band_bipolar_points.csv",
+    "curve_csv": "showcase/cases/03_bi2sbte3_two_band_convergence/_tmp_bip/kim2017_x075_2.64E19_bipolar_two_band_bipolar_curve.csv",
+    "figures": [
+      "showcase/cases/03_bi2sbte3_two_band_convergence/_tmp_bip/kim2017_x075_2.64E19_bipolar_two_band_bipolar.svg",
+      "showcase/cases/03_bi2sbte3_two_band_convergence/_tmp_bip/kim2017_x075_2.64E19_bipolar_two_band_bipolar.png"
+    ],
+    "data_dir_figures": []
+  }
+}

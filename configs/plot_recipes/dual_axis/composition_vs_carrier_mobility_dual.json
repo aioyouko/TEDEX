@@ -17,7 +17,7 @@
         "legend_label": "$n_{\\mathrm{H}}$",
         "color": "#d62728",
         "marker": "o",
-        "line_width": 1.4
+        "line_width": 2.2
       },
       {
         "y": {
@@ -29,7 +29,7 @@
         "legend_label": "$\\mu_{\\mathrm{H}}$",
         "color": "#1f77b4",
         "marker": "s",
-        "line_width": 1.4
+        "line_width": 2.2
       }
     ],
     "xlabel": "Content",
@@ -38,13 +38,16 @@
     "yscale": "log",
     "y_tick_format": "plain",
     "legend_loc": "best",
-    "x_margin": 0.04,
-    "y_margin": 0.08
+    "x_margin": 0.06,
+    "y_margin": 0.12
   },
   "output": {
     "dir": "outputs/figures/flexible",
     "stem": "dual_axis_composition_vs_carrier_mobility",
-    "formats": ["png", "pdf"],
+    "formats": [
+      "png",
+      "pdf"
+    ],
     "normalized_csv": true,
     "copy_to_data_dir": true
   }

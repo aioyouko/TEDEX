@@ -1,0 +1,42 @@
+{
+  "name": "percent_stacked_bar",
+  "plot": {
+    "kind": "percent_stacked_bar",
+    "x": {
+      "column": "Category",
+      "label": "Sample"
+    },
+    "series": [
+      {
+        "y": {
+          "column": "Phase_1",
+          "label": "Fraction (%)"
+        },
+        "property": "fraction",
+        "group_value": "Main Phase",
+        "legend_label": "Main Phase"
+      },
+      {
+        "y": {
+          "column": "Phase_2",
+          "label": "Fraction (%)"
+        },
+        "property": "fraction",
+        "group_value": "Secondary Phase",
+        "legend_label": "Secondary Phase"
+      }
+    ],
+    "xlabel": "Sample",
+    "ylabel": "Contribution (%)",
+    "legend": "inside",
+    "bar_width": 0.56,
+    "bar_labels": true
+  },
+  "output": {
+    "dir": "outputs/figures/flexible",
+    "stem": "percent_stacked_bar",
+    "formats": ["png", "pdf"],
+    "normalized_csv": true,
+    "copy_to_data_dir": true
+  }
+}

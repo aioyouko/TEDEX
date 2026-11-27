@@ -3,10 +3,14 @@ requires = ["setuptools>=68", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "te-analysis-plotting"
-version = "1.4.2"
-description = "Thermoelectric analysis, plotting, SPB fitting, and demo workflow package."
+name = "tedex"
+version = "1.5.0"
+description = "TEDEX: Thermoelectric data processing, publication plotting (plot-te, plot-xrd, sciplot), and phonon/electronic transport physics modeling."
 readme = "README.md"
+license = { file = "LICENSE" }
+authors = [
+    { name = "TEDEX Contributors" },
+]
 requires-python = ">=3.10"
 dependencies = [
     "numpy>=1.23",
@@ -26,6 +30,11 @@ test = ["pytest>=7"]
 
 [project.scripts]
 te = "te_analysis.launcher:main"
+tedex = "te_analysis.launcher:main"
+te-init = "te_analysis.tools.workspace_init:main"
+te-plot-te = "te_analysis.tools.te_plotting.cli:main"
+te-plot-xrd = "te_analysis.tools.xrd.cli:main"
+te-sciplot = "te_analysis.tools.sciplot.cli:main"
 te-spb-effective-mass = "te_analysis.tools.spb.effective_mass_fit:main"
 te-spb-performance = "te_analysis.tools.spb.performance_fit:main"
 te-spb-conductivity = "te_analysis.tools.spb.conductivity_fit:main"

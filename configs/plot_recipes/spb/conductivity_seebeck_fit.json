@@ -10,41 +10,44 @@
       {
         "y": {
           "column": "Seebeck_model_abs_uV_K",
-          "label": "$|S|$ (\u00b5V K$^{-1}$)"
+          "label": "$|S|$ (µV K$^{-1}$)"
         },
         "property": "seebeck",
         "group_value": "SPB S model",
         "marker": "None",
         "linestyle": "-",
-        "line_width": 1.4
+        "line_width": 2.2
       },
       {
         "y": {
           "column": "Seebeck_abs_uV_K",
-          "label": "$|S|$ (\u00b5V K$^{-1}$)"
+          "label": "$|S|$ (µV K$^{-1}$)"
         },
         "property": "seebeck",
         "group_value": "S data",
         "color": "#e76f6f",
         "marker": "o",
-        "marker_size": 5.5,
+        "marker_size": 11.0,
         "alpha": 0.75,
         "linestyle": "none",
         "line_width": 0.0
       }
     ],
     "xlabel": "$\\sigma$ (S cm$^{-1}$)",
-    "ylabel": "$|S|$ (\u00b5V K$^{-1}$)",
+    "ylabel": "$|S|$ (µV K$^{-1}$)",
     "xscale": "log",
     "x_log_ticks": "decade",
     "legend": "inside",
     "legend_loc": "best",
-    "x_margin": 0.04,
-    "y_margin": 0.08
+    "x_margin": 0.06,
+    "y_margin": 0.12
   },
   "output": {
     "dir": "results/spb_fitting",
     "stem": "conductivity_seebeck_fit",
-    "formats": ["png", "pdf"]
+    "formats": [
+      "png",
+      "pdf"
+    ]
   }
 }

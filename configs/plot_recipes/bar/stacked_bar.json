@@ -1,0 +1,45 @@
+{
+  "name": "stacked_bar",
+  "plot": {
+    "kind": "stacked_bar",
+    "x": {
+      "column": "Category",
+      "label": "Sample"
+    },
+    "series": [
+      {
+        "y": {
+          "column": "Component_A",
+          "label": "Value"
+        },
+        "property": "value",
+        "group_value": "Component A",
+        "legend_label": "Component A"
+      },
+      {
+        "y": {
+          "column": "Component_B",
+          "label": "Value"
+        },
+        "property": "value",
+        "group_value": "Component B",
+        "legend_label": "Component B"
+      }
+    ],
+    "xlabel": "Sample",
+    "ylabel": "Value",
+    "legend": "inside",
+    "legend_loc": "best",
+    "bar_width": 0.56,
+    "bar_labels": false,
+    "stack_total_labels": true,
+    "y_margin": 0.14
+  },
+  "output": {
+    "dir": "outputs/figures/flexible",
+    "stem": "stacked_bar",
+    "formats": ["png", "pdf"],
+    "normalized_csv": true,
+    "copy_to_data_dir": true
+  }
+}

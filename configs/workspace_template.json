@@ -1,0 +1,54 @@
+{
+  "schema_version": "tedex-workspace/v1",
+  "project": {
+    "name": "Thermoelectric Project",
+    "grouping_mode": "by_batch",
+    "batch_prefix": "",
+    "raw_dir_pattern": "{batch_id}",
+    "processed_dir_pattern": "{batch_id}",
+    "figure_dir_pattern": "{domain}/{batch_id}",
+    "default_batches": []
+  },
+  "paths": {
+    "raw": "data/raw",
+    "processed": "data/processed",
+    "metadata": "data/metadata",
+    "references": "data/references/literature",
+    "xrd_cards": "data/references/xrd_cards",
+    "figures": "outputs/figures",
+    "models": "outputs/models",
+    "reports": "outputs/reports",
+    "cache": "outputs/cache",
+    "recipes": "configs/plot_recipes",
+    "schemas": "configs/schemas"
+  },
+  "data_types": {
+    "electrical_transport": {
+      "instrument": "ZEM-3",
+      "formats": [".txt", ".csv"],
+      "conductivity_unit": "S/cm",
+      "seebeck_unit": "uV/K",
+      "temperature_unit": "K"
+    },
+    "thermal_transport": {
+      "instrument": "LFA",
+      "formats": [".csv", ".xlsx"],
+      "diffusivity_unit": "mm^2/s"
+    },
+    "xrd": {
+      "formats": [".xy", ".csv", ".txt"],
+      "wavelength_angstrom": 1.5406,
+      "radiation": "Cu-Ka"
+    },
+    "hall_and_cp": {
+      "hall_nh_unit": "cm^-3",
+      "cp_unit": "J/molK"
+    }
+  },
+  "plotting": {
+    "formats": ["svg"],
+    "color_set": "npg",
+    "copy_beside_data": true,
+    "data_figures_subdir": "figures"
+  }
+}

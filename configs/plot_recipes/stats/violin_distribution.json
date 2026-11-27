@@ -1,0 +1,30 @@
+{
+  "name": "violin_distribution",
+  "plot": {
+    "kind": "violin",
+    "show_points": true,
+    "show_mean": true,
+    "x": {
+      "column": "Sample",
+      "label": "Sample"
+    },
+    "series": [
+      {
+        "y": {
+          "column": "Value",
+          "label": "Measured Value"
+        },
+        "property": "value"
+      }
+    ],
+    "xlabel": "Sample",
+    "ylabel": "Measured Value"
+  },
+  "output": {
+    "dir": "outputs/figures/flexible",
+    "stem": "violin_distribution",
+    "formats": ["png", "pdf"],
+    "normalized_csv": true,
+    "copy_to_data_dir": true
+  }
+}

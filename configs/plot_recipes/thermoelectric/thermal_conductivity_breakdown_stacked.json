@@ -1,0 +1,44 @@
+{
+  "name": "thermal_conductivity_breakdown_stacked",
+  "plot": {
+    "kind": "stacked_bar",
+    "x": {
+      "column": "Sample",
+      "label": "Composition"
+    },
+    "series": [
+      {
+        "y": {
+          "column": "kappa_L",
+          "label": "$\\kappa$ (W m$^{-1}$ K$^{-1}$)"
+        },
+        "property": "thermal_conductivity",
+        "group_value": "$\\kappa_{\\mathrm{L}}$",
+        "legend_label": "$\\kappa_{\\mathrm{L}}$"
+      },
+      {
+        "y": {
+          "column": "kappa_e",
+          "label": "$\\kappa$ (W m$^{-1}$ K$^{-1}$)"
+        },
+        "property": "thermal_conductivity",
+        "group_value": "$\\kappa_{\\mathrm{e}}$",
+        "legend_label": "$\\kappa_{\\mathrm{e}}$"
+      }
+    ],
+    "xlabel": "Composition",
+    "ylabel": "$\\kappa$ (W m$^{-1}$ K$^{-1}$)",
+    "legend": "inside",
+    "legend_loc": "upper right",
+    "bar_width": 0.55,
+    "stack_total_labels": true,
+    "y_margin": 0.14
+  },
+  "output": {
+    "dir": "outputs/figures/flexible",
+    "stem": "thermal_conductivity_breakdown_stacked",
+    "formats": ["png", "pdf"],
+    "normalized_csv": true,
+    "copy_to_data_dir": true
+  }
+}

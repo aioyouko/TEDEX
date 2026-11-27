@@ -39,9 +39,7 @@ def main() -> int:
             label = f"{test_file.stem}.{name}"
             try:
                 getattr(module, name)()
-            except BaseException as exc:  # pytest's Skipped is not an Exception subclass
-                if isinstance(exc, KeyboardInterrupt):
-                    raise
+            except Exception as exc:
                 if type(exc).__name__ in ("SkipTest", "Skipped"):
                     print(f"SKIP  {label}: {exc}")
                     skipped += 1

@@ -1,41 +1,29 @@
 # Project Structure
 
-The root directory is intentionally reserved for the user-facing launcher:
+The root directory keeps `main.py` as the thin user-facing launcher shim, while all library logic and CLI entry points live inside the installable `te_analysis/` (`tedex`) package:
 
-```text
-main.py
-```
-
-Everything else should land in one of these buckets:
-
-| Folder | Purpose |
+| Folder / File | Purpose |
 | --- | --- |
-| `te_analysis/` | Importable source modules used by `main.py` and `scripts/`. |
-| `scripts/analysis/` | Runnable analysis workflows such as TE processing, assessment, agent analysis, and Bayesian prediction. |
-| `scripts/plotting/` | Runnable plotting entry scripts for TE, XRD, and flexible recipes. |
-| `scripts/` | Supporting sync/export utilities and small shell helpers. |
-| `data/raw/` | Original instrument exports and unmodified source data. |
-| `data/processed/` | Cleaned CSVs and extracted features generated from raw data. |
-| `data/lab/` | Batch/sample ledgers and lab metadata. |
-| `data/reference/` | Literature/reference datasets, extracted text, PDF-card data, and reference features. |
-| `configs/` | Plot recipes, batch templates, and schema/config JSON files. |
-| `results/` | Standard outputs produced by the analysis scripts. |
-| `outputs/` | Standalone artifacts, exported figures, decks, tables, logs, and one-off generated outputs. |
-| `outputs/cache/` | Ignored local cache archive for `.pyc`, Jupyter checkpoints, and macOS metadata. |
-| `notebooks/` | Scratch notebooks and exploratory work. |
-| `docs/` | Human-facing instructions, command notes, and project documentation. |
-| `skills/` | Local skill instructions used by Codex workflows. |
-| `external/` | Third-party snapshots or archived external code. |
+| `main.py` | Root launcher shim delegating to `te_analysis.launcher:main`. |
+| `te_analysis/` | Self-contained installable Python package (`tedex`). |
+| `te_analysis/pipeline/` | Raw ZEM/LFA batch analysis (`analyze`), batch assessment (`assess`), Bayesian GP prediction (`bayes`), and mechanistic AI reports (`agent`). |
+| `te_analysis/sync/` | Bidirectional `lab_metadata.md` <-> JSON ledger sync, Notion payload builder, and Excel reference extractor. |
+| `te_analysis/tools/` | Core plotting & physics modules (`te_plotting/`, `sciplot/`, `xrd/`, `spb/`, `physics/`, `workspace_init.py`, `legend_layout.py`, `colors.py`, `figure_naming.py`). |
+| `te_analysis/plotstyle/` | Publication typography and axis formatting helpers. |
+| `te_analysis/paths.py` | Centralized workspace configuration & path resolver (`ENGINE_ROOT` vs `WORKSPACE_ROOT`). |
+| `plugin/tedex/` | Standalone Mode-B software-layer plugin (`plugin.json`, generic `rules/AGENTS.md`, and 5 orthogonal skills). |
+| `.agents/skills/` | Workspace-level 5 orthogonal skills (`te-workspace`, `te-data-pipeline`, `te-plotting`, `te-xrd`, `te-physics-models`). |
+| `scripts/` | Backward-compatible CLI shims and standalone utility/example scripts. |
+| `configs/` | `workspace_template.json`, reusable `plot_recipes/`, `sciplot_demos/`, and metadata schema templates. |
+| `data/` | Public `demo/` and `pdf_card/` examples; user `raw/`, `processed/`, `metadata/` (`lab/`), and `references/` remain gitignored. |
+| `outputs/` | Unified root for generated `figures/`, numeric `models/`, Markdown `reports/`, and disposable `cache/` (gitignored). |
+| `docs/` | Command references (`COMMANDS.md`, `SCIPLOT.md`, `COLOR_SETS.md`, `RELEASING.md`). |
+| `tests/` | Unit, golden-master, and Mode-B workspace integration tests (`pytest` or `python tests/run_tests.py`). |
 
-## Practical Rules
+## Practical Conventions
 
-1. User-facing tools should be launched through `python main.py <command>`.
-2. New reusable functions go in `src/tools/` or another `te_analysis/` package.
-3. New experiment data goes in `data/raw/` first, then processed outputs go in
-   `data/processed/`.
-4. New generated plots from standard TE/XRD scripts should stay under
-   `outputs/figures/te/` or `outputs/figures/xrd/`.
-5. One-off figures or exports should go under `outputs/figures/`,
-   `outputs/tables/`, or `outputs/logs/`.
-6. Notebooks should be named for their purpose, not `Untitled.ipynb`.
-7. Do not hardcode API keys in notebooks or scripts; use `.env`.
+1. Execute tools through `python main.py <command> ... --no-show` (or `te <command> ... --no-show` after `pip install -e .`).
+2. Keep all installable CLI targets inside `te_analysis/` so standard wheel installations (`pip install .`) work outside the source repository.
+3. Resolve workspace directories through `te_analysis/paths.py` (`configs/workspace.json`) rather than hardcoding `data/` or `outputs/` paths.
+4. Keep legends inside plot axes by default (`legend_layout.py`) unless `--legend outside` is explicitly requested.
+5. Never commit API keys or private measurement files; keep `.env` and local `configs/workspace.json` gitignored.

@@ -1,0 +1,70 @@
+{
+ "conductivity_summary.json": {
+  "conductivity_mae_S_cm-1": 4019.405340101645,
+  "conductivity_max_abs_error_S_cm-1": 11853.302024106757,
+  "conductivity_rmse_S_cm-1": 5408.646153330581,
+  "config": {
+   "conductivity_column": null,
+   "conductivity_unit": "S/cm",
+   "curve_points": 300,
+   "curve_xlim": null,
+   "eta_max": 80.0,
+   "eta_min": -60.0,
+   "figure_formats": [
+    "png"
+   ],
+   "kappa_lattice": "0.5",
+   "mobility_u0_cm2_vs": null,
+   "mstar_over_me": 1.0,
+   "pf_column": null,
+   "pf_unit": "uW cm^-1 K^-2",
+   "properties": [
+    "seebeck",
+    "pf",
+    "zt"
+   ],
+   "scattering_lambda": 0.0,
+   "seebeck_column": null,
+   "seebeck_unit": "uV/K",
+   "temperature": 300.0,
+   "use_hall_factor": true,
+   "zt_column": null
+  },
+  "input_csv": "/var/folders/v5/xn601fnn1k3by34l3ljt59hh0000gn/T/tmpndk8uhea/900K.csv",
+  "kappa_lattice_W_m-1_K-1": 0.5,
+  "kappa_lattice_source": "specified",
+  "mobility_model": {
+   "alpha": 0.0,
+   "band_mass_over_me": null,
+   "deformation_potential_eV": null,
+   "density_kg_m3": null,
+   "inertial_mass_over_me": null,
+   "model": "spb_u0",
+   "mu0_cm2_vs": 14247.793979223583,
+   "mu_ref_cm2_vs": 14247.793979223583,
+   "n_ref_cm3": 1.5899604859984255e+19,
+   "scattering_lambda": 0.0,
+   "sound_velocity_m_s": null,
+   "source": "fit",
+   "valley_degeneracy": null
+  },
+  "mstar": {
+   "mode": "normalization",
+   "mstar_over_me": 1.0,
+   "note": "For conductivity-based fitting, fitted u0 is a weighted mobility prefactor that absorbs the chosen m* normalization."
+  },
+  "n_points": 21,
+  "properties": [
+   "seebeck",
+   "pf",
+   "zt"
+  ],
+  "source_columns": {
+   "conductivity": "conductivity",
+   "pf": "PF",
+   "seebeck": "S",
+   "zt": "ZT"
+  },
+  "temperature_K": 300.0
+ }
+}

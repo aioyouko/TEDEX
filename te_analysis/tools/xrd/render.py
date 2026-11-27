@@ -25,11 +25,13 @@ from te_analysis.tools.selectors import (
     normalize_batch_id as normalize_batch_selector,
     truncate_with_digest,
 )
+from te_analysis.tools.colors import get_colors
+from te_analysis.tools.legend_layout import axis_limit_locked, place_legend_inside
 from te_analysis.tools.plot import (
-    DEFAULT_COLORS,
     DEFAULT_LEGEND_FONT_SIZE,
     DEFAULT_SUBPLOT_ASPECT,
     DEFAULT_SUBPLOT_HEIGHT,
+    DEFAULT_TICK_LABEL_SIZE,
     apply_plot_style,
     apply_subplot_aspect,
     figure_size_for_subplot_aspect,
@@ -37,13 +39,15 @@ from te_analysis.tools.plot import (
     save_figure,
 )
 
+from te_analysis.paths import get_workspace
 from te_analysis.tools.xrd.io import XRDPattern, right_xrd_pattern_label, safe_filename, format_xrd_pattern_label
 from te_analysis.tools.xrd.pdf_cards import PDFStandard, _clean_peaks
 
 
-DEFAULT_XRD_SAVE_DIR = Path("data/raw/figures")
+DEFAULT_XRD_SAVE_DIR = get_workspace().xrd_figure_dir()
 DEFAULT_TWO_THETA_RANGE = (10.0, 80.0)
 DEFAULT_XRD_LINE_WIDTH = 0.9
+DEFAULT_XRD_LABEL_FONT_SIZE = 7.5
 DEFAULT_PDF_HEIGHT_FRACTION = 1.0
 DEFAULT_BOTTOM_PDF_GAP_FRACTION = 0.25
 _MIN_LABELED_BOTTOM_PDF_GAP_FRACTION = 0.60
@@ -164,9 +168,9 @@ def plot_xrd_comparison(
     ylim: tuple[float | None, float | None] | None = None,
     colors: Sequence[str] | None = None,
     line_width: float = DEFAULT_XRD_LINE_WIDTH,
-    tick_labelsize: float = 10,
-    legend_font_size: float = DEFAULT_LEGEND_FONT_SIZE,
-    legend_outside: bool = True,
+    tick_labelsize: float = DEFAULT_TICK_LABEL_SIZE,
+    legend_font_size: float | None = None,
+    legend_outside: bool = False,
     show_legend: bool = False,
     fixed_aspect: bool = False,
     right_labels: bool = True,
@@ -177,6 +181,7 @@ def plot_xrd_comparison(
     top_standard_color: str = "#1f77b4",
     show_pdf_labels: bool = False,
     bottom_standard_gap_fraction: float = DEFAULT_BOTTOM_PDF_GAP_FRACTION,
+    color_set: str | None = None,
 ):
     """
     Plot stacked XRD patterns with optional bottom and top PDF-card references.
@@ -195,6 +200,9 @@ def plot_xrd_comparison(
         raise ValueError("bottom_standard_gap_fraction must be finite and non-negative")
 
     apply_plot_style(mode="single")
+    annotation_font_size = DEFAULT_XRD_LABEL_FONT_SIZE if legend_font_size is None else legend_font_size
+    explicit_legend_fs = legend_font_size
+    legend_font_size = DEFAULT_LEGEND_FONT_SIZE if legend_font_size is None else legend_font_size
     prepared = []
     for pattern in patterns:
         clipped_x, clipped_y = _clip_pattern(pattern.two_theta, pattern.intensity, two_theta_range)
@@ -224,7 +232,8 @@ def plot_xrd_comparison(
             subplot_height=DEFAULT_SUBPLOT_HEIGHT,
         )
     fig, ax = plt.subplots(figsize=figsize)
-    color_cycle = cycle(colors or DEFAULT_COLORS)
+    palette = get_colors(color_set, len(patterns))
+    color_cycle = cycle(colors or palette)
     handles = []
     labels = []
     range_high = two_theta_range[1] if two_theta_range else None
@@ -248,7 +257,7 @@ def plot_xrd_comparison(
                 right_xrd_pattern_label(pattern),
                 ha="right",
                 va="center",
-                fontsize=legend_font_size,
+                fontsize=annotation_font_size,
                 color="black",
             )
 
@@ -271,7 +280,7 @@ def plot_xrd_comparison(
             label_x=label_x,
             label_y=standard_height + standard_label_padding,
             label_vertical_alignment="bottom",
-            label_font_size=legend_font_size,
+            label_font_size=annotation_font_size,
             show_label=show_pdf_labels,
         )
         handles.append(handle)
@@ -304,7 +313,7 @@ def plot_xrd_comparison(
             label_x=label_x,
             label_y=top_standard_label_bottom + 0.5 * top_standard_label_band,
             label_vertical_alignment="center",
-            label_font_size=legend_font_size,
+            label_font_size=annotation_font_size,
             show_label=show_pdf_labels,
         )
         handles.append(handle)
@@ -348,7 +357,21 @@ def plot_xrd_comparison(
             )
             fig.tight_layout(rect=(0, 0, 0.82, 1))
         else:
-            ax.legend(fontsize=legend_font_size, loc="best", frameon=False)
+            y_locks = axis_limit_locked(ylim) if ylim is not None else (True, False)
+            place_legend_inside(
+                ax,
+                handles,
+                labels,
+                loc="upper left",
+                fontsize=legend_font_size,
+                fontsize_locked=explicit_legend_fs is not None,
+                frameon=True,
+                facecolor="white",
+                edgecolor="black",
+                framealpha=0.92,
+                ylim_locked=y_locks,
+                xlim_locked=(True, True),
+            )
             fig.tight_layout()
     else:
         fig.tight_layout()
@@ -380,9 +403,9 @@ def plot_xrd_raw_and_normalized(
     colors: Sequence[str] | None = None,
     line_width: float = DEFAULT_XRD_LINE_WIDTH,
     subplot_aspect: str = DEFAULT_SUBPLOT_ASPECT,
-    tick_labelsize: float = 10,
-    legend_font_size: float = DEFAULT_LEGEND_FONT_SIZE,
-    legend_outside: bool = True,
+    tick_labelsize: float = DEFAULT_TICK_LABEL_SIZE,
+    legend_font_size: float | None = None,
+    legend_outside: bool = False,
     show_legend: bool = False,
     fixed_aspect: bool = False,
     right_labels: bool = True,
@@ -393,6 +416,7 @@ def plot_xrd_raw_and_normalized(
     top_standard_color: str = "#1f77b4",
     show_pdf_labels: bool = False,
     standard_height_fraction: float = DEFAULT_PDF_HEIGHT_FRACTION,
+    color_set: str | None = None,
 ) -> dict[str, str]:
     save_dir = Path(save_dir)
     if nest_in_comparison_dir:
@@ -412,6 +436,7 @@ def plot_xrd_raw_and_normalized(
         ylim=ylim,
         overlap=overlap,
         colors=colors,
+        color_set=color_set,
         line_width=line_width,
         subplot_aspect=subplot_aspect,
         tick_labelsize=tick_labelsize,
@@ -438,6 +463,7 @@ def plot_xrd_raw_and_normalized(
         ylim=ylim,
         overlap=overlap,
         colors=colors,
+        color_set=color_set,
         line_width=line_width,
         subplot_aspect=subplot_aspect,
         tick_labelsize=tick_labelsize,
@@ -475,9 +501,9 @@ def plot_xrd_separate(
     colors: Sequence[str] | None = None,
     line_width: float = DEFAULT_XRD_LINE_WIDTH,
     subplot_aspect: str = DEFAULT_SUBPLOT_ASPECT,
-    tick_labelsize: float = 10,
-    legend_font_size: float = DEFAULT_LEGEND_FONT_SIZE,
-    legend_outside: bool = True,
+    tick_labelsize: float = DEFAULT_TICK_LABEL_SIZE,
+    legend_font_size: float | None = None,
+    legend_outside: bool = False,
     show_legend: bool = False,
     fixed_aspect: bool = False,
     right_labels: bool = True,
@@ -488,6 +514,7 @@ def plot_xrd_separate(
     top_standard_color: str = "#1f77b4",
     show_pdf_labels: bool = False,
     standard_height_fraction: float = DEFAULT_PDF_HEIGHT_FRACTION,
+    color_set: str | None = None,
 ) -> dict[str, str]:
     save_dir = Path(save_dir)
     if nest_in_comparison_dir:
@@ -495,7 +522,10 @@ def plot_xrd_separate(
     save_dir = save_dir / "separate"
     paths: dict[str, str] = {}
 
+    palette = get_colors(color_set, len(patterns))
+    color_cycle = cycle(colors or palette)
     for pattern in patterns:
+        sample_color = next(color_cycle)
         sample_key = safe_filename(pattern.sample_id or pattern.label)
         for suffix, normalized in _normalized_modes_for_output_mode(output_mode):
             plot_path = plot_xrd_comparison(
@@ -512,7 +542,8 @@ def plot_xrd_separate(
                 two_theta_range=two_theta_range,
                 ylim=ylim,
                 overlap=overlap,
-                colors=colors,
+                colors=[sample_color],
+                color_set=color_set,
                 line_width=line_width,
                 subplot_aspect=subplot_aspect,
                 tick_labelsize=tick_labelsize,

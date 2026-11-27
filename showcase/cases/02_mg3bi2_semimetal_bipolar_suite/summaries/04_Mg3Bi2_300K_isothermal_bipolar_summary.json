@@ -1,0 +1,48 @@
+{
+  "model": "Two-Band (isothermal-bipolar)",
+  "input_csv": "showcase/cases/02_mg3bi2_semimetal_bipolar_suite/data/Mg3Bi2_Te_300K_series.csv",
+  "fit": {
+    "mode": "isothermal-bipolar",
+    "Temperature_K": 300.0,
+    "majority_carrier": "n-type",
+    "scattering_r": 0.0,
+    "m_maj_dos_over_me": 0.53,
+    "m_min_dos_over_me": 0.276,
+    "Eg_eV": -0.1,
+    "Eg_in_kBT": -3.868172707183361,
+    "b_mu_min_over_maj": 0.33,
+    "weighted_mobility_ratio_A0_e_over_h": 8.063734895810656,
+    "mu0_maj_cm2_Vs": 285.606725991566,
+    "seebeck_rmse_uV_K": 13.4783461969377,
+    "diagnostics": {
+      "n_observations": 10,
+      "n_free_parameters": 1,
+      "degrees_of_freedom": 9,
+      "condition_number": 1.0,
+      "parameter_uncertainties": {
+        "mu0_maj_cm2_Vs": {
+          "value": 285.606725991566,
+          "std_error": 22.160205553839283,
+          "ci95_halfwidth": 50.12986772393673,
+          "relative_se_pct": 7.758992886775949
+        }
+      },
+      "correlation_matrix": {
+        "mu0_maj_cm2_Vs": {
+          "mu0_maj_cm2_Vs": 1.0
+        }
+      },
+      "collinear_pairs": [],
+      "identifiability_warnings": []
+    }
+  },
+  "outputs": {
+    "points_csv": "showcase/cases/02_mg3bi2_semimetal_bipolar_suite/_tmp_07/Mg3Bi2_Te_300K_series_two_band_isothermal_bipolar_points.csv",
+    "curve_csv": "showcase/cases/02_mg3bi2_semimetal_bipolar_suite/_tmp_07/Mg3Bi2_Te_300K_series_two_band_isothermal_bipolar_curve.csv",
+    "figures": [
+      "showcase/cases/02_mg3bi2_semimetal_bipolar_suite/_tmp_07/Mg3Bi2_Te_300K_series_two_band_isothermal_bipolar.svg",
+      "showcase/cases/02_mg3bi2_semimetal_bipolar_suite/_tmp_07/Mg3Bi2_Te_300K_series_two_band_isothermal_bipolar.png"
+    ],
+    "data_dir_figures": []
+  }
+}

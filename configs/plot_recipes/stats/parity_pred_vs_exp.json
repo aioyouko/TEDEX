@@ -1,0 +1,34 @@
+{
+  "name": "parity_pred_vs_exp",
+  "plot": {
+    "kind": "parity",
+    "subplot_aspect": "1:1",
+    "parity_band_pct": 10.0,
+    "show_metrics": true,
+    "x": {
+      "column": "Experimental",
+      "label": "Experimental $zT$"
+    },
+    "group": {
+      "column": "Split"
+    },
+    "series": [
+      {
+        "y": {
+          "column": "Predicted",
+          "label": "Predicted $zT$"
+        },
+        "property": "zt"
+      }
+    ],
+    "xlabel": "Experimental $zT$",
+    "ylabel": "Predicted $zT$"
+  },
+  "output": {
+    "dir": "outputs/figures/flexible",
+    "stem": "parity_pred_vs_exp",
+    "formats": ["png", "pdf"],
+    "normalized_csv": true,
+    "copy_to_data_dir": true
+  }
+}

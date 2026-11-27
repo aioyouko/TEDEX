@@ -1,0 +1,20 @@
+{
+  "Temperature_K": 303.0,
+  "Eg_eV": 0.2712,
+  "alpha": 0.09627772781821495,
+  "SKB_fixed_Pisarenko_mstar": {
+    "mstar_dos_over_me": 0.49871918894277933,
+    "mu0_cm2_Vs": 2146.9195196256082,
+    "rmse_cm2_Vs": 97.66363860319065
+  },
+  "SPB_fixed_Pisarenko_mstar": {
+    "mstar_app_over_me": 0.35352276759328755,
+    "mu0_cm2_Vs": 1217.826944820071,
+    "rmse_cm2_Vs": 138.95771388968797
+  },
+  "Empirical_Power_Law": {
+    "mu_at_1e19_cm2_Vs": 1103.1356632101533,
+    "exponent_p": -0.6151972339219488,
+    "rmse_cm2_Vs": 51.728807342786034
+  }
+}

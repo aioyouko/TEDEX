@@ -1,0 +1,37 @@
+{
+  "model": "Two-Band (semimetal)",
+  "input_csv": "showcase/cases/02_mg3bi2_semimetal_bipolar_suite/data/Mg3_2Bi2_semimetal.csv",
+  "fit": {
+    "mode": "semimetal",
+    "closure": "hall-split",
+    "scattering_r": -0.5,
+    "m_e_dos_over_me": 0.53,
+    "m_h_dos_over_me": 0.276,
+    "n_dop_cm-3": 0.0,
+    "reference_T_K": 300.0,
+    "Eg_at_ref_T_eV": -0.10049404665481133,
+    "Eg_mean_eV": -0.09302760328830956,
+    "Se_at_ref_T_uV_K": -149.99278109875942,
+    "Sh_at_ref_T_uV_K": 89.0071358515721,
+    "mu_e_at_ref_T_cm2_Vs": 364.3835895852061,
+    "mu_h_at_ref_T_cm2_Vs": 84.50529930368093,
+    "mu_e_over_mu_h_at_ref_T": 4.311961410558948,
+    "weighted_mobility_ratio_A_at_ref_T": 11.474269519585333,
+    "RH_calc_over_exp_at_ref_T": 1.246982481452333,
+    "seebeck_rmse_uV_K": 0.0,
+    "diagnostics": {
+      "n_temperatures": 11,
+      "physical_partial_mobilities": true,
+      "identifiability_warnings": []
+    }
+  },
+  "outputs": {
+    "points_csv": "showcase/cases/02_mg3bi2_semimetal_bipolar_suite/_tmp_01/Mg3_2Bi2_semimetal_two_band_semimetal_points.csv",
+    "curve_csv": "showcase/cases/02_mg3bi2_semimetal_bipolar_suite/_tmp_01/Mg3_2Bi2_semimetal_two_band_semimetal_curve.csv",
+    "figures": [
+      "showcase/cases/02_mg3bi2_semimetal_bipolar_suite/_tmp_01/Mg3_2Bi2_semimetal_two_band_semimetal.svg",
+      "showcase/cases/02_mg3bi2_semimetal_bipolar_suite/_tmp_01/Mg3_2Bi2_semimetal_two_band_semimetal.png"
+    ],
+    "data_dir_figures": []
+  }
+}

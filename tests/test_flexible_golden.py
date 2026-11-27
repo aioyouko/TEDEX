@@ -17,7 +17,7 @@ from pathlib import Path
 
 from _helpers import GOLDEN_DIR, REPO_ROOT, run_cli, skip
 
-RECIPE_DIR = REPO_ROOT / "configs" / "flexible_plot_demos"
+RECIPE_DIR = REPO_ROOT / "configs" / "sciplot_demos"
 
 RECIPES = [
     "composition_grouped_bar",
@@ -31,13 +31,13 @@ RECIPES = [
 ]
 
 
-def _run_recipe(name: str):
+def _run_recipe(name: str, cli_cmd: str = "sciplot"):
     recipe = RECIPE_DIR / f"{name}.json"
     assert recipe.exists(), recipe
     with tempfile.TemporaryDirectory() as tmp:
         result = run_cli(
             [
-                "flexible",
+                cli_cmd,
                 "--recipe",
                 str(recipe),
                 "--output-dir",
@@ -93,3 +93,5 @@ def test_flexible_temperature_multi_panel():
 
 def test_flexible_temperature_seebeck_line():
     _run_recipe("temperature_seebeck_line")
+    # Also verify backward-compatible `flexible` CLI alias
+    _run_recipe("temperature_seebeck_line", cli_cmd="flexible")

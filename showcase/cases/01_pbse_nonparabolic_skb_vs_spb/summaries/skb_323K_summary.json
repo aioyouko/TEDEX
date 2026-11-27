@@ -1,0 +1,66 @@
+{
+  "model": "Single-Kane-Band (SKB)",
+  "input_csv": "data/processed/PbSe_SPB_SKB/isothermal/x0_fit/pisarenko_only_x0_323K.csv",
+  "config": {
+    "temperature_k": 323.0,
+    "eg_ev": 0.2792,
+    "fit_eg": false,
+    "fixed_mstar": null,
+    "valley_degeneracy": 4.0,
+    "anisotropy_k": 1.0,
+    "use_hall_factor": false,
+    "density_kg_m3": null,
+    "sound_velocity_m_s": null,
+    "kappa_lattice_w_mk": null,
+    "nh_unit": "cm^-3",
+    "seebeck_unit": "auto",
+    "sigma_unit": "auto",
+    "pf_unit": "auto",
+    "curve_points": 240
+  },
+  "fit": {
+    "Temperature_K": 323.0,
+    "Eg_eV": 0.2792,
+    "nonparabolicity_alpha": 0.09969192849831277,
+    "mstar_dos_over_me": 0.2777909451276782,
+    "spb_apparent_mstar_over_me": 0.2703981467394593,
+    "mstar_band_over_me": 0.11024140963072919,
+    "mstar_inertial_over_me": 0.11024140963072919,
+    "mu0_cm2_Vs": null,
+    "deformation_potential_Xi_eV": null,
+    "seebeck_rmse_uV_K": 1.1368683772161603e-13,
+    "seebeck_mae_uV_K": 1.1368683772161603e-13,
+    "diagnostics": {
+      "n_observations": 1,
+      "n_free_parameters": 1,
+      "degrees_of_freedom": 0,
+      "condition_number": 1.0,
+      "parameter_uncertainties": {
+        "mstar_dos_over_me": {
+          "value": 0.2777909451276782,
+          "std_error": 3.088075496196232e-16,
+          "ci95_halfwidth": 6.052627972544614e-16,
+          "relative_se_pct": 1.1116544834738553e-13
+        }
+      },
+      "correlation_matrix": {
+        "mstar_dos_over_me": {
+          "mstar_dos_over_me": 1.0
+        }
+      },
+      "collinear_pairs": [],
+      "identifiability_warnings": [
+        "Number of observations (1) <= fitted parameters (1); solution is underdetermined."
+      ]
+    }
+  },
+  "outputs": {
+    "points_csv": "outputs\\PbSe_SPB_SKB\\x0_no_hall_factor\\pisarenko_skb_323K\\pisarenko_only_x0_323K_skb_points.csv",
+    "curve_csv": "outputs\\PbSe_SPB_SKB\\x0_no_hall_factor\\pisarenko_skb_323K\\pisarenko_only_x0_323K_skb_curve.csv",
+    "figures": [
+      "outputs\\PbSe_SPB_SKB\\x0_no_hall_factor\\pisarenko_skb_323K\\pisarenko_only_x0_323K_skb_fit.png",
+      "outputs\\PbSe_SPB_SKB\\x0_no_hall_factor\\pisarenko_skb_323K\\pisarenko_only_x0_323K_skb_fit.svg"
+    ],
+    "data_dir_figures": []
+  }
+}

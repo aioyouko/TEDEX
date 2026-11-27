@@ -42,7 +42,7 @@ def _write_synthetic_xy(directory: Path) -> Path:
         for peak, height in ((27.4, 8000), (31.7, 4500), (45.5, 2600), (56.4, 1400)):
             intensity += height * math.exp(-((two_theta - peak) ** 2) / (2 * 0.05**2))
         rows.append(f"{two_theta:.4f} {intensity:.2f}")
-    path = directory / "CHY-9999-A_XRD.xy"
+    path = directory / "TE-9999-A_XRD.xy"
     path.write_text("\n".join(rows) + "\n")
     return path
 
@@ -271,7 +271,7 @@ def test_plot_xrd_cli_accepts_two_pdf_cards():
         hidden_svg = hidden_figures[0].read_text(encoding="utf-8").lower()
         assert "bottom cli card" not in hidden_svg
         assert "top cli card" not in hidden_svg
-        assert "chy-9999-a_xrd" in hidden_svg
+        assert "te-9999-a_xrd" in hidden_svg
         assert "stroke: #d62728" in hidden_svg
         assert "stroke: #1f77b4" in hidden_svg
 
@@ -306,7 +306,7 @@ def test_plot_xrd_cli_accepts_two_pdf_cards():
         svg = figures[0].read_text(encoding="utf-8").lower()
         assert "bottom cli card" in svg
         assert "top cli card" in svg
-        assert "chy-9999-a_xrd" in svg
+        assert "te-9999-a_xrd" in svg
         assert "stroke: #123456" in svg
         assert "stroke: #abcdef" in svg
 

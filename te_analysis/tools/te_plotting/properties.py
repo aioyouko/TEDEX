@@ -64,10 +64,10 @@ PROPERTY_FLAG_ALIASES = {
     "resistivity": ("rho",),
     "seebeck": ("s",),
     "conductivity": ("sigma", "cond"),
-    "thermal_conductivity": ("kappa", "kt", "ktot", "tc"),
+    "thermal_conductivity": ("thermal", "kappa", "kt", "ktot", "tc"),
     "diffusivity": ("diff", "alpha"),
-    "carrier_thermal_conductivity": ("ke", "kappa-e"),
-    "lattice_thermal_conductivity": ("kl", "kappa-l", "lattice"),
+    "carrier_thermal_conductivity": ("ke", "kE", "kappa-e"),
+    "lattice_thermal_conductivity": ("kl", "kL", "kappa-l", "lattice"),
     "lorenz_number": ("lorenz",),
     "generalized_fermi_level": ("eta",),
     "weighted_mobility": ("muw", "mu-w"),
@@ -291,5 +291,4 @@ def get_requested_single_properties(args):
             selected_properties.append(property_key)
 
     return selected_properties or None
-
 

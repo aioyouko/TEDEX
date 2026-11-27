@@ -1,0 +1,81 @@
+{
+  "mode": "multi",
+  "input_csv": "showcase/cases/07_classical_te_transport_and_spb_suite/data/cu2se_spb_series.csv",
+  "group_by": "curve_id",
+  "temperature_column": null,
+  "params_csv": "showcase/cases/07_classical_te_transport_and_spb_suite/data/cu2se_spb_params.csv",
+  "n_groups": 2,
+  "properties": [
+    "pf",
+    "zt"
+  ],
+  "groups": [
+    {
+      "curve_id": "300",
+      "label": "$/mathrm{Cu_2Se}$ (300 K)",
+      "temperature_K": 300.0,
+      "mstar_mode": "fixed_mstar",
+      "mstar_over_me": 2.3,
+      "mobility_model": "spb_u0",
+      "mu0_cm2_vs": 35.0,
+      "mu_ref_cm2_vs": 35.0,
+      "kappa_lattice_W_m-1_K-1": 0.3,
+      "properties": "pf,zt",
+      "n_points": 9,
+      "points_path": "showcase/cases/07_classical_te_transport_and_spb_suite/summaries/groups/300/performance_points.csv",
+      "curve_path": "showcase/cases/07_classical_te_transport_and_spb_suite/summaries/groups/300/performance_curve.csv",
+      "summary_path": "showcase/cases/07_classical_te_transport_and_spb_suite/summaries/groups/300/performance_summary.json"
+    },
+    {
+      "curve_id": "750",
+      "label": "$/mathrm{Cu_2Se}$ (750 K)",
+      "temperature_K": 750.0,
+      "mstar_mode": "fixed_mstar",
+      "mstar_over_me": 3.2,
+      "mobility_model": "spb_u0",
+      "mu0_cm2_vs": 6.0,
+      "mu_ref_cm2_vs": 6.0,
+      "kappa_lattice_W_m-1_K-1": 0.4,
+      "properties": "pf,zt",
+      "n_points": 9,
+      "points_path": "showcase/cases/07_classical_te_transport_and_spb_suite/summaries/groups/750/performance_points.csv",
+      "curve_path": "showcase/cases/07_classical_te_transport_and_spb_suite/summaries/groups/750/performance_curve.csv",
+      "summary_path": "showcase/cases/07_classical_te_transport_and_spb_suite/summaries/groups/750/performance_summary.json"
+    }
+  ],
+  "config": {
+    "temperature": 300.0,
+    "nh_unit": "cm^-3",
+    "seebeck_unit": "uV/K",
+    "pf_unit": "uW cm^-1 K^-2",
+    "nh_column": null,
+    "seebeck_column": null,
+    "pf_column": null,
+    "zt_column": null,
+    "use_hall_factor": true,
+    "eta_min": -60.0,
+    "eta_max": 80.0,
+    "mstar_min": 0.02,
+    "mstar_max": 20.0,
+    "mstar_over_me": null,
+    "curve_points": 300,
+    "curve_xlim": [
+      1e+20,
+      2.5e+21
+    ],
+    "mobility_model": "spb_u0",
+    "mobility_u0_cm2_vs": null,
+    "mobility_cm2_vs": null,
+    "scattering_lambda": 0.0,
+    "deformation_potential_eV": null,
+    "density_kg_m3": null,
+    "sound_velocity_m_s": null,
+    "valley_degeneracy": 1.0,
+    "kappa_lattice": null,
+    "properties": null,
+    "figure_formats": [
+      "svg",
+      "png"
+    ]
+  }
+}

@@ -4,10 +4,6 @@
 !.env.example
 *.key
 
-# Claude Code: agent definitions are tracked; worktrees and local settings are not
-.claude/worktrees/
-.claude/settings.local.json
-
 # Python cache
 __pycache__/
 *.py[cod]
@@ -16,10 +12,12 @@ __pycache__/
 # Jupyter cache
 .ipynb_checkpoints/
 
-# macOS and editor metadata
+# macOS, editor, and local agent metadata
 .DS_Store
 .vscode/
 .idea/
+.claude/
+.pytest_cache/
 
 # Local virtual environments
 .venv/
@@ -31,14 +29,17 @@ outputs/cache/
 outputs/logs/
 *.log
 
-# Local generated artifacts
+# Local generated artifacts & archives
 outputs/*
 !outputs/.gitkeep
 results/*
 !results/.gitkeep
+*.zip
 
-# LaTeX build intermediates
+# LaTeX build intermediates & internal lab manuals
 docs/build/
+docs/project_intro_basic_operations.*
+docs/te_dex_chaptered_manual/
 *.aux
 *.fdb_latexmk
 *.fls
@@ -46,12 +47,36 @@ docs/build/
 *.synctex.gz
 *.xdv
 
-# Private lab data (keep local, never commit)
+# Private lab data & local workspace configs (keep local on disk, never commit)
+configs/workspace.json
+configs/lab_batches.json
+*samples*lists*.xlsx
+*_ZEM.txt
+*_LFA.csv
+*_LFA.xlsx
+scripts/plot_selected_te.sh
+scripts/analysis/compare_ftir_*.py
 data/raw/
 data/lab/
+data/metadata/
 data/processed/
 data/reference/
+data/references/
+data/performance_comparison/
+data/performance_comparision/
+data/extracted_te_review/
+data/inter/*
 !data/raw/.gitkeep
 !data/lab/.gitkeep
 !data/processed/.gitkeep
 !data/reference/.gitkeep
+!data/inter/.gitkeep
+
+# Demo data: publish only the curated example sets used in the docs
+data/demo/*
+!data/demo/spb_fitting/
+!data/demo/flexible_plotting/
+!data/demo/physics_fitting/
+
+# Repo hygiene
+_to_delete/

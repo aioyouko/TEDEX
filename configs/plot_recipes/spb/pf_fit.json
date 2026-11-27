@@ -10,41 +10,44 @@
       {
         "y": {
           "column": "Power_Factor_model_uW_cm-1_K-2",
-          "label": "$PF$ (\u00b5W cm$^{-1}$ K$^{-2}$)"
+          "label": "$PF$ (µW cm$^{-1}$ K$^{-2}$)"
         },
         "property": "power_factor",
         "group_value": "SPB PF model",
         "marker": "None",
         "linestyle": "-",
-        "line_width": 1.4
+        "line_width": 2.2
       },
       {
         "y": {
           "column": "Power_Factor_uW_cm-1_K-2",
-          "label": "$PF$ (\u00b5W cm$^{-1}$ K$^{-2}$)"
+          "label": "$PF$ (µW cm$^{-1}$ K$^{-2}$)"
         },
         "property": "power_factor",
         "group_value": "PF data",
         "color": "#e76f6f",
         "marker": "o",
-        "marker_size": 5.5,
+        "marker_size": 11.0,
         "alpha": 0.75,
         "linestyle": "none",
         "line_width": 0.0
       }
     ],
     "xlabel": "$n_{\\mathrm{H}}$ (cm$^{-3}$)",
-    "ylabel": "$PF$ (\u00b5W cm$^{-1}$ K$^{-2}$)",
+    "ylabel": "$PF$ (µW cm$^{-1}$ K$^{-2}$)",
     "xscale": "log",
     "x_log_ticks": "decade",
     "legend": "inside",
     "legend_loc": "best",
-    "x_margin": 0.04,
-    "y_margin": 0.08
+    "x_margin": 0.06,
+    "y_margin": 0.12
   },
   "output": {
     "dir": "results/spb_fitting",
     "stem": "pf_fit",
-    "formats": ["png", "pdf"]
+    "formats": [
+      "png",
+      "pdf"
+    ]
   }
 }

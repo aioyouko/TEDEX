@@ -36,6 +36,7 @@ _plot_te_properties() {
     'sigma:electrical conductivity alias'
     'cond:electrical conductivity alias'
     'thermal_conductivity:total thermal conductivity'
+    'thermal:total thermal conductivity alias'
     'kappa:total thermal conductivity alias'
     'kt:total thermal conductivity alias'
     'ktot:total thermal conductivity alias'
@@ -45,8 +46,10 @@ _plot_te_properties() {
     'alpha:thermal diffusivity alias'
     'carrier_thermal_conductivity:carrier thermal conductivity'
     'ke:carrier thermal conductivity alias'
+    'kE:carrier thermal conductivity alias'
     'lattice_thermal_conductivity:lattice thermal conductivity'
     'kl:lattice thermal conductivity alias'
+    'kL:lattice thermal conductivity alias'
     'lorenz_number:Lorenz number'
     'lorenz:Lorenz number alias'
     'generalized_fermi_level:generalized Fermi level'
@@ -86,7 +89,7 @@ _plot_te_selectors() {
   local -a batches csvs
 
   if [[ -d "$PLOT_TE_WORKSPACE/data/processed" ]]; then
-    batches=("${(@f)$(command find "$PLOT_TE_WORKSPACE/data/processed" -maxdepth 1 -type d -name 'CHY-*-processed' -exec basename {} \; 2>/dev/null)}")
+    batches=("${(@f)$(command find "$PLOT_TE_WORKSPACE/data/processed" -maxdepth 1 -type d -name '*-processed' -exec basename {} \; 2>/dev/null)}")
     batches=("${(@)batches%-processed}")
     (( ${#batches[@]} )) && compadd -a batches
   fi
@@ -108,6 +111,7 @@ _plot_te() {
     '--sigma[plot electrical conductivity]' \
     '--cond[plot electrical conductivity]' \
     '--thermal-conductivity[plot total thermal conductivity]' \
+    '--thermal[plot total thermal conductivity]' \
     '--kappa[plot total thermal conductivity]' \
     '--kt[plot total thermal conductivity]' \
     '--ktot[plot total thermal conductivity]' \
@@ -117,9 +121,11 @@ _plot_te() {
     '--alpha[plot thermal diffusivity]' \
     '--carrier-thermal-conductivity[plot carrier thermal conductivity]' \
     '--ke[plot carrier thermal conductivity]' \
+    '--kE[plot carrier thermal conductivity]' \
     '--kappa-e[plot carrier thermal conductivity]' \
     '--lattice-thermal-conductivity[plot lattice thermal conductivity]' \
     '--kl[plot lattice thermal conductivity]' \
+    '--kL[plot lattice thermal conductivity]' \
     '--kappa-l[plot lattice thermal conductivity]' \
     '--lattice[plot lattice thermal conductivity]' \
     '--lorenz-number[plot Lorenz number]' \
@@ -131,6 +137,7 @@ _plot_te() {
     '--mu-w[plot weighted mobility]' \
     '--quality-factor[plot quality factor]' \
     '--b[plot quality factor]' \
+    '--color-set[plot palette]:color set:(npg science classic blue-orange blue teal purple orange red gray legacy)' \
     '--zt[plot ZT]' \
     '--power-factor[plot power factor]' \
     '--pf[plot power factor]' \
@@ -138,7 +145,10 @@ _plot_te() {
     '--comparison-id[set output folder and filename prefix]:comparison id:' \
     '--xlim[set shared temperature axis limits]:low:' \
     '--ylim[set y-axis limits; use LOW HIGH or PROPERTY LOW HIGH]:value:' \
+    '--yscale[set shared y-axis scale]:scale:(linear log symlog)' \
+    '--yscal[alias for --yscale]:scale:(linear log symlog)' \
     '--subplot-aspect[set plot frame ratio, e.g. 10:8 or 1:1]:aspect ratio:' \
+    '--aspect[alias for --subplot-aspect]:aspect ratio:' \
     '--single-legend[set single-property legend placement]:legend:_plot_te_legends' \
     '--legend[add an inside legend to selected single-property plots]' \
     '--legend-font-size[set single-property legend font size in points]:font size:' \

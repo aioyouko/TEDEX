@@ -1,0 +1,236 @@
+{
+  "name": "pisarenko_323_523_723K_x0_fit_solid_hollow",
+  "plot": {
+    "kind": "line",
+    "x": {
+      "column": "nH_cm-3",
+      "label": "$n_{\\mathrm{H}}$ (cm$^{-3}$)"
+    },
+    "series": [
+      {
+        "source": "showcase/cases/01_pbse_nonparabolic_skb_vs_spb/data/pisarenko_x0_grid_323K.csv",
+        "y": {
+          "column": "Seebeck_SKB_uV_K",
+          "label": "$|S|$ ($\\mu$V K$^{-1}$)"
+        },
+        "property": "seebeck",
+        "group_value": "SKB_323K",
+        "legend_label": "323 K SKB ($0.28m_e$)",
+        "role": "reference",
+        "color": "#3C5488",
+        "marker": "None",
+        "linestyle": "-",
+        "line_width": 2.0,
+        "alpha": 0.96
+      },
+      {
+        "source": "showcase/cases/01_pbse_nonparabolic_skb_vs_spb/data/pisarenko_x0_grid_323K.csv",
+        "y": {
+          "column": "Seebeck_SPB_uV_K",
+          "label": "$|S|$ ($\\mu$V K$^{-1}$)"
+        },
+        "property": "seebeck",
+        "group_value": "SPB_323K",
+        "legend_label": "323 K SPB ($0.27m_e$)",
+        "role": "reference",
+        "color": "#3C5488",
+        "marker": "None",
+        "linestyle": "--",
+        "line_width": 1.45,
+        "alpha": 0.8
+      },
+      {
+        "source": "showcase/cases/01_pbse_nonparabolic_skb_vs_spb/data/pisarenko_x0_grid_523K.csv",
+        "y": {
+          "column": "Seebeck_SKB_uV_K",
+          "label": "$|S|$ ($\\mu$V K$^{-1}$)"
+        },
+        "property": "seebeck",
+        "group_value": "SKB_523K",
+        "legend_label": "523 K SKB ($0.35m_e$)",
+        "role": "reference",
+        "color": "#00A087",
+        "marker": "None",
+        "linestyle": "-",
+        "line_width": 2.0,
+        "alpha": 0.96
+      },
+      {
+        "source": "showcase/cases/01_pbse_nonparabolic_skb_vs_spb/data/pisarenko_x0_grid_523K.csv",
+        "y": {
+          "column": "Seebeck_SPB_uV_K",
+          "label": "$|S|$ ($\\mu$V K$^{-1}$)"
+        },
+        "property": "seebeck",
+        "group_value": "SPB_523K",
+        "legend_label": "523 K SPB ($0.36m_e$)",
+        "role": "reference",
+        "color": "#00A087",
+        "marker": "None",
+        "linestyle": "--",
+        "line_width": 1.45,
+        "alpha": 0.8
+      },
+      {
+        "source": "showcase/cases/01_pbse_nonparabolic_skb_vs_spb/data/pisarenko_x0_grid_723K.csv",
+        "y": {
+          "column": "Seebeck_SKB_uV_K",
+          "label": "$|S|$ ($\\mu$V K$^{-1}$)"
+        },
+        "property": "seebeck",
+        "group_value": "SKB_723K",
+        "legend_label": "723 K SKB ($0.45m_e$)",
+        "role": "reference",
+        "color": "#E64B35",
+        "marker": "None",
+        "linestyle": "-",
+        "line_width": 2.0,
+        "alpha": 0.96
+      },
+      {
+        "source": "showcase/cases/01_pbse_nonparabolic_skb_vs_spb/data/pisarenko_x0_grid_723K.csv",
+        "y": {
+          "column": "Seebeck_SPB_uV_K",
+          "label": "$|S|$ ($\\mu$V K$^{-1}$)"
+        },
+        "property": "seebeck",
+        "group_value": "SPB_723K",
+        "legend_label": "723 K SPB ($0.47m_e$)",
+        "role": "reference",
+        "color": "#E64B35",
+        "marker": "None",
+        "linestyle": "--",
+        "line_width": 1.45,
+        "alpha": 0.8
+      },
+      {
+        "source": "showcase/cases/01_pbse_nonparabolic_skb_vs_spb/data/pisarenko_x0_323K.csv",
+        "y": {
+          "column": "Seebeck_abs_uV_K",
+          "label": "$|S|$ ($\\mu$V K$^{-1}$)"
+        },
+        "property": "seebeck",
+        "group_value": "x0_323K",
+        "legend_label": "323 K $x=0$ fit (solid)",
+        "role": "highlight",
+        "color": "#3C5488",
+        "marker": "o",
+        "marker_size": 8.4,
+        "linestyle": "none",
+        "line_width": 0.0,
+        "alpha": 1.0
+      },
+      {
+        "source": "showcase/cases/01_pbse_nonparabolic_skb_vs_spb/data/pisarenko_x0_523K.csv",
+        "y": {
+          "column": "Seebeck_abs_uV_K",
+          "label": "$|S|$ ($\\mu$V K$^{-1}$)"
+        },
+        "property": "seebeck",
+        "group_value": "x0_523K",
+        "legend_label": "523 K $x=0$ fit (solid)",
+        "role": "highlight",
+        "color": "#00A087",
+        "marker": "s",
+        "marker_size": 8.4,
+        "linestyle": "none",
+        "line_width": 0.0,
+        "alpha": 1.0
+      },
+      {
+        "source": "showcase/cases/01_pbse_nonparabolic_skb_vs_spb/data/pisarenko_x0_723K.csv",
+        "y": {
+          "column": "Seebeck_abs_uV_K",
+          "label": "$|S|$ ($\\mu$V K$^{-1}$)"
+        },
+        "property": "seebeck",
+        "group_value": "x0_723K",
+        "legend_label": "723 K $x=0$ fit (solid)",
+        "role": "highlight",
+        "color": "#E64B35",
+        "marker": "D",
+        "marker_size": 8.4,
+        "linestyle": "none",
+        "line_width": 0.0,
+        "alpha": 1.0
+      },
+      {
+        "source": "showcase/cases/01_pbse_nonparabolic_skb_vs_spb/data/pisarenko_other_323K.csv",
+        "y": {
+          "column": "Seebeck_abs_uV_K",
+          "label": "$|S|$ ($\\mu$V K$^{-1}$)"
+        },
+        "property": "seebeck",
+        "group_value": "Other_323K",
+        "legend_label": "323 K $x=0.01$–$0.04$ (hollow)",
+        "role": "reference",
+        "color": "#3C5488",
+        "marker": "o",
+        "marker_size": 7.6,
+        "linestyle": "none",
+        "line_width": 0.0,
+        "alpha": 0.98
+      },
+      {
+        "source": "showcase/cases/01_pbse_nonparabolic_skb_vs_spb/data/pisarenko_other_523K.csv",
+        "y": {
+          "column": "Seebeck_abs_uV_K",
+          "label": "$|S|$ ($\\mu$V K$^{-1}$)"
+        },
+        "property": "seebeck",
+        "group_value": "Other_523K",
+        "legend_label": "523 K $x=0.01$–$0.04$ (hollow)",
+        "role": "reference",
+        "color": "#00A087",
+        "marker": "s",
+        "marker_size": 7.6,
+        "linestyle": "none",
+        "line_width": 0.0,
+        "alpha": 0.98
+      },
+      {
+        "source": "showcase/cases/01_pbse_nonparabolic_skb_vs_spb/data/pisarenko_other_723K.csv",
+        "y": {
+          "column": "Seebeck_abs_uV_K",
+          "label": "$|S|$ ($\\mu$V K$^{-1}$)"
+        },
+        "property": "seebeck",
+        "group_value": "Other_723K",
+        "legend_label": "723 K $x=0.01$–$0.04$ (hollow)",
+        "role": "reference",
+        "color": "#E64B35",
+        "marker": "D",
+        "marker_size": 7.6,
+        "linestyle": "none",
+        "line_width": 0.0,
+        "alpha": 0.98
+      }
+    ],
+    "xlabel": "$n_{\\mathrm{H}}$ (cm$^{-3}$)",
+    "ylabel": "$|S|$ ($\\mu$V K$^{-1}$)",
+    "xscale": "log",
+    "x_log_ticks": "decade",
+    "xlim": [
+      5.5e+18,
+      5.5e+19
+    ],
+    "ylim": [
+      30,
+      340
+    ],
+    "legend": "inside",
+    "legend_columns": 2,
+    "legend_font_size": 8.8,
+    "subplot_aspect": "10:8"
+  },
+  "output": {
+    "dir": "showcase/cases/01_pbse_nonparabolic_skb_vs_spb/figures",
+    "stem": "PbSe_Pisarenko_323_523_723K_x0_fit_solid_hollow",
+    "formats": [
+      "svg",
+      "png"
+    ],
+    "copy_to_data_dir": false,
+    "normalized_csv": false
+  }
+}

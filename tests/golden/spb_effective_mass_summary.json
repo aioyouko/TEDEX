@@ -1,0 +1,35 @@
+{
+ "fit_summary.json": {
+  "config": {
+   "curve_points": 300,
+   "curve_xlim": null,
+   "eta_max": 80.0,
+   "eta_min": -60.0,
+   "figure_formats": [
+    "png"
+   ],
+   "manual_mstar_values": [
+    0.25
+   ],
+   "mstar_max": 20.0,
+   "mstar_min": 0.02,
+   "nh_column": null,
+   "nh_unit": "cm^-3",
+   "seebeck_column": null,
+   "seebeck_unit": "uV/K",
+   "temperature": 300.0,
+   "use_hall_factor": true
+  },
+  "input_csv": "/var/folders/v5/xn601fnn1k3by34l3ljt59hh0000gn/T/tmpecnni_fb/out/groups/Ag2Se/input.csv",
+  "manual_mstar_values": [
+   0.25
+  ],
+  "mode": "manual_mstar",
+  "mstar_over_me_point_mean": 0.2387993228449421,
+  "mstar_over_me_point_median": 0.23811376137518958,
+  "mstar_over_me_point_std": 0.03828006869353737,
+  "n_points": 8,
+  "temperature_K": 300.0,
+  "use_hall_factor": true
+ }
+}

@@ -1,0 +1,70 @@
+{
+  "name": "04_hall_vt_mobility",
+  "sources": [
+    {
+      "path": "showcase/cases/07_classical_te_transport_and_spb_suite/data/vt_mobility/mob_1.csv",
+      "metadata": {
+        "sample": "$x = 0$"
+      }
+    },
+    {
+      "path": "showcase/cases/07_classical_te_transport_and_spb_suite/data/vt_mobility/mob_2.csv",
+      "metadata": {
+        "sample": "$x = 0.001$"
+      }
+    },
+    {
+      "path": "showcase/cases/07_classical_te_transport_and_spb_suite/data/vt_mobility/mob_3.csv",
+      "metadata": {
+        "sample": "$x = 0.003$"
+      }
+    },
+    {
+      "path": "showcase/cases/07_classical_te_transport_and_spb_suite/data/vt_mobility/mob_4.csv",
+      "metadata": {
+        "sample": "$x = 0.005$"
+      }
+    },
+    {
+      "path": "showcase/cases/07_classical_te_transport_and_spb_suite/data/vt_mobility/mob_5.csv",
+      "metadata": {
+        "sample": "$x = 0.007$"
+      }
+    }
+  ],
+  "plot": {
+    "kind": "line",
+    "color_set": "science",
+    "x": {
+      "column": "Temperature_K",
+      "label": "$T$ (K)"
+    },
+    "group": {
+      "column": "sample"
+    },
+    "series": [
+      {
+        "y": {
+          "column": "Mobility_cm2_Vs",
+          "label": "$\\mu_{\\mathrm{H}}$ (cm$^2$ V$^{-1}$ s$^{-1}$)"
+        },
+        "property": "mobility"
+      }
+    ],
+    "xlabel": "$T$ (K)",
+    "ylabel": "$\\mu_{\\mathrm{H}}$ (cm$^2$ V$^{-1}$ s$^{-1}$)",
+    "legend": "inside",
+    "x_margin": 0.06,
+    "y_margin": 0.12
+  },
+  "output": {
+    "dir": "showcase/cases/07_classical_te_transport_and_spb_suite/figures",
+    "stem": "04_hall_vt_mobility",
+    "formats": [
+      "svg",
+      "png"
+    ],
+    "normalized_csv": false,
+    "copy_to_data_dir": false
+  }
+}

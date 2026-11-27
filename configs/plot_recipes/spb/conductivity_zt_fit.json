@@ -16,7 +16,7 @@
         "group_value": "SPB zT model",
         "marker": "None",
         "linestyle": "-",
-        "line_width": 1.4
+        "line_width": 2.2
       },
       {
         "y": {
@@ -27,7 +27,7 @@
         "group_value": "zT data",
         "color": "#e76f6f",
         "marker": "o",
-        "marker_size": 5.5,
+        "marker_size": 11.0,
         "alpha": 0.75,
         "linestyle": "none",
         "line_width": 0.0
@@ -39,12 +39,15 @@
     "x_log_ticks": "decade",
     "legend": "inside",
     "legend_loc": "best",
-    "x_margin": 0.04,
-    "y_margin": 0.08
+    "x_margin": 0.06,
+    "y_margin": 0.12
   },
   "output": {
     "dir": "results/spb_fitting",
     "stem": "conductivity_zt_fit",
-    "formats": ["png", "pdf"]
+    "formats": [
+      "png",
+      "pdf"
+    ]
   }
 }

@@ -15,19 +15,22 @@
         "property": "alpha_over_s",
         "group_value": "$\\alpha/S$",
         "marker": "",
-        "line_width": 1.4
+        "line_width": 2.2
       }
     ],
     "xlabel": "Energy (eV)",
     "ylabel": "$\\alpha/S$ (a.u.)",
     "legend": "none",
-    "x_margin": 0.04,
-    "y_margin": 0.08
+    "x_margin": 0.06,
+    "y_margin": 0.12
   },
   "output": {
     "dir": "outputs/figures/flexible",
     "stem": "alpha_s",
-    "formats": ["png", "pdf"],
+    "formats": [
+      "png",
+      "pdf"
+    ],
     "normalized_csv": true,
     "copy_to_data_dir": true
   }

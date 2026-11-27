@@ -1,0 +1,69 @@
+{
+  "name": "03_hall_composition_dual_axis",
+  "sources": [
+    {
+      "path": "showcase/cases/07_classical_te_transport_and_spb_suite/data/hall_composition_rt.csv"
+    }
+  ],
+  "plot": {
+    "kind": "dual_line",
+    "x": {
+      "column": "doping_x_1e-3",
+      "label": "$x$ ($10^{-3}$)"
+    },
+    "series": [
+      {
+        "y": {
+          "column": "n_H_1e19_cm-3",
+          "label": "$n_{\\mathrm{H}}$ ($10^{19}$ cm$^{-3}$)"
+        },
+        "property": "carrier_concentration",
+        "group_value": "$n_{\\mathrm{H}}$",
+        "legend_label": "$n_{\\mathrm{H}}$",
+        "color": "#D43F3A",
+        "marker": "o",
+        "line_width": 2.3
+      },
+      {
+        "y": {
+          "column": "mu_H_cm2_V-1_s-1",
+          "label": "$\\mu_{\\mathrm{H}}$ (cm$^2$ V$^{-1}$ s$^{-1}$)"
+        },
+        "property": "mobility",
+        "group_value": "$\\mu_{\\mathrm{H}}$",
+        "legend_label": "$\\mu_{\\mathrm{H}}$",
+        "color": "#3B4992",
+        "marker": "s",
+        "line_width": 2.3
+      }
+    ],
+    "xlabel": "$x$ ($10^{-3}$)",
+    "ylabel": "$n_{\\mathrm{H}}$ ($10^{19}$ cm$^{-3}$)",
+    "right_ylabel": "$\\mu_{\\mathrm{H}}$ (cm$^2$ V$^{-1}$ s$^{-1}$)",
+    "yscale": "log",
+    "right_yscale": "log",
+    "ylim": [
+      0.1,
+      100.0
+    ],
+    "right_ylim": [
+      100.0,
+      10000.0
+    ],
+    "y_tick_format": "plain",
+    "legend": "inside",
+    "legend_loc": "upper right",
+    "x_margin": 0.06,
+    "y_margin": 0.12
+  },
+  "output": {
+    "dir": "showcase/cases/07_classical_te_transport_and_spb_suite/figures",
+    "stem": "03_hall_composition_dual_axis",
+    "formats": [
+      "svg",
+      "png"
+    ],
+    "normalized_csv": false,
+    "copy_to_data_dir": false
+  }
+}

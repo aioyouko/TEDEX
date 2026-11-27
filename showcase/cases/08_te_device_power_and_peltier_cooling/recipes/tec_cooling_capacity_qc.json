@@ -1,0 +1,62 @@
+{
+  "name": "04_tec_cooling_capacity_qc",
+  "sources": [
+    {
+      "path": "showcase/cases/08_te_device_power_and_peltier_cooling/data/tec_cooling_capacity/qc_dt_0K.csv",
+      "metadata": {
+        "sample": "$\\Delta T = 0$ K"
+      }
+    },
+    {
+      "path": "showcase/cases/08_te_device_power_and_peltier_cooling/data/tec_cooling_capacity/qc_dt_10K.csv",
+      "metadata": {
+        "sample": "$\\Delta T = 10$ K"
+      }
+    },
+    {
+      "path": "showcase/cases/08_te_device_power_and_peltier_cooling/data/tec_cooling_capacity/qc_dt_20K.csv",
+      "metadata": {
+        "sample": "$\\Delta T = 20$ K"
+      }
+    }
+  ],
+  "plot": {
+    "kind": "line",
+    "color_set": "science",
+    "x": {
+      "column": "Current_A",
+      "label": "$I$ (A)"
+    },
+    "group": {
+      "column": "sample"
+    },
+    "series": [
+      {
+        "y": {
+          "column": "Qc_W",
+          "label": "$Q_{\\mathrm{c}}$ (W)"
+        },
+        "property": "cooling_capacity"
+      }
+    ],
+    "xlabel": "$I$ (A)",
+    "ylabel": "$Q_{\\mathrm{c}}$ (W)",
+    "ylim": [
+      0,
+      6.8
+    ],
+    "legend": "inside",
+    "x_margin": 0.06,
+    "y_margin": 0.12
+  },
+  "output": {
+    "dir": "showcase/cases/08_te_device_power_and_peltier_cooling/figures",
+    "stem": "04_tec_cooling_capacity_qc",
+    "formats": [
+      "svg",
+      "png"
+    ],
+    "normalized_csv": false,
+    "copy_to_data_dir": false
+  }
+}

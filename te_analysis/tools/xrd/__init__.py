@@ -20,6 +20,7 @@ from te_analysis.tools.xrd.io import (
     _pattern_identifier_values,
     pattern_matches_selector,
     filter_xrd_patterns,
+    select_xrd_patterns_by_index,
     load_xrd_patterns,
     format_xrd_pattern_label,
     right_xrd_pattern_label,
@@ -57,6 +58,15 @@ from te_analysis.tools.xrd.render import (
     comparison_id_from_patterns,
     summarize_patterns,
 )
+from te_analysis.tools.xrd.advanced import (
+    plot_xrd_peak_fit,
+    plot_xrd_rietveld,
+    plot_xrd_vt_map,
+    plot_xrd_vt_stack,
+    plot_xrd_williamson_hall,
+    plot_xrd_zoom_stack,
+    resolve_pattern_temperatures,
+)
 
 __all__ = [
     "DEFAULT_XRD_ROOT",
@@ -87,6 +97,7 @@ __all__ = [
     "_pattern_identifier_values",
     "pattern_matches_selector",
     "filter_xrd_patterns",
+    "select_xrd_patterns_by_index",
     "load_xrd_patterns",
     "format_xrd_pattern_label",
     "right_xrd_pattern_label",
@@ -108,6 +119,13 @@ __all__ = [
     "plot_xrd_raw_and_normalized",
     "_normalized_modes_for_output_mode",
     "plot_xrd_separate",
+    "plot_xrd_zoom_stack",
+    "plot_xrd_vt_map",
+    "plot_xrd_vt_stack",
+    "plot_xrd_rietveld",
+    "plot_xrd_peak_fit",
+    "plot_xrd_williamson_hall",
+    "resolve_pattern_temperatures",
     "comparison_id_from_patterns",
     "summarize_patterns",
 ]

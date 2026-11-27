@@ -1,0 +1,65 @@
+{
+  "input_csv": "showcase/cases/07_classical_te_transport_and_spb_suite/data/cu2ssete_900K.csv",
+  "temperature_K": 900.0,
+  "source_columns": {
+    "conductivity": "conductivity",
+    "seebeck": "S",
+    "pf": "PF",
+    "zt": "ZT"
+  },
+  "config": {
+    "temperature": 900.0,
+    "conductivity_unit": "S/m",
+    "seebeck_unit": "uV/K",
+    "pf_unit": "uW cm^-1 K^-2",
+    "conductivity_column": null,
+    "seebeck_column": null,
+    "pf_column": null,
+    "zt_column": null,
+    "use_hall_factor": true,
+    "eta_min": -60.0,
+    "eta_max": 80.0,
+    "mstar_over_me": 1.0,
+    "mobility_u0_cm2_vs": null,
+    "scattering_lambda": 0.0,
+    "kappa_lattice": "0.45",
+    "properties": null,
+    "curve_points": 300,
+    "curve_xlim": null,
+    "figure_formats": [
+      "svg",
+      "png"
+    ]
+  },
+  "mstar": {
+    "mode": "normalization",
+    "mstar_over_me": 1.0,
+    "note": "For conductivity-based fitting, fitted u0 is a weighted mobility prefactor that absorbs the chosen m* normalization."
+  },
+  "mobility_model": {
+    "model": "spb_u0",
+    "n_ref_cm3": 8.2616770481894e+19,
+    "mu_ref_cm2_vs": 27.419892241661707,
+    "alpha": 0.0,
+    "source": "fit",
+    "mu0_cm2_vs": 27.419892241661707,
+    "scattering_lambda": 0.0,
+    "deformation_potential_eV": null,
+    "density_kg_m3": null,
+    "sound_velocity_m_s": null,
+    "valley_degeneracy": null,
+    "inertial_mass_over_me": null,
+    "band_mass_over_me": null
+  },
+  "kappa_lattice_W_m-1_K-1": 0.45,
+  "kappa_lattice_source": "specified",
+  "properties": [
+    "seebeck",
+    "pf",
+    "zt"
+  ],
+  "n_points": 21,
+  "conductivity_rmse_S_cm-1": 54.08646153333344,
+  "conductivity_mae_S_cm-1": 40.19405340107825,
+  "conductivity_max_abs_error_S_cm-1": 118.53302024389427
+}

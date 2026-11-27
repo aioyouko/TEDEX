@@ -14,6 +14,7 @@ from pathlib import Path
 
 import pandas as pd
 
+from te_analysis.paths import get_workspace
 from te_analysis.tools.plot import TE_PLOT_SPECS
 from te_analysis.tools.selectors import (
     normalize_sample_selector as normalize_selector,
@@ -21,7 +22,8 @@ from te_analysis.tools.selectors import (
 )
 
 
-def load_lab_ledger(file_path="configs/lab_batches.json"):
+def load_lab_ledger(file_path=None):
+    ws = get_workspace()
     flat_ledger = load_flat_lab_ledger()
     reference_ledger = load_flat_reference_ledger()
     if flat_ledger or reference_ledger:
@@ -33,27 +35,33 @@ def load_lab_ledger(file_path="configs/lab_batches.json"):
                 merged[reference_id] = reference_samples
         return merged
 
-    return load_json(file_path, {})
+    fallback = Path(file_path) if file_path is not None else ws.legacy_lab_batches_json
+    return load_json(fallback, {}, quiet_missing=True)
 
 
-def load_json(file_path, default):
-    try:
-        with open(file_path, 'r', encoding='utf-8') as file:
-            return json.load(file)
-    except FileNotFoundError:
-        print(f"❌ JSON NOT FOUND: {file_path}")
+def load_json(file_path, default, quiet_missing=False):
+    path = Path(file_path)
+    if not path.exists():
+        if not quiet_missing:
+            print(f"❌ JSON NOT FOUND: {file_path}")
         return default
+    try:
+        with path.open('r', encoding='utf-8') as file:
+            return json.load(file)
     except json.JSONDecodeError:
         print(f"❌ JSON FORMAT WRONG: {file_path}")
         return default
 
 
 def load_flat_lab_ledger(
-    batches_path="data/lab/batches.json",
-    samples_path="data/lab/samples.json",
+    batches_path=None,
+    samples_path=None,
 ):
-    batches = load_json(batches_path, [])
-    samples = load_json(samples_path, [])
+    ws = get_workspace()
+    b_path = Path(batches_path) if batches_path is not None else ws.batches_json
+    s_path = Path(samples_path) if samples_path is not None else ws.samples_json
+    batches = load_json(b_path, [], quiet_missing=True)
+    samples = load_json(s_path, [], quiet_missing=True)
     ledger = {}
 
     for batch in batches:
@@ -96,8 +104,10 @@ def load_flat_lab_ledger(
     return ledger
 
 
-def load_flat_reference_ledger(samples_path="data/reference/samples.json"):
-    samples = load_json(samples_path, [])
+def load_flat_reference_ledger(samples_path=None):
+    ws = get_workspace()
+    ref_path = Path(samples_path) if samples_path is not None else ws.reference_samples_json
+    samples = load_json(ref_path, [], quiet_missing=True)
     ledger = {}
 
     for sample in samples:

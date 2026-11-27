@@ -24,7 +24,7 @@ def _sync():
 
 BATCHES = [
     {
-        "batch_id": "CHY-1048",
+        "batch_id": "TE-1048",
         "project": "PbSe optimization",
         "matrix_composition": "PbSe",
         "pristine_composition": "PbSe",
@@ -32,7 +32,7 @@ BATCHES = [
         "notes": "baseline | with pipe",
     },
     {
-        "batch_id": "CHY-1056",
+        "batch_id": "TE-1056",
         "project": "",
         "matrix_composition": "Cu2Se",
         "pristine_composition": "",
@@ -43,12 +43,12 @@ BATCHES = [
 
 SAMPLES = [
     {
-        "sample_id": "CHY-1048-A",
-        "batch_id": "CHY-1048",
+        "sample_id": "TE-1048-A",
+        "batch_id": "TE-1048",
         "sample_name": "A",
-        "zem": "data/raw/CHY-1048/CHY-1048-A_ZEM.txt",
-        "lfa": "data/raw/CHY-1048/CHY-1048-A_LFA.csv",
-        "processed_file": "data/processed/CHY-1048-processed/CHY-1048-A.csv",
+        "zem": "data/raw/TE-1048/TE-1048-A_ZEM.txt",
+        "lfa": "data/raw/TE-1048/TE-1048-A_LFA.csv",
+        "processed_file": "data/processed/TE-1048-processed/TE-1048-A.csv",
         "processed_exists": True,
         "density": 8.27,
         "cp_value": 0.339,
@@ -68,12 +68,12 @@ SAMPLES = [
         "notes": "",
     },
     {
-        "sample_id": "CHY-1056-B",
-        "batch_id": "CHY-1056",
+        "sample_id": "TE-1056-B",
+        "batch_id": "TE-1056",
         "sample_name": "B",
         "zem": "",
-        "lfa": "data/raw/CHY-1056/CHY-1056-B_LFA.csv",
-        "processed_file": "data/processed/CHY-1056-processed/CHY-1056-B.csv",
+        "lfa": "data/raw/TE-1056/TE-1056-B_LFA.csv",
+        "processed_file": "data/processed/TE-1056-processed/TE-1056-B.csv",
         "processed_exists": False,
         "density": None,
         "cp_value": None,
@@ -136,8 +136,8 @@ def test_roundtrip_survives_stripped_markers():
         md = Path(tmp) / "lab_metadata.md"
         md.write_text(text, encoding="utf-8")
         parsed_batches, parsed_samples = mod.parse_markdown(md, BATCHES, SAMPLES)
-    assert {b["batch_id"] for b in parsed_batches} == {"CHY-1048", "CHY-1056"}
-    assert {s["sample_id"] for s in parsed_samples} == {"CHY-1048-A", "CHY-1056-B"}
+    assert {b["batch_id"] for b in parsed_batches} == {"TE-1048", "TE-1056"}
+    assert {s["sample_id"] for s in parsed_samples} == {"TE-1048-A", "TE-1056-B"}
 
 
 def test_typed_field_parsing():
@@ -158,7 +158,7 @@ def test_deleted_section_is_kept_not_dropped():
     mod = _sync()
     text = mod.render_markdown(BATCHES, SAMPLES)
     lines = text.splitlines()
-    start = next(i for i, l in enumerate(lines) if "Sample CHY-1056-B" in l) - 1
+    start = next(i for i, l in enumerate(lines) if "Sample TE-1056-B" in l) - 1
     end = next(
         (i for i in range(start + 2, len(lines)) if lines[i].startswith(("###", "<!--"))),
         len(lines),
@@ -169,8 +169,8 @@ def test_deleted_section_is_kept_not_dropped():
         md.write_text(mangled, encoding="utf-8")
         _, parsed_samples = mod.parse_markdown(md, BATCHES, SAMPLES)
     merged = mod.merge_records(parsed_samples, SAMPLES, "sample_id", mod.SAMPLE_FIELDS)
-    assert {s["sample_id"] for s in merged} == {"CHY-1048-A", "CHY-1056-B"}
-    kept = _by_id(merged, "sample_id")["CHY-1056-B"]
+    assert {s["sample_id"] for s in merged} == {"TE-1048-A", "TE-1056-B"}
+    kept = _by_id(merged, "sample_id")["TE-1056-B"]
     assert kept["modifier_amount"] == [0.01, 0.02]
 
 

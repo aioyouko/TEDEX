@@ -1,0 +1,773 @@
+{
+  "schema_version": "tedex-showcase/v1",
+  "project": "TEDEX (Thermoelectric Data, Modeling & Plotting Agent Harness)",
+  "version": "1.5.0",
+  "architecture_diagram": "assets/tedex_evolution_roadmap.svg",
+  "skills": [
+    {
+      "name": "te-workspace",
+      "role": "Clean Mode-B workspace initialization & path resolution"
+    },
+    {
+      "name": "te-data-pipeline",
+      "role": "Raw ZEM/LFA batch processing, metadata sync & Bayesian GP"
+    },
+    {
+      "name": "te-plotting",
+      "role": "Thermoelectric curves (`plot-te`) & 20+ scientific charts (`sciplot`)"
+    },
+    {
+      "name": "te-xrd",
+      "role": "Standard/VT/Rietveld/WH diffraction plots (`plot-xrd`) & lattice refinement (`xrd-lattice`)"
+    },
+    {
+      "name": "te-physics-models",
+      "role": "Phonon (`debye-calc`, `callaway`, `debye-einstein`) & band (`spb`, `skb`, `two-band`) physics"
+    }
+  ],
+  "cases": [
+    {
+      "id": "01_pbse_nonparabolic_skb_vs_spb",
+      "order": 1,
+      "slug": "pbse-skb-vs-spb",
+      "title_zh": "PbSe 窄带隙非抛物单 Kane 带（SKB）与单抛物带（SPB）多温区对比",
+      "title_en": "Multi-Temperature Non-Parabolic SKB vs. SPB Transport in Narrow-Gap PbSe",
+      "category": "Electronic Band Physics",
+      "skills_used": [
+        "te-physics-models",
+        "te-plotting"
+      ],
+      "material_system": "n-type PbSe (303–723 K)",
+      "reference": "Narrow-gap IV–VI lead chalcogenide Hall + Seebeck benchmark",
+      "user_prompt": "对 PbSe 体系做 323 / 523 / 723 K 多温区 Pisarenko 拟合与 303 K 迁移率 μ_H(n_H) 分析，对比非抛物单 Kane 带（SKB, r_H=1 与含 r_H）和传统单抛物带（SPB）的有效质量 m*_d、本征迁移率 μ_0，以及由两种模型扣除电子热导 κ_e 后得到的晶格热导 κ_L(T) 差异；用实心点标出 x=0 基体，空心点标出固溶系列。",
+      "agent_highlights": [
+        "自动调用 `skb`（`--no-hall-factor` / 含 Kane 霍尔因子）与 `spb effective-mass` 对 323/523/723 K 基体逐温拟合，量化窄带隙（E_g ≈ 0.27 eV, N_v = 4）非抛物性因子 α = k_B T / E_g 随温度的增强。",
+        "在 303 K 下揭示传统 SPB 将非抛物重化归入表观质量导致 μ_0 被低估（2090 vs SKB 5092 cm² V⁻¹ s⁻¹），并准确复现高掺杂区的更陡迁移率衰减斜率。",
+        "通过 `sciplot` Recipe 一键组合实心（x=0 拟合组）与空心（x>0 固溶验证组）散点及实虚线双模型理论曲线，并对比 Lorenz 数 L(T) 与 κ_L(T) 扣除偏差。"
+      ],
+      "cli_commands": [
+        "python main.py skb showcase/cases/01_pbse_nonparabolic_skb_vs_spb/data/rt_303K_x0_full.csv -T 303 --eg 0.271 --nv 4 --no-hall-factor --formats svg png --no-show",
+        "python main.py sciplot --recipe showcase/cases/01_pbse_nonparabolic_skb_vs_spb/recipes/pisarenko_x0_solid_hollow.json --no-show",
+        "python main.py sciplot --recipe showcase/cases/01_pbse_nonparabolic_skb_vs_spb/recipes/rt_mobility_x0_linear.json --no-show"
+      ],
+      "key_metrics": [
+        {
+          "label": "Bandgap E_g (303 K)",
+          "value": "0.271 eV (α = 0.096)"
+        },
+        {
+          "label": "SKB m*_d (323→723 K)",
+          "value": "0.28 → 0.35 → 0.45 m_e"
+        },
+        {
+          "label": "303 K μ_0 (SKB vs SPB)",
+          "value": "5092 vs 2090 cm² V⁻¹ s⁻¹"
+        },
+        {
+          "label": "303 K RMSE(μ_H)",
+          "value": "97.7 (SKB) vs 139.0 (SPB) cm² V⁻¹ s⁻¹"
+        }
+      ],
+      "figures": [
+        {
+          "id": "pbse_pisarenko",
+          "title": "323 / 523 / 723 K 多温区 Pisarenko（SKB 实线 vs SPB 虚线，x=0 实心 / 固溶空心）",
+          "svg": "cases/01_pbse_nonparabolic_skb_vs_spb/figures/PbSe_Pisarenko_323_523_723K_x0_fit_solid_hollow.svg",
+          "png": "cases/01_pbse_nonparabolic_skb_vs_spb/figures/PbSe_Pisarenko_323_523_723K_x0_fit_solid_hollow.png"
+        },
+        {
+          "id": "pbse_mobility",
+          "title": "303 K 室温 Hall 迁移率 μ_H(n_H) 非抛物声学散射对比",
+          "svg": "cases/01_pbse_nonparabolic_skb_vs_spb/figures/PbSe_RT_303K_mobility_x0_fit_solid_hollow_linear.svg",
+          "png": "cases/01_pbse_nonparabolic_skb_vs_spb/figures/PbSe_RT_303K_mobility_x0_fit_solid_hollow_linear.png"
+        },
+        {
+          "id": "pbse_lorenz",
+          "title": "SKB vs SPB 变温 Lorenz 数 L(T) 对比（S1–S5）",
+          "svg": "cases/01_pbse_nonparabolic_skb_vs_spb/figures/PbSe_Lorenz_SKB_vs_SPB_VT_Hall_S1_S5.svg",
+          "png": "cases/01_pbse_nonparabolic_skb_vs_spb/figures/PbSe_Lorenz_SKB_vs_SPB_VT_Hall_S1_S5.png"
+        },
+        {
+          "id": "pbse_kl",
+          "title": "SKB vs SPB 扣除电子热导后的晶格热导率 κ_L(T) 差异",
+          "svg": "cases/01_pbse_nonparabolic_skb_vs_spb/figures/PbSe_kappa_L_SKB_vs_SPB_VT_Hall_S1_S5.svg",
+          "png": "cases/01_pbse_nonparabolic_skb_vs_spb/figures/PbSe_kappa_L_SKB_vs_SPB_VT_Hall_S1_S5.png"
+        }
+      ],
+      "data_files": [
+        "cases/01_pbse_nonparabolic_skb_vs_spb/data/pisarenko_other_323K.csv",
+        "cases/01_pbse_nonparabolic_skb_vs_spb/data/pisarenko_other_523K.csv",
+        "cases/01_pbse_nonparabolic_skb_vs_spb/data/pisarenko_other_723K.csv",
+        "cases/01_pbse_nonparabolic_skb_vs_spb/data/pisarenko_x0_323K.csv",
+        "cases/01_pbse_nonparabolic_skb_vs_spb/data/pisarenko_x0_523K.csv",
+        "cases/01_pbse_nonparabolic_skb_vs_spb/data/pisarenko_x0_723K.csv",
+        "cases/01_pbse_nonparabolic_skb_vs_spb/data/pisarenko_x0_grid_323K.csv",
+        "cases/01_pbse_nonparabolic_skb_vs_spb/data/pisarenko_x0_grid_523K.csv",
+        "cases/01_pbse_nonparabolic_skb_vs_spb/data/pisarenko_x0_grid_723K.csv",
+        "cases/01_pbse_nonparabolic_skb_vs_spb/data/rt_303K_series1_x_001_004.csv",
+        "cases/01_pbse_nonparabolic_skb_vs_spb/data/rt_303K_series2_y_001_005.csv",
+        "cases/01_pbse_nonparabolic_skb_vs_spb/data/rt_303K_x0_full.csv",
+        "cases/01_pbse_nonparabolic_skb_vs_spb/data/rt_303K_x0_grid.csv",
+        "cases/01_pbse_nonparabolic_skb_vs_spb/data/spb_vs_skb_vt_hall_S1_S5.csv"
+      ],
+      "recipes": [
+        "cases/01_pbse_nonparabolic_skb_vs_spb/recipes/pisarenko_x0_solid_hollow.json",
+        "cases/01_pbse_nonparabolic_skb_vs_spb/recipes/rt_mobility_x0_linear.json"
+      ],
+      "summaries_and_reports": [
+        "cases/01_pbse_nonparabolic_skb_vs_spb/summaries/rt_mobility_comparison_summary.json",
+        "cases/01_pbse_nonparabolic_skb_vs_spb/summaries/skb_303K_mobility_summary.json",
+        "cases/01_pbse_nonparabolic_skb_vs_spb/summaries/skb_323K_summary.json",
+        "cases/01_pbse_nonparabolic_skb_vs_spb/summaries/skb_523K_summary.json",
+        "cases/01_pbse_nonparabolic_skb_vs_spb/summaries/skb_723K_summary.json"
+      ]
+    },
+    {
+      "id": "02_mg3bi2_semimetal_bipolar_suite",
+      "order": 2,
+      "slug": "mg3bi2-semimetal-bipolar",
+      "title_zh": "Mg3+δBi2-xSbx 半金属—窄带隙半导体跨相区双带输运反演与全局拟合",
+      "title_en": "Semimetal-to-Semiconductor Crossover Two-Band Inversion & Bipolar Transport in Mg3+δBi2-xSbx",
+      "category": "Semimetal & Bipolar Physics",
+      "skills_used": [
+        "te-physics-models"
+      ],
+      "material_system": "Mg3.2Bi2-xSbxTex (x = 0, 0.3, 0.5; 100–350 K)",
+      "reference": "Mao et al., PNAS / Science (2019) Mg3Bi2-based thermoelectric cooling benchmark",
+      "user_prompt": "用 two-band 模块复现 Mg3.2Bi2-xSbx 体系从半金属（x=0, 负带隙重叠 E_g < 0）到近室温制冷窄带隙半导体（x=0.3, 0.5）的双带电子+空穴输运分析：包括半金属逐点 Hall+S+σ 反演、Matthiessen 杂质+声学散射全局负带隙拟合、x=0.5 制冷腿材料的热导三部分分解（κ_L + κ_e + κ_bi），以及 300 K 等温双极 Pisarenko 与加权迁移率比 A_0 图谱。",
+      "agent_highlights": [
+        "支持 `E_g < 0` 能带交叠半金属物理，当固定 DFT 态密度有效质量（m*_e = 0.53 m_e, m*_h = 0.276 m_e）时，逐点严格反演出 300 K 下 E_g = -0.100 eV、分带 Seebeck（S_e = -150.0, S_h = +89.0 μV K⁻¹）及加权迁移率比 A = 11.5。",
+        "通过 `--mode bipolar --allow-semimetal --matthiessen --fit-nh` 实现低温电离杂质散射到室温声学散射平滑过渡的全局联合拟合（33–44 个观测自由度）。",
+        "自动执行 SVD 雅可比条件数与协方差矩阵诊断，主动预警 κ_L = A/T + κ_∞ 中 A 与 κ_∞ 在窄温区下的强共线性（r = -0.925），提示引入独立表征固定参数。"
+      ],
+      "cli_commands": [
+        "python main.py two-band showcase/cases/02_mg3bi2_semimetal_bipolar_suite/data/Mg3_2Bi2_semimetal.csv --mode semimetal --fix-m1 0.53 --fix-m2 0.276 --fix-ndop 0 --formats svg png --no-show",
+        "python main.py two-band showcase/cases/02_mg3bi2_semimetal_bipolar_suite/data/Mg3_2Bi2_semimetal.csv --mode bipolar --allow-semimetal --matthiessen --fit-nh --fix-m1 0.53 --fix-m2 0.276 --fix-ndop 0 --formats svg png --no-show",
+        "python main.py two-band showcase/cases/02_mg3bi2_semimetal_bipolar_suite/data/Mg3_2Bi1_498Sb0_5Te0_002.csv --mode bipolar --matthiessen --fit-nh --fix-m2 0.276 --fix-eg0 0.126 --fix-ndop 1.32e19 --formats svg png --no-show",
+        "python main.py two-band showcase/cases/02_mg3bi2_semimetal_bipolar_suite/data/Mg3Bi2_Te_300K_series.csv --mode isothermal-bipolar -T 300 --scattering-r 0.0 --fix-m1 0.53 --fix-m2 0.276 --fix-eg0 -0.10 --fix-b 0.33 --formats svg png --no-show"
+      ],
+      "key_metrics": [
+        {
+          "label": "Mg3.2Bi2 Semimetal E_g(300K)",
+          "value": "-0.100 eV (band overlap)"
+        },
+        {
+          "label": "Partial Seebeck @ 300 K",
+          "value": "S_e = -150.0, S_h = +89.0 μV K⁻¹"
+        },
+        {
+          "label": "Weighted Mobility Ratio A",
+          "value": "A(x=0) = 11.5 → A_0(x=0.5) = 1.47"
+        },
+        {
+          "label": "x=0.5 Cooling Leg RMSE(S)",
+          "value": "11.4 μV K⁻¹ (E_g0 = +0.126 eV)"
+        }
+      ],
+      "figures": [
+        {
+          "id": "mg3bi2_semimetal_inv",
+          "title": "Mg3.2Bi2 半金属逐点 Hall+S+σ 反演（分带 S_{e,h}, μ_{e,h}, E_g(T)）",
+          "svg": "cases/02_mg3bi2_semimetal_bipolar_suite/figures/01_Mg3_2Bi2_semimetal_inversion.svg",
+          "png": "cases/02_mg3bi2_semimetal_bipolar_suite/figures/01_Mg3_2Bi2_semimetal_inversion.png"
+        },
+        {
+          "id": "mg3bi2_bipolar_global",
+          "title": "Mg3.2Bi2 负带隙全局双极拟合（E_g0 = -0.092 ± 0.002 eV, Matthiessen 散射）",
+          "svg": "cases/02_mg3bi2_semimetal_bipolar_suite/figures/02_Mg3_2Bi2_negative_gap_global.svg",
+          "png": "cases/02_mg3bi2_semimetal_bipolar_suite/figures/02_Mg3_2Bi2_negative_gap_global.png"
+        },
+        {
+          "id": "mg3bi2_sb05_cooling",
+          "title": "Mg3.2Bi1.5Sb0.5Te0.002 近室温制冷材料全局双极拟合与 κ_bi 分解",
+          "svg": "cases/02_mg3bi2_semimetal_bipolar_suite/figures/03_Mg3_2Bi1_5Sb0_5_cooling_bipolar.svg",
+          "png": "cases/02_mg3bi2_semimetal_bipolar_suite/figures/03_Mg3_2Bi1_5Sb0_5_cooling_bipolar.png"
+        },
+        {
+          "id": "mg3bi2_iso_bipolar",
+          "title": "300 K 等温双极 Pisarenko 与加权迁移率比 A_0 分布图",
+          "svg": "cases/02_mg3bi2_semimetal_bipolar_suite/figures/04_Mg3Bi2_300K_isothermal_bipolar.svg",
+          "png": "cases/02_mg3bi2_semimetal_bipolar_suite/figures/04_Mg3Bi2_300K_isothermal_bipolar.png"
+        }
+      ],
+      "data_files": [
+        "cases/02_mg3bi2_semimetal_bipolar_suite/data/Mg3Bi2_Te_300K_series.csv",
+        "cases/02_mg3bi2_semimetal_bipolar_suite/data/Mg3_2Bi1_498Sb0_5Te0_002.csv",
+        "cases/02_mg3bi2_semimetal_bipolar_suite/data/Mg3_2Bi1_698Sb0_3Te0_002.csv",
+        "cases/02_mg3bi2_semimetal_bipolar_suite/data/Mg3_2Bi1_998Te0_002.csv",
+        "cases/02_mg3bi2_semimetal_bipolar_suite/data/Mg3_2Bi2_semimetal.csv"
+      ],
+      "recipes": [],
+      "summaries_and_reports": [
+        "cases/02_mg3bi2_semimetal_bipolar_suite/summaries/01_Mg3_2Bi2_semimetal_inversion_summary.json",
+        "cases/02_mg3bi2_semimetal_bipolar_suite/summaries/02_Mg3_2Bi2_negative_gap_global_summary.json",
+        "cases/02_mg3bi2_semimetal_bipolar_suite/summaries/03_Mg3_2Bi1_5Sb0_5_cooling_bipolar_summary.json",
+        "cases/02_mg3bi2_semimetal_bipolar_suite/summaries/04_Mg3Bi2_300K_isothermal_bipolar_summary.json",
+        "cases/02_mg3bi2_semimetal_bipolar_suite/summaries/mg3bi2_7case_benchmark.json"
+      ]
+    },
+    {
+      "id": "03_bi2sbte3_two_band_convergence",
+      "order": 3,
+      "slug": "bi2sbte3-band-convergence",
+      "title_zh": "p-Bi0.5Sb1.5Te3 双价带收敛与多模型（SPB / SKB / Two-Band）基准对比",
+      "title_en": "Light + Heavy Valence Band Convergence & Multi-Model Benchmark in p-Bi0.5Sb1.5Te3",
+      "category": "Band Convergence Modeling",
+      "skills_used": [
+        "te-physics-models",
+        "te-plotting"
+      ],
+      "material_system": "p-type Bi2-xSbxTe3 (x = 0.75, 300–500 K)",
+      "reference": "Kim et al., Acta Materialia / J. Mater. Chem. A (2017) Zone-Levelled Bi0.5Sb1.5Te3",
+      "user_prompt": "针对 p 型 Bi0.5Sb1.5Te3 体系（300 K 等温掺杂系列与变温双极数据），同时运行 SPB、SKB 与 Two-Band（轻重价带收敛 ΔE = 0.025 eV）模型，对比它们对高载流子浓度区 Pisarenko 平台、Hall 迁移率与峰值 zT 预测曲线的差异，并与原论文曲线直接叠图对比。",
+      "agent_highlights": [
+        "利用 `two-band --mode convergence` 解析轻价带（m*_1 = 0.326 m_e）与重价带（m*_2 = 0.916 m_e, ΔE = 25 meV）协同输运，准确捕捉高 n_H 下的 Seebeck 抬升与功率因子展宽。",
+        "结合 `two-band --mode bipolar` 提取高温少数载流子热激发引起的双极热导率 κ_bi(T) 峰值。",
+        "自动生成与文献原图同坐标系的四曲线对比图（原论文 TB vs TEDEX Two-Band vs SPB vs SKB），图例自动内嵌于坐标轴空白区。"
+      ],
+      "cli_commands": [
+        "python main.py two-band showcase/cases/03_bi2sbte3_two_band_convergence/data/kim2017_x075_full300K_pf.csv --mode convergence -T 300 --fix-m1 0.326 --fix-m2 0.916 --fix-delta-e 0.025 --formats svg png --no-show",
+        "python main.py two-band showcase/cases/03_bi2sbte3_two_band_convergence/data/kim2017_x075_2.64E19_bipolar.csv --mode bipolar --fix-m1 1.14 --fix-m2 0.78 --fix-eg0 0.194 --formats svg png --no-show",
+        "python main.py sciplot --recipe showcase/cases/03_bi2sbte3_two_band_convergence/recipes/kim2017_zt_compare.json --no-show"
+      ],
+      "key_metrics": [
+        {
+          "label": "Valence Band Offset ΔE",
+          "value": "0.025 eV (m*_1=0.33, m*_2=0.92 m_e)"
+        },
+        {
+          "label": "Peak zT (300 K)",
+          "value": "1.03 (Paper TB) vs 1.01–1.02 (TEDEX)"
+        },
+        {
+          "label": "Optical / Bipolar Bandgap E_g0",
+          "value": "0.194 eV"
+        }
+      ],
+      "figures": [
+        {
+          "id": "kim_zt_compare",
+          "title": "300 K zT(n_H) 四模型预测曲线对比（Paper TB vs TEDEX Two-Band / SPB / SKB）",
+          "svg": "cases/03_bi2sbte3_two_band_convergence/figures/fig5a_zt_model_comparison.svg",
+          "png": "cases/03_bi2sbte3_two_band_convergence/figures/fig5a_zt_model_comparison.png"
+        },
+        {
+          "id": "kim_s_compare",
+          "title": "300 K Pisarenko |S|(n_H) 轻重带收敛与单带对比",
+          "svg": "cases/03_bi2sbte3_two_band_convergence/figures/fig4b_pisarenko_model_comparison.svg",
+          "png": "cases/03_bi2sbte3_two_band_convergence/figures/fig4b_pisarenko_model_comparison.png"
+        },
+        {
+          "id": "kim_mu_compare",
+          "title": "300 K Hall 迁移率 μ_H(n_H) 多模型对比",
+          "svg": "cases/03_bi2sbte3_two_band_convergence/figures/fig4c_mobility_model_comparison.svg",
+          "png": "cases/03_bi2sbte3_two_band_convergence/figures/fig4c_mobility_model_comparison.png"
+        },
+        {
+          "id": "kim_tb_conv",
+          "title": "TEDEX Two-Band 轻重价带收敛联合拟合（S 与 PF vs n_H）",
+          "svg": "cases/03_bi2sbte3_two_band_convergence/figures/two_band_valence_convergence_300K.svg",
+          "png": "cases/03_bi2sbte3_two_band_convergence/figures/two_band_valence_convergence_300K.png"
+        },
+        {
+          "id": "kim_tb_bipolar",
+          "title": "TEDEX Two-Band 变温双极热激发与 κ_bi 分解",
+          "svg": "cases/03_bi2sbte3_two_band_convergence/figures/two_band_highT_bipolar.svg",
+          "png": "cases/03_bi2sbte3_two_band_convergence/figures/two_band_highT_bipolar.png"
+        }
+      ],
+      "data_files": [
+        "cases/03_bi2sbte3_two_band_convergence/data/kim2017_paper_tb_curve.csv",
+        "cases/03_bi2sbte3_two_band_convergence/data/kim2017_x075_2.64E19_bipolar.csv",
+        "cases/03_bi2sbte3_two_band_convergence/data/kim2017_x075_full300K.csv",
+        "cases/03_bi2sbte3_two_band_convergence/data/kim2017_x075_full300K_pf.csv",
+        "cases/03_bi2sbte3_two_band_convergence/data/kim2017_x075_full300K_skb_curve.csv",
+        "cases/03_bi2sbte3_two_band_convergence/data/kim2017_x075_tableS2.csv",
+        "cases/03_bi2sbte3_two_band_convergence/data/performance_curve.csv",
+        "cases/03_bi2sbte3_two_band_convergence/data/pisarenko_curve.csv",
+        "cases/03_bi2sbte3_two_band_convergence/data/tedex_tb_extended_curves.csv"
+      ],
+      "recipes": [
+        "cases/03_bi2sbte3_two_band_convergence/recipes/kim2017_mu_compare.json",
+        "cases/03_bi2sbte3_two_band_convergence/recipes/kim2017_s_compare.json",
+        "cases/03_bi2sbte3_two_band_convergence/recipes/kim2017_zt_compare.json"
+      ],
+      "summaries_and_reports": [
+        "cases/03_bi2sbte3_two_band_convergence/summaries/two_band_highT_bipolar_summary.json",
+        "cases/03_bi2sbte3_two_band_convergence/summaries/two_band_valence_convergence_300K_summary.json"
+      ]
+    },
+    {
+      "id": "04_callaway_cryogenic_rattler_phonon",
+      "order": 4,
+      "slug": "callaway-cryogenic-rattler",
+      "title_zh": "4–300 K 晶格热导率 Debye–Callaway 局域共振散射与低温比热玻色峰解析",
+      "title_en": "Cryogenic-to-300 K Debye–Callaway Rattler Scattering, Spectral MFP & Cp/T³ Boson Peak",
+      "category": "Phonon Transport & Heat Capacity",
+      "skills_used": [
+        "te-physics-models"
+      ],
+      "material_system": "Rattler Chalcogenide / Cage-like Thermoelectric (4–300 K)",
+      "reference": "Debye–Callaway U+B+PD+RES & Sommerfeld–Debye–Einstein low-T Cp benchmark",
+      "user_prompt": "对 4–300 K 全温区晶格热导率数据拟合 Debye–Callaway 模型（包含 Umklapp、晶界 B、点缺陷 PD 和局域共振模 RES），输出阶梯累积曲线、以 meV 为横轴的谱热导 κ_s(ħω) 与累积平均自由程 Λ_50%、顺序无关散射份额 S_m(T) 以及双单位 Markdown 报告；同时用 debye-einstein 对低温比热 Cp/T³ 玻色峰拟合 Einstein 局域振动模温度。",
+      "agent_highlights": [
+        "若用户未给 Θ_D 与 v_s，`callaway` 以退出码 `2` 终止并列出 3 种物理参数提供路径（直接输入、超声纵向/横向声速 v_l/v_t、低温比热斜率 β），杜绝 AI 编造物理常数。",
+        "全温区拟合优度 R² = 0.9918（RMSE = 0.0153 W m⁻¹ K⁻¹），提取局域共振特征温度 Θ_E = 29.5 ± 1.7 K（2.54 meV / 0.615 THz）与 300 K 中位声子平均自由程 Λ_50% = 0.68 nm。",
+        "自动生成双单位 Markdown 报告（同时给出 SI 与文献常用单位如 μm、THz、meV、cm⁻¹），并检测低温晶粒尺寸 L 与 Θ_E 共线性（r = -0.929）。"
+      ],
+      "cli_commands": [
+        "python main.py callaway showcase/cases/04_callaway_cryogenic_rattler_phonon/data/paper_demo_kl_4_300K.csv --theta-d 146 --vs 1445 --mechanisms U B PD RES --spectral-xaxis meV --spectral-norm x --rattler-damping 0 --formats svg png --no-show",
+        "python main.py debye-einstein showcase/cases/04_callaway_cryogenic_rattler_phonon/data/cp_rattler.csv --atoms-per-fu 4 --n-einstein 2 --volume-a3-per-fu 116.8 --formats svg png --no-show"
+      ],
+      "key_metrics": [
+        {
+          "label": "Callaway Goodness of Fit",
+          "value": "R² = 0.9918, RMSE = 0.0153 W m⁻¹ K⁻¹"
+        },
+        {
+          "label": "Resonant Rattler Mode Θ_E",
+          "value": "29.5 ± 1.7 K (2.54 meV / 20.5 cm⁻¹)"
+        },
+        {
+          "label": "Median Phonon MFP Λ_50% (300 K)",
+          "value": "0.68 nm (κ_min = 0.275 W m⁻¹ K⁻¹)"
+        },
+        {
+          "label": "Point-Defect Disorder Γ",
+          "value": "0.1007 (A = 6.79 × 10⁻⁴¹ s³)"
+        }
+      ],
+      "figures": [
+        {
+          "id": "callaway_fit",
+          "title": "4–300 K 累积散射机制阶梯拟合曲线（U → U+B → U+B+PD → +RES）与 Cahill κ_min",
+          "svg": "cases/04_callaway_cryogenic_rattler_phonon/figures/paper_demo_kl_4_300K_callaway_fit.svg",
+          "png": "cases/04_callaway_cryogenic_rattler_phonon/figures/paper_demo_kl_4_300K_callaway_fit.png"
+        },
+        {
+          "id": "callaway_spectral",
+          "title": "300 K 阶梯着色谱热导率 κ_s(ħω) 与声子累积平均自由程 κ_cum(Λ)",
+          "svg": "cases/04_callaway_cryogenic_rattler_phonon/figures/paper_demo_kl_4_300K_callaway_spectral_mfp.svg",
+          "png": "cases/04_callaway_cryogenic_rattler_phonon/figures/paper_demo_kl_4_300K_callaway_spectral_mfp.png"
+        },
+        {
+          "id": "callaway_contrib",
+          "title": "各机制弛豫率 τ_i⁻¹(ω) 频谱与顺序无关热阻散射权重 S_m(T)",
+          "svg": "cases/04_callaway_cryogenic_rattler_phonon/figures/paper_demo_kl_4_300K_callaway_contributions.svg",
+          "png": "cases/04_callaway_cryogenic_rattler_phonon/figures/paper_demo_kl_4_300K_callaway_contributions.png"
+        },
+        {
+          "id": "debye_einstein_cp",
+          "title": "低温比热 Cp/T³ 玻色峰 Sommerfeld + Debye + 双 Einstein 模分解",
+          "svg": "cases/04_callaway_cryogenic_rattler_phonon/figures/cp_rattler_debye_einstein_fit.svg",
+          "png": "cases/04_callaway_cryogenic_rattler_phonon/figures/cp_rattler_debye_einstein_fit.png"
+        }
+      ],
+      "data_files": [
+        "cases/04_callaway_cryogenic_rattler_phonon/data/callaway_cigt.csv",
+        "cases/04_callaway_cryogenic_rattler_phonon/data/cp_rattler.csv",
+        "cases/04_callaway_cryogenic_rattler_phonon/data/paper_demo_kl_4_300K.csv"
+      ],
+      "recipes": [],
+      "summaries_and_reports": [
+        "cases/04_callaway_cryogenic_rattler_phonon/reports/cp_rattler_debye_einstein_summary.json",
+        "cases/04_callaway_cryogenic_rattler_phonon/reports/paper_demo_kl_4_300K_callaway_report.md",
+        "cases/04_callaway_cryogenic_rattler_phonon/reports/paper_demo_kl_4_300K_callaway_summary.json"
+      ]
+    },
+    {
+      "id": "05_xrd_structural_and_vt_suite",
+      "order": 5,
+      "slug": "xrd-structural-vt-suite",
+      "title_zh": "多模态结构表征：原位变温 XRD 相变热图、Rietveld 精修与微观应变解析",
+      "title_en": "6-Mode XRD Structural Characterization: Peak-Shift Zoom, In-Situ VT Maps, Rietveld & Williamson–Hall",
+      "category": "Crystal Structure & Phase Evolution",
+      "skills_used": [
+        "te-xrd"
+      ],
+      "material_system": "Chalcopyrite CuIn1-xGaxTe2 – ZnSe (300–750 K)",
+      "reference": "TEDEX `plot-xrd` & `xrd-lattice` structural workflow suite",
+      "user_prompt": "对 CuInGaTe2–ZnSe 样品系列完成一套完整的文章级结构表征作图：(1) 选定代表性谱线绘制全谱+主峰固溶峰移局部放大双栏图；(2) 300–750 K 原位变温 XRD 二维相变强度热图（标出 T_c=635 K 相变线）与热色阶瀑布图；(3) 双相 Rietveld 精修残差图；(4) 四方双峰伪 Voigt 分峰拟合；(5) Williamson–Hall 晶粒尺寸与微应变线性回归。",
+      "agent_highlights": [
+        "单条 `plot-xrd` 命令通过 `--zoom`、`--vt-map`、`--vt-stack`、`--rietveld`、`--peak-fit`、`--wh` 六种布局覆盖从常规物相核对到相变动力学与微结构量化的全链路。",
+        "支持 `--pick 13568` 按文件夹顺序精准抽取谱线并保持与 `legend.txt` 一一绑定，自动叠加双物相 PDF 标准卡片衍射棒。",
+        "内置 `soft-br`（柔和蓝→珊瑚红）热学色阶与图内自适应图例布局，直接导出期刊可投稿的矢量 SVG 与高分 PNG。"
+      ],
+      "cli_commands": [
+        "python main.py plot-xrd showcase/cases/05_xrd_structural_and_vt_suite/data/vt_xrd_cigt --pick 13568 --zoom 26.9 28.3 --pdf-card showcase/cases/05_xrd_structural_and_vt_suite/data/CuInGaTe2_card.csv --legend --formats svg png --no-show",
+        "python main.py plot-xrd showcase/cases/05_xrd_structural_and_vt_suite/data/vt_xrd_cigt --vt-map --transition-temp 635 --formats svg png --no-show",
+        "python main.py plot-xrd showcase/cases/05_xrd_structural_and_vt_suite/data/CIGT_ZnSe_rietveld.csv --rietveld --zoom 44.2 47.2 --pdf-card showcase/cases/05_xrd_structural_and_vt_suite/data/CuInGaTe2_card.csv --pdf-card showcase/cases/05_xrd_structural_and_vt_suite/data/ZnSe_card.csv --formats svg png --no-show",
+        "python main.py plot-xrd showcase/cases/05_xrd_structural_and_vt_suite/data/CIT_nano_WH.xy --wh --pdf-card showcase/cases/05_xrd_structural_and_vt_suite/data/CuInGaTe2_card.csv --instr-fwhm 0.05 --formats svg png --no-show"
+      ],
+      "key_metrics": [
+        {
+          "label": "Supported XRD Layouts",
+          "value": "8 modes (stack, separate, zoom, vt-map, vt-stack, rietveld, peak-fit, WH)"
+        },
+        {
+          "label": "In-Situ VT Window",
+          "value": "300 – 750 K (T_c = 635 K phase transition)"
+        },
+        {
+          "label": "Profile & Lattice Outputs",
+          "value": "R_wp / χ², pseudo-Voigt FWHM, D (nm) & ε, (a,b,c)"
+        }
+      ],
+      "figures": [
+        {
+          "id": "xrd_zoom",
+          "title": "全谱堆栈 + (112) 主峰固溶位移同步放大双栏图",
+          "svg": "cases/05_xrd_structural_and_vt_suite/figures/01_xrd_zoom_peak_shift.svg",
+          "png": "cases/05_xrd_structural_and_vt_suite/figures/01_xrd_zoom_peak_shift.png"
+        },
+        {
+          "id": "xrd_vt_map",
+          "title": "300–750 K 原位变温 XRD (2θ, T) 二维相变热力图",
+          "svg": "cases/05_xrd_structural_and_vt_suite/figures/02_xrd_vt_phase_heatmap.svg",
+          "png": "cases/05_xrd_structural_and_vt_suite/figures/02_xrd_vt_phase_heatmap.png"
+        },
+        {
+          "id": "xrd_vt_stack",
+          "title": "300–750 K 变温蓝—红温度梯度瀑布图（含峰位参考线）",
+          "svg": "cases/05_xrd_structural_and_vt_suite/figures/03_xrd_vt_waterfall_stack.svg",
+          "png": "cases/05_xrd_structural_and_vt_suite/figures/03_xrd_vt_waterfall_stack.png"
+        },
+        {
+          "id": "xrd_rietveld",
+          "title": "双相（CuIn0.8Ga0.2Te2 + ZnSe）Rietveld 精修拟合、残差与局部放大图",
+          "svg": "cases/05_xrd_structural_and_vt_suite/figures/04_xrd_rietveld_refinement.svg",
+          "png": "cases/05_xrd_structural_and_vt_suite/figures/04_xrd_rietveld_refinement.png"
+        },
+        {
+          "id": "xrd_peak_fit",
+          "title": "(204)/(220) 四方劈裂双峰伪 Voigt 解卷积与残差面板",
+          "svg": "cases/05_xrd_structural_and_vt_suite/figures/05_xrd_pseudo_voigt_peak_fit.svg",
+          "png": "cases/05_xrd_structural_and_vt_suite/figures/05_xrd_pseudo_voigt_peak_fit.png"
+        },
+        {
+          "id": "xrd_wh",
+          "title": "Williamson–Hall βcosθ – 4sinθ 纳米晶粒尺寸与晶格微应变回归",
+          "svg": "cases/05_xrd_structural_and_vt_suite/figures/06_xrd_williamson_hall.svg",
+          "png": "cases/05_xrd_structural_and_vt_suite/figures/06_xrd_williamson_hall.png"
+        }
+      ],
+      "data_files": [
+        "cases/05_xrd_structural_and_vt_suite/data/CIT_nano_WH.xy",
+        "cases/05_xrd_structural_and_vt_suite/data/CIGT_ZnSe_rietveld.csv",
+        "cases/05_xrd_structural_and_vt_suite/data/CuInGaTe2_card.csv",
+        "cases/05_xrd_structural_and_vt_suite/data/ZnSe_card.csv",
+        "cases/05_xrd_structural_and_vt_suite/data/vt_xrd_cigt/01_CIGT_300K.xy",
+        "cases/05_xrd_structural_and_vt_suite/data/vt_xrd_cigt/02_CIGT_375K.xy",
+        "cases/05_xrd_structural_and_vt_suite/data/vt_xrd_cigt/03_CIGT_450K.xy",
+        "cases/05_xrd_structural_and_vt_suite/data/vt_xrd_cigt/04_CIGT_525K.xy",
+        "cases/05_xrd_structural_and_vt_suite/data/vt_xrd_cigt/05_CIGT_600K.xy",
+        "cases/05_xrd_structural_and_vt_suite/data/vt_xrd_cigt/06_CIGT_650K.xy",
+        "cases/05_xrd_structural_and_vt_suite/data/vt_xrd_cigt/07_CIGT_700K.xy",
+        "cases/05_xrd_structural_and_vt_suite/data/vt_xrd_cigt/08_CIGT_750K.xy",
+        "cases/05_xrd_structural_and_vt_suite/data/vt_xrd_cigt/legend.txt"
+      ],
+      "recipes": [],
+      "summaries_and_reports": []
+    },
+    {
+      "id": "06_sciplot_20kind_scientific_gallery",
+      "order": 6,
+      "slug": "sciplot-scientific-gallery",
+      "title_zh": "sciplot 通用科研图表引擎：20+ 种多维相图、统计与机器学习诊断图库",
+      "title_en": "Unified Scientific Chart Engine (`sciplot`): 2D Phase Maps, Ternary, ML Parity, Arrhenius & Multi-Metric Plots",
+      "category": "Scientific Data Visualization",
+      "skills_used": [
+        "te-plotting"
+      ],
+      "material_system": "Cross-system thermoelectric screening, ML & device characterization",
+      "reference": "TEDEX `sciplot` CLI & JSON Recipe Gallery",
+      "user_prompt": "展示 sciplot 模块无需手写 matplotlib 脚本即可一键生成的出版级科研图表：包括热导构成堆积柱状图、100% 散射占比柱状图、zT 阶梯优化瀑布图、(T, x) 二维等高线相图、三元成分热电优值相图、机器学习预测 Parity 对角误差带图、电导率 Arrhenius 活化能自动拟合图，以及多指标归一化雷达图。",
+      "agent_highlights": [
+        "统一字号、线宽、内向刻度（inward ticks）与 `npg` / `soft-br` 学术配色，彻底告别 AI 临时手写脚本导致的字号不一与图例遮挡曲线问题。",
+        "内置 `legend_layout` 图内自适应引擎：自动搜索最低碰撞方位、调整列数与字号，并在必要时温和扩展坐标轴留白（如百分比堆积图自动锁定刻度上限在 100%）。",
+        "同时支持命令行直出（`te sciplot --figure contour ...`）与可版本化复用的 JSON Recipe，支持误差带、参考线、局部放大插图（Inset）等通用叠加层。"
+      ],
+      "cli_commands": [
+        "python main.py sciplot showcase/cases/06_sciplot_20kind_scientific_gallery/data/contour_zt.csv --figure contour_phase_map --formats svg png --no-show",
+        "python main.py sciplot showcase/cases/06_sciplot_20kind_scientific_gallery/data/ternary_cigt.csv --figure ternary_composition --alabel CuInTe$_2$ --blabel CuGaTe$_2$ --clabel ZnSe --formats svg png --no-show",
+        "python main.py sciplot showcase/cases/06_sciplot_20kind_scientific_gallery/data/parity_zt.csv --figure parity_pred_vs_exp --formats svg png --no-show",
+        "python main.py sciplot showcase/cases/06_sciplot_20kind_scientific_gallery/data/arrhenius_sigma.csv --figure arrhenius_conductivity --formats svg png --no-show"
+      ],
+      "key_metrics": [
+        {
+          "label": "Built-in Figure Kinds",
+          "value": "20+ 1D, 2D, Ternary, Statistical & Diagnostic Charts"
+        },
+        {
+          "label": "Legend Layout",
+          "value": "100% Inside-Axes Collision-Free Auto Placement"
+        },
+        {
+          "label": "Export Formats",
+          "value": "Vector SVG / PDF + High-DPI PNG + Normalized CSV"
+        }
+      ],
+      "figures": [
+        {
+          "id": "sci_contour",
+          "title": "(T, x) 二维热电优值 zT 等高线相图（soft-br 配色）",
+          "svg": "cases/06_sciplot_20kind_scientific_gallery/figures/04_contour_phase_map.svg",
+          "png": "cases/06_sciplot_20kind_scientific_gallery/figures/04_contour_phase_map.png"
+        },
+        {
+          "id": "sci_ternary",
+          "title": "CuInTe2–CuGaTe2–ZnSe 三元固溶成分 zT 相图",
+          "svg": "cases/06_sciplot_20kind_scientific_gallery/figures/07_ternary_composition.svg",
+          "png": "cases/06_sciplot_20kind_scientific_gallery/figures/07_ternary_composition.png"
+        },
+        {
+          "id": "sci_parity",
+          "title": "机器学习 zT 预测 vs 实验 Parity 诊断图（自动标注 R², MAE, RMSE 与 ±10% 误差带）",
+          "svg": "cases/06_sciplot_20kind_scientific_gallery/figures/11_parity_ml.svg",
+          "png": "cases/06_sciplot_20kind_scientific_gallery/figures/11_parity_ml.png"
+        },
+        {
+          "id": "sci_arrhenius",
+          "title": "ln σ – 1000/T 双横轴 Arrhenius 拟合与热激发活化能 E_a 自动提取",
+          "svg": "cases/06_sciplot_20kind_scientific_gallery/figures/12_arrhenius_fit.svg",
+          "png": "cases/06_sciplot_20kind_scientific_gallery/figures/12_arrhenius_fit.png"
+        },
+        {
+          "id": "sci_pct_bar",
+          "title": "100% 声子散射权重堆积柱状图（图内顶部留白图例，Y 轴刻度严格封顶 100%）",
+          "svg": "cases/06_sciplot_20kind_scientific_gallery/figures/02_percent_stacked_bar.svg",
+          "png": "cases/06_sciplot_20kind_scientific_gallery/figures/02_percent_stacked_bar.png"
+        },
+        {
+          "id": "sci_radar",
+          "title": "多维热电与力学综合指标雷达对比图",
+          "svg": "cases/06_sciplot_20kind_scientific_gallery/figures/17_radar_multi_metric.svg",
+          "png": "cases/06_sciplot_20kind_scientific_gallery/figures/17_radar_multi_metric.png"
+        }
+      ],
+      "data_files": [
+        "cases/06_sciplot_20kind_scientific_gallery/data/arrhenius_sigma.csv",
+        "cases/06_sciplot_20kind_scientific_gallery/data/broken_sigma.csv",
+        "cases/06_sciplot_20kind_scientific_gallery/data/bubble_screening.csv",
+        "cases/06_sciplot_20kind_scientific_gallery/data/contour_zt.csv",
+        "cases/06_sciplot_20kind_scientific_gallery/data/hardness_dist.csv",
+        "cases/06_sciplot_20kind_scientific_gallery/data/heatmap_batches.csv",
+        "cases/06_sciplot_20kind_scientific_gallery/data/kappa_breakdown.csv",
+        "cases/06_sciplot_20kind_scientific_gallery/data/parity_zt.csv",
+        "cases/06_sciplot_20kind_scientific_gallery/data/precipitate_sizes.csv",
+        "cases/06_sciplot_20kind_scientific_gallery/data/radar_summary.csv",
+        "cases/06_sciplot_20kind_scientific_gallery/data/scattering_pct.csv",
+        "cases/06_sciplot_20kind_scientific_gallery/data/ternary_cigt.csv",
+        "cases/06_sciplot_20kind_scientific_gallery/data/waterfall_zt.csv",
+        "cases/06_sciplot_20kind_scientific_gallery/data/xrd_split_fit.csv",
+        "cases/06_sciplot_20kind_scientific_gallery/data/zt_benchmark.csv",
+        "cases/06_sciplot_20kind_scientific_gallery/data/zt_error_inset.csv"
+      ],
+      "recipes": [],
+      "summaries_and_reports": []
+    },
+    {
+      "id": "07_classical_te_transport_and_spb_suite",
+      "order": 7,
+      "slug": "classical-te-transport-and-spb",
+      "title_zh": "经典热电材料变温输运、霍尔表征与单抛物带（SPB）全流程解析",
+      "title_en": "Classical Bulk Thermoelectric Transport, Hall Characterization & SPB Band Modeling",
+      "category": "Classical TE Transport & SPB",
+      "skills_used": [
+        "te-plotting",
+        "te-physics-models"
+      ],
+      "material_system": "p→n Chalcogenide Doping Series (300–575 K), Cu2Se (300/750 K) & Cu2(S,Se,Te) (900 K)",
+      "reference": "TEDEX Classical Transport, Hall & SPB Benchmark Suite",
+      "user_prompt": "基于实验测试数据集完成一套标准热电材料论文级基础表征与能带分析图谱：绘制 p→n 型转变掺杂系列的 2×3 六联图变温热电输运总览（S, σ, PF, κ_tot, κ_L, zT）及单幅 zT(T) 演化大图；结合室温成分双纵轴霍尔图（n_H, μ_H）与 300–800 K 变温迁移率 μ_H(T) 分析散射机制；并对 Cu2Se（300 / 750 K 霍尔轴）与 Cu2(S,Se,Te)（900 K 免霍尔电导率轴）执行单抛物带（SPB）优值预测拟合。",
+      "agent_highlights": [
+        "直接调用 `plot-te --plot-mode combined` 与 `--zt --legend` 自动识别目录中的 `legend.txt` 样品标签，生成标准 2×3 六联图与单属性大图，共享图例自动置于首面板图内空白处并智能扩展纵轴留白。",
+        "通过 `sciplot` 双纵轴（`dual_line`）与多源分组配置，统一展示室温载流子浓度/迁移率随掺杂量的演化以及 300–800 K 声学声子散射主导的迁移率衰减规律。",
+        "同时覆盖有霍尔数据（`spb performance`：Cu2Se 300 K / 750 K 跨温区 zT(n_H) 曲线簇）与高温无霍尔数据（`spb conductivity`：900 K 电导率轴 zT(σ) 拟合反推加权迁移率 μ_0 = 27.4 cm² V⁻¹ s⁻¹）两大经典 SPB 建模范式。"
+      ],
+      "cli_commands": [
+        "python main.py plot-te showcase/cases/07_classical_te_transport_and_spb_suite/data/te_series --plot-mode combined --formats svg png --no-show",
+        "python main.py plot-te showcase/cases/07_classical_te_transport_and_spb_suite/data/te_series --zt --legend --formats svg png --no-show",
+        "python main.py sciplot --recipe showcase/cases/07_classical_te_transport_and_spb_suite/recipes/hall_composition_dual.json --no-show",
+        "python main.py sciplot --recipe showcase/cases/07_classical_te_transport_and_spb_suite/recipes/vt_hall_mobility.json --no-show",
+        "python main.py spb performance showcase/cases/07_classical_te_transport_and_spb_suite/data/cu2se_spb_series.csv --params showcase/cases/07_classical_te_transport_and_spb_suite/data/cu2se_spb_params.csv --xlim 1e20 2.5e21 --legend inside --formats svg png --no-show",
+        "python main.py spb conductivity showcase/cases/07_classical_te_transport_and_spb_suite/data/cu2ssete_900K.csv --temperature 900 --kL 0.45 --legend inside --formats svg png --no-show"
+      ],
+      "key_metrics": [
+        {
+          "label": "Conduction Transition (x = 0 → 0.007)",
+          "value": "p-type (+337 µV K⁻¹) → n-type (-315 µV K⁻¹)"
+        },
+        {
+          "label": "Peak zT (p-type / n-type)",
+          "value": "1.08 (524 K) / 1.00 (574 K)"
+        },
+        {
+          "label": "Cu2Se SPB (300 / 750 K)",
+          "value": "m* = 2.3 / 3.2 m_e, Peak zT = 1.22"
+        },
+        {
+          "label": "900 K Hall-Free σ-SPB",
+          "value": "Weighted μ_0 = 27.4 cm² V⁻¹ s⁻¹ (κ_L = 0.45 W m⁻¹ K⁻¹)"
+        }
+      ],
+      "figures": [
+        {
+          "id": "te_6panel_summary",
+          "title": "2×3 六联图变温热电输运总览（S, σ, PF, κ_tot, κ_L, ZT vs T，p→n 导电类型转变）",
+          "svg": "cases/07_classical_te_transport_and_spb_suite/figures/01_te_6panel_combined_summary.svg",
+          "png": "cases/07_classical_te_transport_and_spb_suite/figures/01_te_6panel_combined_summary.png"
+        },
+        {
+          "id": "te_zt_doping",
+          "title": "单幅变温热电优值 ZT(T) 掺杂演化对比图（图内自适应无遮挡图例）",
+          "svg": "cases/07_classical_te_transport_and_spb_suite/figures/02_te_zt_doping_series.svg",
+          "png": "cases/07_classical_te_transport_and_spb_suite/figures/02_te_zt_doping_series.png"
+        },
+        {
+          "id": "hall_rt_dual",
+          "title": "室温成分依赖霍尔载流子浓度 n_H 与迁移率 μ_H 双对数双纵轴图",
+          "svg": "cases/07_classical_te_transport_and_spb_suite/figures/03_hall_composition_dual_axis.svg",
+          "png": "cases/07_classical_te_transport_and_spb_suite/figures/03_hall_composition_dual_axis.png"
+        },
+        {
+          "id": "hall_vt_mobility",
+          "title": "300–800 K 变温霍尔迁移率 μ_H(T) 声学声子散射衰减曲线簇",
+          "svg": "cases/07_classical_te_transport_and_spb_suite/figures/04_hall_vt_mobility.svg",
+          "png": "cases/07_classical_te_transport_and_spb_suite/figures/04_hall_vt_mobility.png"
+        },
+        {
+          "id": "spb_cu2se_zt",
+          "title": "Cu2Se 300 K / 750 K 多温区单抛物带（SPB）优值 zT(n_H) 预测与实验对比",
+          "svg": "cases/07_classical_te_transport_and_spb_suite/figures/05_spb_cu2se_multi_temp_zt.svg",
+          "png": "cases/07_classical_te_transport_and_spb_suite/figures/05_spb_cu2se_multi_temp_zt.png"
+        },
+        {
+          "id": "spb_cu2ssete_sigma_zt",
+          "title": "900 K 免霍尔电导率轴 SPB 建模：Cu2(S,Se,Te) 优值 zT(σ) 峰值窗口预测",
+          "svg": "cases/07_classical_te_transport_and_spb_suite/figures/06_spb_cu2ssete_conductivity_zt.svg",
+          "png": "cases/07_classical_te_transport_and_spb_suite/figures/06_spb_cu2ssete_conductivity_zt.png"
+        }
+      ],
+      "data_files": [
+        "cases/07_classical_te_transport_and_spb_suite/data/cu2se_spb_params.csv",
+        "cases/07_classical_te_transport_and_spb_suite/data/cu2se_spb_series.csv",
+        "cases/07_classical_te_transport_and_spb_suite/data/cu2ssete_900K.csv",
+        "cases/07_classical_te_transport_and_spb_suite/data/hall_composition_rt.csv",
+        "cases/07_classical_te_transport_and_spb_suite/data/te_series/legend.txt",
+        "cases/07_classical_te_transport_and_spb_suite/data/te_series/sample_1.csv",
+        "cases/07_classical_te_transport_and_spb_suite/data/te_series/sample_2.csv",
+        "cases/07_classical_te_transport_and_spb_suite/data/te_series/sample_3.csv",
+        "cases/07_classical_te_transport_and_spb_suite/data/te_series/sample_4.csv",
+        "cases/07_classical_te_transport_and_spb_suite/data/te_series/sample_5.csv",
+        "cases/07_classical_te_transport_and_spb_suite/data/vt_mobility/mob_1.csv",
+        "cases/07_classical_te_transport_and_spb_suite/data/vt_mobility/mob_2.csv",
+        "cases/07_classical_te_transport_and_spb_suite/data/vt_mobility/mob_3.csv",
+        "cases/07_classical_te_transport_and_spb_suite/data/vt_mobility/mob_4.csv",
+        "cases/07_classical_te_transport_and_spb_suite/data/vt_mobility/mob_5.csv"
+      ],
+      "recipes": [
+        "cases/07_classical_te_transport_and_spb_suite/recipes/hall_composition_dual.json",
+        "cases/07_classical_te_transport_and_spb_suite/recipes/vt_hall_mobility.json"
+      ],
+      "summaries_and_reports": [
+        "cases/07_classical_te_transport_and_spb_suite/summaries/cu2se_performance_summary.json",
+        "cases/07_classical_te_transport_and_spb_suite/summaries/cu2ssete_900K_conductivity_summary.json"
+      ]
+    },
+    {
+      "id": "08_te_device_power_and_peltier_cooling",
+      "order": 8,
+      "slug": "te-device-power-and-cooling",
+      "title_zh": "热电器件服役表征：发电器件（TEG）输出功率/效率与帕尔贴制冷（TEC）性能图谱",
+      "title_en": "Thermoelectric Module Characterization: TEG Power Generation, Conversion Efficiency & Peltier Cooling",
+      "category": "TE Device & Module Engineering",
+      "skills_used": [
+        "te-plotting"
+      ],
+      "material_system": "Multi-ΔT Thermoelectric Generator (TEG) & Peltier Cooling (TEC) Modules",
+      "reference": "TEDEX Device Characterization Recipe Suite (`configs/plot_recipes/device/`)",
+      "user_prompt": "整理并绘制热电器件级服役测试数据：包括温差发电器件（TEG）在 ΔT = 150–500 K 下的输出电压 V(I) 与输出功率 P(I) 双纵轴特性曲线簇、ΔT = 350–550 K 下的电流依赖转换效率 η(I) 曲线，以及帕尔贴制冷模组（TEC）在多温差工况下的制冷系数 COP(I) 与制冷量 Q_c(I) 曲线，要求全部采用图内无碰撞图例与统一期刊字号配色。",
+      "agent_highlights": [
+        "通过 `sciplot` 的 `dual_line` 配方将开路电压线性支路（实线圆点 V–I）与抛物线型输出功率支路（虚线方点 P–I）按相同温差色系配对绑定，并在图内空白角自动排布 ΔT = 500 → 150 K 梯度图例。",
+        "通过显式 `group_order` 保证温差序列（如 ΔT = 5, 10, 15, 20 K）严格按物理单调顺序排列，避免字符串字典序把 5 K 排在 20 K 之后的常见瑕疵。",
+        "一套声明式 JSON Recipe 同时覆盖温差发电（TEG：V, P, η）与固态帕尔贴制冷（TEC：COP, Q_c）两大器件测试场景，零手写脚本即可复现矢量 SVG 与高清 PNG。"
+      ],
+      "cli_commands": [
+        "python main.py sciplot --recipe showcase/cases/08_te_device_power_and_peltier_cooling/recipes/teg_iv_power_dual.json --no-show",
+        "python main.py sciplot --recipe showcase/cases/08_te_device_power_and_peltier_cooling/recipes/teg_conversion_efficiency.json --no-show",
+        "python main.py sciplot --recipe showcase/cases/08_te_device_power_and_peltier_cooling/recipes/tec_peltier_cop.json --no-show",
+        "python main.py sciplot --recipe showcase/cases/08_te_device_power_and_peltier_cooling/recipes/tec_cooling_capacity_qc.json --no-show"
+      ],
+      "key_metrics": [
+        {
+          "label": "TEG V_oc & Peak Power (ΔT = 500 K)",
+          "value": "V_oc = 2.12 V, P_max = 4.40 mW"
+        },
+        {
+          "label": "Peak TEG Efficiency (ΔT = 550 K)",
+          "value": "η_max = 12.3% (at I ≈ 3.1 A)"
+        },
+        {
+          "label": "Peak Peltier COP (ΔT = 5 K)",
+          "value": "COP_max = 21.3"
+        },
+        {
+          "label": "Max Cooling Capacity Q_c (ΔT = 0 K)",
+          "value": "Q_c,max = 5.97 W (at I = 19.9 A)"
+        }
+      ],
+      "figures": [
+        {
+          "id": "teg_iv_power",
+          "title": "多温差 TEG 发电模组输出电压 V(I)（实线）与输出功率 P(I)（虚线）双纵轴特性曲线簇",
+          "svg": "cases/08_te_device_power_and_peltier_cooling/figures/01_teg_iv_power_dual_axis.svg",
+          "png": "cases/08_te_device_power_and_peltier_cooling/figures/01_teg_iv_power_dual_axis.png"
+        },
+        {
+          "id": "teg_efficiency",
+          "title": "TEG 发电模组电流依赖热电转换效率 η(I) 曲线簇（峰值 η_max = 12.3%）",
+          "svg": "cases/08_te_device_power_and_peltier_cooling/figures/02_teg_conversion_efficiency.svg",
+          "png": "cases/08_te_device_power_and_peltier_cooling/figures/02_teg_conversion_efficiency.png"
+        },
+        {
+          "id": "tec_cop",
+          "title": "TEC 帕尔贴制冷模组多温差制冷系数 COP(I) 特性曲线簇（峰值 COP = 21.3）",
+          "svg": "cases/08_te_device_power_and_peltier_cooling/figures/03_tec_peltier_cop.svg",
+          "png": "cases/08_te_device_power_and_peltier_cooling/figures/03_tec_peltier_cop.png"
+        },
+        {
+          "id": "tec_qc",
+          "title": "TEC 帕尔贴制冷模组电流依赖制冷功率 Q_c(I) 曲线簇（最高 5.97 W）",
+          "svg": "cases/08_te_device_power_and_peltier_cooling/figures/04_tec_cooling_capacity_qc.svg",
+          "png": "cases/08_te_device_power_and_peltier_cooling/figures/04_tec_cooling_capacity_qc.png"
+        }
+      ],
+      "data_files": [
+        "cases/08_te_device_power_and_peltier_cooling/data/tec_cooling_capacity/qc_dt_0K.csv",
+        "cases/08_te_device_power_and_peltier_cooling/data/tec_cooling_capacity/qc_dt_10K.csv",
+        "cases/08_te_device_power_and_peltier_cooling/data/tec_cooling_capacity/qc_dt_20K.csv",
+        "cases/08_te_device_power_and_peltier_cooling/data/tec_cop/cop_dt_10K.csv",
+        "cases/08_te_device_power_and_peltier_cooling/data/tec_cop/cop_dt_15K.csv",
+        "cases/08_te_device_power_and_peltier_cooling/data/tec_cop/cop_dt_20K.csv",
+        "cases/08_te_device_power_and_peltier_cooling/data/tec_cop/cop_dt_5K.csv",
+        "cases/08_te_device_power_and_peltier_cooling/data/teg_efficiency/eff_dt_350K.csv",
+        "cases/08_te_device_power_and_peltier_cooling/data/teg_efficiency/eff_dt_450K.csv",
+        "cases/08_te_device_power_and_peltier_cooling/data/teg_efficiency/eff_dt_500K.csv",
+        "cases/08_te_device_power_and_peltier_cooling/data/teg_efficiency/eff_dt_550K.csv",
+        "cases/08_te_device_power_and_peltier_cooling/data/teg_iv_power/teg_dt_150K.csv",
+        "cases/08_te_device_power_and_peltier_cooling/data/teg_iv_power/teg_dt_250K.csv",
+        "cases/08_te_device_power_and_peltier_cooling/data/teg_iv_power/teg_dt_350K.csv",
+        "cases/08_te_device_power_and_peltier_cooling/data/teg_iv_power/teg_dt_420K.csv",
+        "cases/08_te_device_power_and_peltier_cooling/data/teg_iv_power/teg_dt_500K.csv"
+      ],
+      "recipes": [
+        "cases/08_te_device_power_and_peltier_cooling/recipes/tec_cooling_capacity_qc.json",
+        "cases/08_te_device_power_and_peltier_cooling/recipes/tec_peltier_cop.json",
+        "cases/08_te_device_power_and_peltier_cooling/recipes/teg_conversion_efficiency.json",
+        "cases/08_te_device_power_and_peltier_cooling/recipes/teg_iv_power_dual.json"
+      ],
+      "summaries_and_reports": []
+    }
+  ]
+}

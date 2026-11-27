@@ -1,0 +1,38 @@
+{
+  "name": "waterfall_steps",
+  "plot": {
+    "kind": "waterfall",
+    "waterfall_mode": "delta",
+    "x": {
+      "column": "Step",
+      "label": "Optimization Step"
+    },
+    "condition": {
+      "column": "Step_Type"
+    },
+    "series": [
+      {
+        "y": {
+          "column": "Value",
+          "label": "$zT_{\\max}$"
+        },
+        "property": "zt",
+        "group_value": "zT",
+        "legend_label": "zT"
+      }
+    ],
+    "xlabel": "Optimization Strategy",
+    "ylabel": "$zT_{\\max}$",
+    "bar_width": 0.56,
+    "bar_labels": true,
+    "connectors": true,
+    "y_margin": 0.16
+  },
+  "output": {
+    "dir": "outputs/figures/flexible",
+    "stem": "waterfall_steps",
+    "formats": ["png", "pdf"],
+    "normalized_csv": true,
+    "copy_to_data_dir": true
+  }
+}

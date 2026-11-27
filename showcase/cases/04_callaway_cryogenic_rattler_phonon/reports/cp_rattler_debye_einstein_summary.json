@@ -1,0 +1,154 @@
+{
+  "model": "Debye-Einstein",
+  "input_csv": "showcase/cases/04_callaway_cryogenic_rattler_phonon/data/cp_rattler.csv",
+  "fit": {
+    "converged": true,
+    "atoms_per_formula_unit": 4.0,
+    "gamma_mJ_molK2": 0.8044063957654851,
+    "Theta_D_K": 213.74611983944732,
+    "w_Debye": 0.8041907746801867,
+    "beta_Debye_mJ_molK4": 0.6402790275039177,
+    "derived_sound_velocity_m_s": 2210.7992733484602,
+    "einstein_modes": [
+      {
+        "mode": 1,
+        "Theta_E_K": 35.95046990191767,
+        "frequency_meV": 3.097971800755442,
+        "frequency_cm-1": 24.986827658185366,
+        "weight_fraction": 0.06455206498066826,
+        "oscillators_per_3Nat": 0.7746247797680191
+      },
+      {
+        "mode": 2,
+        "Theta_E_K": 79.05376574324788,
+        "frequency_meV": 6.81232645037123,
+        "frequency_cm-1": 54.945118262605135,
+        "weight_fraction": 0.13125716033914497,
+        "oscillators_per_3Nat": 1.5750859240697397
+      }
+    ],
+    "r2_Cp": 0.9997896248492897,
+    "r2_Cp_over_T3": 0.9997225253675308,
+    "mean_rel_error_pct": 0.8089547343605468,
+    "diagnostics": {
+      "n_observations": 42,
+      "n_free_parameters": 6,
+      "degrees_of_freedom": 36,
+      "condition_number": 500.1439481634697,
+      "parameter_uncertainties": {
+        "gamma_mJ_molK2": {
+          "value": 0.8044063957654851,
+          "std_error": 0.11195074381779592,
+          "ci95_halfwidth": 0.22704663194217112,
+          "relative_se_pct": 13.917187183881342
+        },
+        "Theta_D_K": {
+          "value": 213.74611983944732,
+          "std_error": 1.4875071284739079,
+          "ci95_halfwidth": 3.016804283673588,
+          "relative_se_pct": 0.6959224006457895
+        },
+        "Theta_E1_K": {
+          "value": 35.95046990191767,
+          "std_error": 0.127844200287111,
+          "ci95_halfwidth": 0.25928005566243295,
+          "relative_se_pct": 0.35561204244590844
+        },
+        "w_E1": {
+          "value": 0.06455206498066826,
+          "std_error": 0.0010037325403035814,
+          "ci95_halfwidth": 0.0020356639435785613,
+          "relative_se_pct": 1.5549193362043094
+        },
+        "Theta_E2_K": {
+          "value": 79.05376574324788,
+          "std_error": 1.331476178756962,
+          "ci95_halfwidth": 2.7003588505853684,
+          "relative_se_pct": 1.6842666079707729
+        },
+        "w_E2": {
+          "value": 0.13125716033914497,
+          "std_error": 0.00800581401686601,
+          "ci95_halfwidth": 0.016236543380571157,
+          "relative_se_pct": 6.099335073363177
+        }
+      },
+      "correlation_matrix": {
+        "gamma_mJ_molK2": {
+          "gamma_mJ_molK2": 1.0,
+          "Theta_D_K": 0.9446,
+          "Theta_E1_K": -0.3911,
+          "w_E1": 0.1322,
+          "Theta_E2_K": 0.5257,
+          "w_E2": 0.9088
+        },
+        "Theta_D_K": {
+          "gamma_mJ_molK2": 0.9446,
+          "Theta_D_K": 1.0,
+          "Theta_E1_K": -0.5603,
+          "w_E1": -0.0446,
+          "Theta_E2_K": 0.3491,
+          "w_E2": 0.8636
+        },
+        "Theta_E1_K": {
+          "gamma_mJ_molK2": -0.3911,
+          "Theta_D_K": -0.5603,
+          "Theta_E1_K": 1.0,
+          "w_E1": 0.7952,
+          "Theta_E2_K": 0.2768,
+          "w_E2": -0.4377
+        },
+        "w_E1": {
+          "gamma_mJ_molK2": 0.1322,
+          "Theta_D_K": -0.0446,
+          "Theta_E1_K": 0.7952,
+          "w_E1": 1.0,
+          "Theta_E2_K": 0.7115,
+          "w_E2": 0.1061
+        },
+        "Theta_E2_K": {
+          "gamma_mJ_molK2": 0.5257,
+          "Theta_D_K": 0.3491,
+          "Theta_E1_K": 0.2768,
+          "w_E1": 0.7115,
+          "Theta_E2_K": 1.0,
+          "w_E2": 0.6586
+        },
+        "w_E2": {
+          "gamma_mJ_molK2": 0.9088,
+          "Theta_D_K": 0.8636,
+          "Theta_E1_K": -0.4377,
+          "w_E1": 0.1061,
+          "Theta_E2_K": 0.6586,
+          "w_E2": 1.0
+        }
+      },
+      "collinear_pairs": [
+        {
+          "param_a": "gamma_mJ_molK2",
+          "param_b": "Theta_D_K",
+          "r": 0.9446
+        },
+        {
+          "param_a": "gamma_mJ_molK2",
+          "param_b": "w_E2",
+          "r": 0.9088
+        }
+      ],
+      "identifiability_warnings": [
+        "Strong parameter collinearity between gamma_mJ_molK2 and Theta_D_K (r = +0.945); consider fixing one from independent Hall/optical/DFT data.",
+        "Strong parameter collinearity between gamma_mJ_molK2 and w_E2 (r = +0.909); consider fixing one from independent Hall/optical/DFT data.",
+        "High Jacobian condition number (500.1); check parameter uncertainties and correlations."
+      ]
+    }
+  },
+  "outputs": {
+    "points_csv": "showcase/cases/04_callaway_cryogenic_rattler_phonon/_tmp_cp/cp_rattler_debye_einstein_points.csv",
+    "curve_csv": "showcase/cases/04_callaway_cryogenic_rattler_phonon/_tmp_cp/cp_rattler_debye_einstein_curve.csv",
+    "figures": [
+      "showcase/cases/04_callaway_cryogenic_rattler_phonon/_tmp_cp/cp_rattler_debye_einstein_fit.svg",
+      "showcase/cases/04_callaway_cryogenic_rattler_phonon/_tmp_cp/cp_rattler_debye_einstein_fit.png"
+    ],
+    "data_dir_figures": []
+  }
+}

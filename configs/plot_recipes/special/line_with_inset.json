@@ -1,0 +1,39 @@
+{
+  "name": "line_with_inset",
+  "plot": {
+    "kind": "line",
+    "x": {
+      "semantic": "temperature",
+      "label": "$T$ (K)"
+    },
+    "group": {
+      "semantic": "sample"
+    },
+    "series": [
+      {
+        "y": {
+          "semantic": "zt",
+          "label": "$zT$"
+        },
+        "property": "zt"
+      }
+    ],
+    "inset": {
+      "xlim": [650, 800],
+      "ylim": [0.9, 1.5],
+      "bounds": [0.14, 0.52, 0.38, 0.38],
+      "connectors": true
+    },
+    "xlabel": "$T$ (K)",
+    "ylabel": "$zT$",
+    "legend": "inside",
+    "legend_loc": "lower right"
+  },
+  "output": {
+    "dir": "outputs/figures/flexible",
+    "stem": "line_with_inset",
+    "formats": ["png", "pdf"],
+    "normalized_csv": true,
+    "copy_to_data_dir": true
+  }
+}

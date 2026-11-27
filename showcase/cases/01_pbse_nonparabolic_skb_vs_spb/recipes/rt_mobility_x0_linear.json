@@ -1,0 +1,121 @@
+{
+  "name": "rt_303K_mobility_x0_fit_linear",
+  "plot": {
+    "kind": "line",
+    "x": {
+      "column": "nH_cm-3",
+      "label": "$n_{\\mathrm{H}}$ (cm$^{-3}$)"
+    },
+    "series": [
+      {
+        "source": "showcase/cases/01_pbse_nonparabolic_skb_vs_spb/data/rt_303K_x0_grid.csv",
+        "y": {
+          "column": "Hall_Mobility_SKB_cm2_V-1_s-1",
+          "label": "$\\mu_{\\mathrm{H}}$ (cm$^2$ V$^{-1}$ s$^{-1}$)"
+        },
+        "property": "mobility",
+        "group_value": "SKB_x0",
+        "legend_label": "SKB $x=0$ fit ($\\mu_0=5092$, $m^*_{\\mathrm{d}}=0.28m_e$)",
+        "role": "reference",
+        "color": "#E64B35",
+        "marker": "None",
+        "linestyle": "-",
+        "line_width": 2.1,
+        "alpha": 0.96
+      },
+      {
+        "source": "showcase/cases/01_pbse_nonparabolic_skb_vs_spb/data/rt_303K_x0_grid.csv",
+        "y": {
+          "column": "Hall_Mobility_SPB_cm2_V-1_s-1",
+          "label": "$\\mu_{\\mathrm{H}}$ (cm$^2$ V$^{-1}$ s$^{-1}$)"
+        },
+        "property": "mobility",
+        "group_value": "SPB_x0",
+        "legend_label": "SPB $x=0$ fit ($\\mu_0=2090$, $m^*_{\\mathrm{app}}=0.27m_e$)",
+        "role": "reference",
+        "color": "#3C5488",
+        "marker": "None",
+        "linestyle": "--",
+        "line_width": 1.7,
+        "alpha": 0.88
+      },
+      {
+        "source": "showcase/cases/01_pbse_nonparabolic_skb_vs_spb/data/rt_303K_x0_full.csv",
+        "y": {
+          "column": "uH_cm2_Vs",
+          "label": "$\\mu_{\\mathrm{H}}$ (cm$^2$ V$^{-1}$ s$^{-1}$)"
+        },
+        "property": "mobility",
+        "group_value": "x0_S1",
+        "legend_label": "$x=0$ ($\\mathrm{PbCu_{0.002}Se}$, S1, solid)",
+        "role": "highlight",
+        "color": "#E64B35",
+        "marker": "o",
+        "marker_size": 8.8,
+        "linestyle": "none",
+        "line_width": 0.0,
+        "alpha": 1.0
+      },
+      {
+        "source": "showcase/cases/01_pbse_nonparabolic_skb_vs_spb/data/rt_303K_series1_x_001_004.csv",
+        "y": {
+          "column": "uH_cm2_Vs",
+          "label": "$\\mu_{\\mathrm{H}}$ (cm$^2$ V$^{-1}$ s$^{-1}$)"
+        },
+        "property": "mobility",
+        "group_value": "Series1_x_gt_0",
+        "legend_label": "$x=0.01$–$0.04$ (S2–S5, hollow)",
+        "role": "reference",
+        "color": "#264B73",
+        "marker": "o",
+        "marker_size": 8.0,
+        "linestyle": "none",
+        "line_width": 0.0,
+        "alpha": 0.98
+      },
+      {
+        "source": "showcase/cases/01_pbse_nonparabolic_skb_vs_spb/data/rt_303K_series2_y_001_005.csv",
+        "y": {
+          "column": "uH_cm2_Vs",
+          "label": "$\\mu_{\\mathrm{H}}$ (cm$^2$ V$^{-1}$ s$^{-1}$)"
+        },
+        "property": "mobility",
+        "group_value": "Series2_y",
+        "legend_label": "$y=0.001$–$0.005$ (S6, S8–S10, hollow)",
+        "role": "reference",
+        "color": "#00A087",
+        "marker": "s",
+        "marker_size": 7.8,
+        "linestyle": "none",
+        "line_width": 0.0,
+        "alpha": 0.98
+      }
+    ],
+    "xlabel": "$n_{\\mathrm{H}}$ (cm$^{-3}$)",
+    "ylabel": "$\\mu_{\\mathrm{H}}$ (cm$^2$ V$^{-1}$ s$^{-1}$)",
+    "xscale": "log",
+    "yscale": "linear",
+    "x_log_ticks": "decade",
+    "xlim": [
+      5e+18,
+      6.5e+19
+    ],
+    "ylim": [
+      300,
+      1650
+    ],
+    "legend": "inside",
+    "legend_font_size": 9.6,
+    "subplot_aspect": "10:8"
+  },
+  "output": {
+    "dir": "showcase/cases/01_pbse_nonparabolic_skb_vs_spb/figures",
+    "stem": "PbSe_RT_303K_mobility_x0_fit_solid_hollow_linear",
+    "formats": [
+      "svg",
+      "png"
+    ],
+    "copy_to_data_dir": false,
+    "normalized_csv": false
+  }
+}

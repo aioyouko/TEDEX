@@ -1,0 +1,31 @@
+{
+  "name": "radar_multi_metric",
+  "plot": {
+    "kind": "radar",
+    "radar_normalize": true,
+    "x": {
+      "column": "Metric",
+      "label": "Metric"
+    },
+    "group": {
+      "column": "Material"
+    },
+    "series": [
+      {
+        "y": {
+          "column": "Score",
+          "label": "Normalized Score"
+        },
+        "property": "score"
+      }
+    ],
+    "ylim": [0, 1.1]
+  },
+  "output": {
+    "dir": "outputs/figures/flexible",
+    "stem": "radar_multi_metric",
+    "formats": ["png", "pdf"],
+    "normalized_csv": true,
+    "copy_to_data_dir": true
+  }
+}

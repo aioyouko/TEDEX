@@ -2,23 +2,24 @@ import os
 import shutil
 from pathlib import Path
 
-from te_analysis.run_manifest import record_output
+from te_analysis.paths import get_workspace
+
 
 def setup_batch_directories(batch_id):
     """
-    Locate the raw folder and create the processed output folder for a batch.
+    Locate the raw folder and create the processed output folder for a batch
+    using the active workspace configuration.
     """
-    base_dir = os.getcwd()
-    
-    raw_dir = os.path.join(base_dir, "data", "raw", batch_id)
-    processed_dir = os.path.join(base_dir, "data", "processed", f"{batch_id}-processed")
-    
+    ws = get_workspace()
+    raw_dir = str(ws.raw_batch_dir(batch_id))
+    processed_dir = str(ws.processed_batch_dir(batch_id, prefer_existing=True))
+
     if not os.path.exists(processed_dir):
-        os.makedirs(processed_dir)
+        os.makedirs(processed_dir, exist_ok=True)
         print(f"Created processed data folder: {processed_dir}")
     else:
         print(f"Using existing processed data folder: {processed_dir}")
-        
+
     return raw_dir, processed_dir
 
 
@@ -69,7 +70,6 @@ def copy_saved_figure_outputs(saved_paths, target_dir, formats=None):
             if source_path.resolve() == target_path.resolve():
                 continue
             shutil.copy2(source_path, target_path)
-            record_output(target_path)
             copied_paths.append(str(target_path))
 
     return copied_paths

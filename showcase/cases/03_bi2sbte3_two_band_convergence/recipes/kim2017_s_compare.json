@@ -1,0 +1,106 @@
+{
+  "name": "kim2017_s_compare",
+  "data": [
+    "showcase/cases/03_bi2sbte3_two_band_convergence/data/tedex_tb_extended_curves.csv"
+  ],
+  "plot": {
+    "kind": "line",
+    "x": {
+      "column": "nH_cm-3",
+      "label": "$n_{\\mathrm{H}}$ (cm$^{-3}$)"
+    },
+    "series": [
+      {
+        "source": "showcase/cases/03_bi2sbte3_two_band_convergence/data/kim2017_paper_tb_curve.csv",
+        "y": {
+          "column": "S_Kim_TB",
+          "label": "$|S|$ ($\\mu$V K$^{-1}$)"
+        },
+        "property": "seebeck",
+        "group_value": "Kim et al. (2017) TB Model",
+        "color": "#F39B7F",
+        "marker": "None",
+        "linestyle": "-",
+        "line_width": 2.4
+      },
+      {
+        "source": "showcase/cases/03_bi2sbte3_two_band_convergence/data/tedex_tb_extended_curves.csv",
+        "y": {
+          "column": "S_TB_sym_uV_K",
+          "label": "$|S|$ ($\\mu$V K$^{-1}$)"
+        },
+        "property": "seebeck",
+        "group_value": "TEDEX Two-Band (Sym. $\\alpha=0$)",
+        "color": "#E64B35",
+        "marker": "None",
+        "linestyle": "--",
+        "line_width": 2.0
+      },
+      {
+        "source": "showcase/cases/03_bi2sbte3_two_band_convergence/data/performance_curve.csv",
+        "y": {
+          "column": "Seebeck_abs_uV_K",
+          "label": "$|S|$ ($\\mu$V K$^{-1}$)"
+        },
+        "property": "seebeck",
+        "group_value": "TEDEX SPB ($m^*=1.17m_e$)",
+        "color": "#00A087",
+        "marker": "None",
+        "linestyle": "-.",
+        "line_width": 1.8
+      },
+      {
+        "source": "showcase/cases/03_bi2sbte3_two_band_convergence/data/kim2017_x075_full300K_skb_curve.csv",
+        "y": {
+          "column": "Seebeck_SKB_uV_K",
+          "label": "$|S|$ ($\\mu$V K$^{-1}$)"
+        },
+        "property": "seebeck",
+        "group_value": "TEDEX SKB (Joint $S+\\mu_{\\mathrm{H}}$)",
+        "color": "#3C5488",
+        "marker": "None",
+        "linestyle": ":",
+        "line_width": 1.9
+      },
+      {
+        "source": "showcase/cases/03_bi2sbte3_two_band_convergence/data/kim2017_x075_full300K.csv",
+        "y": {
+          "column": "Seebeck_uV_K",
+          "label": "$|S|$ ($\\mu$V K$^{-1}$)"
+        },
+        "property": "seebeck",
+        "group_value": "Exp. + Lit. ($x=0.75$, 300 K)",
+        "color": "#79ADD8",
+        "marker": "o",
+        "marker_size": 6.0,
+        "alpha": 0.9,
+        "linestyle": "none",
+        "line_width": 0.0
+      }
+    ],
+    "xlabel": "$n_{\\mathrm{H}}$ (cm$^{-3}$)",
+    "ylabel": "$|S|$ ($\\mu$V K$^{-1}$)",
+    "xscale": "log",
+    "xlim": [
+      5e+18,
+      5e+20
+    ],
+    "ylim": [
+      0,
+      310
+    ],
+    "x_log_ticks": "decade",
+    "legend": "inside",
+    "legend_loc": "upper right"
+  },
+  "output": {
+    "dir": "showcase/cases/03_bi2sbte3_two_band_convergence/figures",
+    "stem": "fig4b_pisarenko_model_comparison",
+    "formats": [
+      "svg",
+      "png"
+    ],
+    "copy_to_data_dir": false,
+    "normalized_csv": false
+  }
+}

@@ -1,0 +1,70 @@
+{
+  "name": "03_tec_peltier_cop",
+  "sources": [
+    {
+      "path": "showcase/cases/08_te_device_power_and_peltier_cooling/data/tec_cop/cop_dt_5K.csv",
+      "metadata": {
+        "sample": "$\\Delta T = 5$ K"
+      }
+    },
+    {
+      "path": "showcase/cases/08_te_device_power_and_peltier_cooling/data/tec_cop/cop_dt_10K.csv",
+      "metadata": {
+        "sample": "$\\Delta T = 10$ K"
+      }
+    },
+    {
+      "path": "showcase/cases/08_te_device_power_and_peltier_cooling/data/tec_cop/cop_dt_15K.csv",
+      "metadata": {
+        "sample": "$\\Delta T = 15$ K"
+      }
+    },
+    {
+      "path": "showcase/cases/08_te_device_power_and_peltier_cooling/data/tec_cop/cop_dt_20K.csv",
+      "metadata": {
+        "sample": "$\\Delta T = 20$ K"
+      }
+    }
+  ],
+  "plot": {
+    "kind": "line",
+    "color_set": "science",
+    "x": {
+      "column": "Current_A",
+      "label": "$I$ (A)"
+    },
+    "group": {
+      "column": "sample"
+    },
+    "series": [
+      {
+        "y": {
+          "column": "COP",
+          "label": "COP"
+        },
+        "property": "cop"
+      }
+    ],
+    "xlabel": "$I$ (A)",
+    "ylabel": "COP",
+    "legend": "inside",
+    "x_margin": 0.06,
+    "y_margin": 0.12,
+    "group_order": [
+      "$\\Delta T = 5$ K",
+      "$\\Delta T = 10$ K",
+      "$\\Delta T = 15$ K",
+      "$\\Delta T = 20$ K"
+    ]
+  },
+  "output": {
+    "dir": "showcase/cases/08_te_device_power_and_peltier_cooling/figures",
+    "stem": "03_tec_peltier_cop",
+    "formats": [
+      "svg",
+      "png"
+    ],
+    "normalized_csv": false,
+    "copy_to_data_dir": false
+  }
+}

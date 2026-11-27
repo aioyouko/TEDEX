@@ -24,6 +24,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 
+from te_analysis.paths import get_workspace
 from te_analysis.tools.selectors import (
     normalize_batch_id as normalize_batch_selector,
     truncate_with_digest,
@@ -42,7 +43,7 @@ from te_analysis.tools.plot import (
 
 
 
-DEFAULT_XRD_ROOT = Path("data/raw")
+DEFAULT_XRD_ROOT = get_workspace().raw_dir
 XRD_LABEL_FILE_STEMS = ("label", "labels", "legend", "legends")
 XRD_LABEL_FILE_SUFFIXES = ("", ".txt", ".csv", ".tsv", ".md")
 @dataclass(frozen=True)
@@ -73,27 +74,37 @@ def safe_filename(value: str, max_length: int = 96) -> str:
     return truncate_with_digest(value, max_length)
 
 
-def infer_batch_id_from_path(path: Path, xrd_root: Path = DEFAULT_XRD_ROOT) -> str:
+def infer_batch_id_from_path(path: Path, xrd_root: Path | None = None) -> str:
+    ws = get_workspace()
+    effective_root = Path(xrd_root) if xrd_root is not None else ws.raw_dir
     try:
-        relative = path.resolve().relative_to(xrd_root.resolve())
+        relative = path.resolve().relative_to(effective_root.resolve())
+        if relative.parts:
+            if ws.grouping_mode == "by_system_batch" and len(relative.parts) >= 3:
+                return relative.parts[1]
+            return relative.parts[0]
     except ValueError:
-        parts = path.parts
-        return next((part for part in parts if re.match(r"CHY-\d+", part)), "")
-    return relative.parts[0] if relative.parts else ""
+        pass
+    prefix = ws.batch_prefix
+    if prefix:
+        return next((part for part in path.parts if re.match(rf"{re.escape(prefix)}-\d+", part)), "")
+    return ""
 
 
 def infer_sample_id_from_xrd_path(path: Path) -> str:
     stem = path.stem
-    sample_match = re.match(r"^((?:CHY-)?\d{3,5}-[A-Za-z0-9]+)", stem, flags=re.IGNORECASE)
-    if sample_match:
-        return sample_match.group(1)
+    prefix = get_workspace().batch_prefix
+    if prefix:
+        sample_match = re.match(rf"^((?:{re.escape(prefix)}-)?\d{{3,5}}-[A-Za-z0-9]+)", stem, flags=re.IGNORECASE)
+        if sample_match:
+            return sample_match.group(1)
     stem = re.sub(r"[_\-]?(XRD|Theta[_\-]?2[_\-]?Theta|Theta[_\-]?2Theta)$", "", stem, flags=re.IGNORECASE)
     return stem
 
 
 def load_sample_metadata(
-    samples_path: str | os.PathLike[str] = "data/lab/samples.json",
-    legacy_batches_path: str | os.PathLike[str] = "configs/lab_batches.json",
+    samples_path: str | os.PathLike[str] | None = None,
+    legacy_batches_path: str | os.PathLike[str] | None = None,
 ) -> dict[str, dict[str, str]]:
     """
     Return sample_id -> metadata for labeling XRD traces.
@@ -101,9 +112,12 @@ def load_sample_metadata(
     The newer flat lab ledger is preferred, while the older batch JSON remains
     supported so this plotter follows the same labels used by the TE plots.
     """
+    ws = get_workspace()
+    s_path = Path(samples_path) if samples_path is not None else ws.samples_json
+    leg_path = Path(legacy_batches_path) if legacy_batches_path is not None else ws.legacy_lab_batches_json
     lookup: dict[str, dict[str, str]] = {}
 
-    for sample in _read_json(Path(samples_path), []):
+    for sample in _read_json(s_path, []):
         sample_id = sample.get("sample_id")
         if not sample_id:
             continue
@@ -113,7 +127,7 @@ def load_sample_metadata(
             "sample_composition": sample.get("sample_composition", ""),
         }
 
-    legacy_batches = _read_json(Path(legacy_batches_path), {})
+    legacy_batches = _read_json(leg_path, {})
     for batch_id, batch_entry in legacy_batches.items():
         if not isinstance(batch_entry, dict):
             continue
@@ -392,6 +406,33 @@ def filter_xrd_patterns(
     return selected, missing_terms
 
 
+def select_xrd_patterns_by_index(
+    patterns: Sequence[XRDPattern],
+    indices: Sequence[int] | None = None,
+) -> list[XRDPattern]:
+    """Select 1-based positions, preserving source order and bound labels.
+
+    Positions refer to the complete loaded list, before any name filtering.
+    Duplicate positions are drawn only once. ``None`` keeps every pattern.
+    """
+    if indices is None:
+        return list(patterns)
+    if not indices:
+        raise ValueError("Choose at least one XRD file index.")
+
+    for index in indices:
+        if isinstance(index, bool) or not isinstance(index, int) or index < 1:
+            raise ValueError("XRD file indices must be positive integers starting at 1.")
+        if index > len(patterns):
+            raise ValueError(
+                f"XRD file index {index} is out of range: {len(patterns)} files loaded. "
+                "Use --list-files to check the available indices."
+            )
+
+    selected_indices = set(indices)
+    return [pattern for index, pattern in enumerate(patterns, 1) if index in selected_indices]
+
+
 def load_xrd_patterns(
     selectors: Sequence[str] | None = None,
     xrd_root: str | os.PathLike[str] = DEFAULT_XRD_ROOT,
@@ -444,11 +485,11 @@ def format_xrd_pattern_label(
     include_batch: bool | None = None,
 ) -> str:
     """
-    Return a compact legend label using batch + sample id, e.g. CHY-1048-A.
+    Return a compact legend label using batch + sample id, e.g. TE-101-A.
     """
     if sample_id:
         if batch_id and not sample_id.startswith(f"{batch_id}-"):
-            batch_number = batch_id.replace("CHY-", "", 1)
+            batch_number = re.sub(r"^[A-Za-z]+-", "", batch_id, count=1)
             if sample_id.startswith(f"{batch_number}-"):
                 return f"{batch_id}-{sample_id[len(batch_number) + 1:]}"
             return f"{batch_id}-{sample_id}"

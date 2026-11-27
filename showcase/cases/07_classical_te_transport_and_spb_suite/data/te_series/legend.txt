@@ -1,0 +1,6 @@
+# data
+$x = 0\ \mathrm{(p-type)}$
+$x = 0.001\ \mathrm{(p-type)}$
+$x = 0.003\ \mathrm{(p-type)}$
+$x = 0.005\ \mathrm{(n-type)}$
+$x = 0.007\ \mathrm{(n-type)}$

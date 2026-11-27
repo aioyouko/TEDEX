@@ -1,0 +1,31 @@
+{
+  "name": "ternary_composition",
+  "plot": {
+    "kind": "ternary",
+    "cmap": "soft-br",
+    "a": {
+      "column": "Comp_A",
+      "label": "A (%)"
+    },
+    "b": {
+      "column": "Comp_B",
+      "label": "B (%)"
+    },
+    "c": {
+      "column": "Comp_C",
+      "label": "C (%)"
+    },
+    "z": {
+      "column": "ZT",
+      "label": "$zT_{\\max}$"
+    },
+    "zlabel": "$zT_{\\max}$"
+  },
+  "output": {
+    "dir": "outputs/figures/flexible",
+    "stem": "ternary_composition",
+    "formats": ["png", "pdf"],
+    "normalized_csv": true,
+    "copy_to_data_dir": true
+  }
+}
