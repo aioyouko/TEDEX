@@ -1,6 +1,6 @@
 # Thermoelectric Analysis Workspace — Agent Harness Instructions
 
-This repository (`te-analysis-workspace` / TEDEX `1.5.0`) is an integrated CLI and Python harness for thermoelectric (TE) raw data processing, publication-grade scientific plotting, XRD structural analysis, and electronic/phonon physics modeling.
+This repository (`te-analysis-workspace` / TEDEX `1.5.1`) is an integrated CLI and Python harness for thermoelectric (TE) raw data processing, publication-grade scientific plotting, XRD structural analysis, and electronic/phonon physics modeling.
 
 ## 1. Core Harness Routing Rules
 

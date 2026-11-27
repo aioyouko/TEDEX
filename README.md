@@ -2,7 +2,7 @@
 
 # TEDEX — Thermoelectric Data, Modeling & Plotting Harness
 
-**Unified Python CLI, Physics Modeling Suite & AI Agent Plugin for Thermoelectric Research (`v1.5.0`)**
+**Unified Python CLI, Physics Modeling Suite & AI Agent Plugin for Thermoelectric Research (`v1.5.1`)**
 
 [**English**](README.md) | [**简体中文**](README_ZH.md) · [Showcase Gallery](showcase/README.md) · [Command Reference](docs/COMMANDS.md) · [SciPlot Guide](docs/SCIPLOT.md) · [Color Palettes](docs/COLOR_SETS.md)
 

@@ -192,3 +192,81 @@ def test_radar_and_ternary_keep_legends_inside_axes():
         assert lb_t.x1 <= 1.0 and lb_t.y1 <= 1.0
     finally:
         plt.close(fig_t)
+
+
+def test_dual_line_right_axis_smart_linear_bounds_and_plain_tick_inheritance():
+    rows = []
+    xs = [0.0, 1.0, 3.0, 5.0, 7.0]
+    nhs = [1.64, 2.75, 3.54, 3.42, 6.04]
+    mus = [140.4, 435.7, 623.5, 573.1, 417.8]
+    for x_val, nh_val in zip(xs, nhs):
+        rows.append(
+            {
+                "x": x_val,
+                "x_category": None,
+                "y": nh_val,
+                "property": "carrier_concentration",
+                "group": "$n_{\\mathrm{H}}$",
+                "legend_label": "$n_{\\mathrm{H}}$",
+                "series_order": 0,
+            }
+        )
+    for x_val, mu_val in zip(xs, mus):
+        rows.append(
+            {
+                "x": x_val,
+                "x_category": None,
+                "y": mu_val,
+                "property": "mobility",
+                "group": "$\\mu_{\\mathrm{H}}$",
+                "legend_label": "$\\mu_{\\mathrm{H}}$",
+                "series_order": 1,
+            }
+        )
+    dual_df = pd.DataFrame(rows)
+    meta = {
+        "x_label": "$x$ ($10^{-3}$)",
+        "property_labels": {
+            "carrier_concentration": "$n_{\\mathrm{H}}$ ($10^{19}$ cm$^{-3}$)",
+            "mobility": "$\\mu_{\\mathrm{H}}$ (cm$^2$ V$^{-1}$ s$^{-1}$)",
+        },
+        "categorical_x": False,
+    }
+
+    # 1. Default linear right axis gets smart tick-aligned bounds and plain ticks
+    fig_lin, (ax_l, ax_r) = plot_dual_line(
+        dual_df,
+        meta,
+        {"plot": {"yscale": "log", "ylim": [1.0, 10.0], "y_tick_format": "plain"}},
+    )
+    try:
+        fig_lin.canvas.draw()
+        r_lo, r_hi = ax_r.get_ylim()
+        assert r_lo == 0.0
+        assert r_hi >= 700.0 and r_hi % 100.0 == 0.0
+        left_labels = [lbl.get_text() for lbl in ax_l.yaxis.get_ticklabels(which="both") if lbl.get_text()]
+        assert set(left_labels) == {"1", "2", "5", "10"}
+    finally:
+        plt.close(fig_lin)
+
+    # 2. Log right axis inherits y_tick_format="plain" when right_y_tick_format is omitted
+    fig_log, (_ax_l2, ax_r2) = plot_dual_line(
+        dual_df,
+        meta,
+        {
+            "plot": {
+                "yscale": "log",
+                "right_yscale": "log",
+                "ylim": [1.0, 10.0],
+                "right_ylim": [100.0, 1000.0],
+                "y_tick_format": "plain",
+            }
+        },
+    )
+    try:
+        fig_log.canvas.draw()
+        right_labels = [lbl.get_text() for lbl in ax_r2.yaxis.get_ticklabels(which="both") if lbl.get_text()]
+        assert set(right_labels) == {"100", "200", "500", "1000"}
+    finally:
+        plt.close(fig_log)
+

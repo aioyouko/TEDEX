@@ -595,9 +595,7 @@ def plot_dual_axis(normalized: pd.DataFrame, metadata: dict[str, Any], recipe: d
     ax_left.xaxis.set_minor_locator(ticker.NullLocator())
     ax_right.xaxis.set_minor_locator(ticker.NullLocator())
     apply_axis_options(ax_left, plot)
-    right_options = right_y_axis_options(plot)
-    if right_options:
-        apply_axis_options(ax_right, right_options)
+    apply_axis_options(ax_right, right_y_axis_options(plot))
     style_colored_y_axis(ax_left, left_color, side="left")
     style_colored_y_axis(ax_right, right_color, side="right")
 
@@ -702,10 +700,7 @@ def plot_dual_line(normalized: pd.DataFrame, metadata: dict[str, Any], recipe: d
     format_te_axis(ax_left, show_grid=False, tick_labelsize=SINGLE_TICK_LABEL_SIZE)
     format_te_axis(ax_right, show_grid=False, tick_labelsize=SINGLE_TICK_LABEL_SIZE)
     apply_axis_options(ax_left, plot)
-
-    right_options = right_y_axis_options(plot)
-    if right_options:
-        apply_axis_options(ax_right, right_options)
+    apply_axis_options(ax_right, right_y_axis_options(plot))
     if plot.get("xlim") is not None:
         ax_right.set_xlim(*plot["xlim"])
     if plot.get("xscale") is not None:

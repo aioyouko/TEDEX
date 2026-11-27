@@ -2,7 +2,7 @@
 
 # TEDEX — 热电材料数据处理、输运模型分析与绘图
 
-**面向热电研究的统一 Python CLI、声子/能带输运与 AI Agent 插件（`v1.5.0`）**
+**面向热电研究的统一 Python CLI、声子/能带输运与 AI Agent 插件（`v1.5.1`）**
 
 [**English**](README.md) | [**简体中文**](README_ZH.md) · [图片示例](showcase/README.md) · [命令速查手册](docs/COMMANDS.md) · [SciPlot 绘图指南](docs/SCIPLOT.md) · [学术色卡手册](docs/COLOR_SETS.md)
 

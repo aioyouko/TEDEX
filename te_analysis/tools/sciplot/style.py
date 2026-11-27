@@ -218,12 +218,12 @@ def log_plain_formatter(axis: ticker.Axis) -> ticker.FuncFormatter:
             return ""
 
         decades = math.log10(high) - math.log10(low)
-        exponent = math.floor(math.log10(value))
+        exponent = math.floor(math.log10(value) + 1e-12)
         mantissa = value / (10**exponent)
         rounded_mantissa = round(mantissa)
 
-        if decades <= 1.25:
-            if abs(mantissa - rounded_mantissa) < 1e-8 and 1 <= rounded_mantissa <= 9:
+        if decades <= 0.75:
+            if any(abs(mantissa - item) < 1e-8 for item in (1, 2, 3, 4, 5, 6, 8)):
                 return plain_number_label(value)
             return ""
         if decades <= 2.5:
@@ -403,7 +403,8 @@ def right_y_axis_options(plot: dict[str, Any]) -> dict[str, Any]:
         "ylim": plot.get("right_ylim"),
         "y_major": plot.get("right_y_major"),
         "y_minor": plot.get("right_y_minor"),
-        "y_tick_format": plot.get("right_y_tick_format"),
+        "y_log_ticks": first_defined(plot.get("right_y_log_ticks"), plot.get("y_log_ticks")),
+        "y_tick_format": first_defined(plot.get("right_y_tick_format"), plot.get("y_tick_format")),
     }
     return {key: value for key, value in options.items() if value is not None}
 

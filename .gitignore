@@ -4,10 +4,13 @@
 !.env.example
 *.key
 
-# Python cache
+# Python cache & packaging intermediates
 __pycache__/
 *.py[cod]
 *$py.class
+*.egg-info/
+build/
+dist/
 
 # Jupyter cache
 .ipynb_checkpoints/

@@ -2,6 +2,16 @@
 
 ## Unreleased
 
+## 1.5.1 - 2026-11-27
+
+- **`sciplot` Dual-Axis Right Y-Axis Fixes**:
+  - Always apply `apply_axis_options()` to the right axis (`ax_right`) in `plot_dual_line` and `plot_dual_axis` so linear right axes automatically receive tick-aligned `compute_smart_linear_ylim()` bounds even when explicit `right_*` options are omitted.
+  - Inherit `y_tick_format` and `y_log_ticks` onto `ax_right` in `right_y_axis_options()` when `right_y_tick_format` / `right_y_log_ticks` are not separately specified.
+  - Refined `log_plain_formatter()` power-of-ten rounding and single-decade plain tick spacing (`1, 2, 5, 10`) to prevent tick label crowding at publication font sizes, with regression tests in `tests/test_inside_legend_layout.py`.
+- **Showcase Gallery Updates (`showcase/`)**:
+  - Unified Case 07 room-temperature Hall carrier concentration & mobility data (`hall_composition_rt.csv`, `03_hall_composition_dual_axis`) with the Case 07 variable-temperature Hall mobility series (`04_hall_vt_mobility`).
+  - Refreshed Case 04 cryogenic Debye–Callaway cascade fit and spectral thermal conductivity / MFP figures (`paper_demo_kl_4_300K_callaway_fit`, `paper_demo_kl_4_300K_callaway_spectral_mfp`).
+
 ## 1.5.0 - 2026-11-26
 
 - **Mode-B Software Plugin & Workspace Initialization (`init`)**:

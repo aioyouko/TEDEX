@@ -1,7 +1,7 @@
 {
   "name": "tedex",
   "displayName": "TEDEX Thermoelectrics",
-  "version": "1.5.0",
+  "version": "1.5.1",
   "description": "Thermoelectric data processing, publication scientific plotting (plot-te, sciplot, plot-xrd), XRD refinement, and phonon/electronic transport physics modeling (Debye-Callaway, SPB, SKB, Two-Band) for clean user data workspaces.",
   "logo": "assets/logo.svg",
   "suggestedPrompts": [

@@ -1,7 +1,7 @@
 {
   "schema_version": "tedex-showcase/v1",
   "project": "TEDEX (Thermoelectric Data, Modeling & Plotting Agent Harness)",
-  "version": "1.5.0",
+  "version": "1.5.1",
   "architecture_diagram": "assets/tedex_evolution_roadmap.svg",
   "skills": [
     {
@@ -626,7 +626,7 @@
         },
         {
           "id": "hall_rt_dual",
-          "title": "室温成分依赖霍尔载流子浓度 n_H 与迁移率 μ_H 双对数双纵轴图",
+          "title": "室温成分依赖霍尔载流子浓度 n_H 与迁移率 μ_H 双纵轴图",
           "svg": "cases/07_classical_te_transport_and_spb_suite/figures/03_hall_composition_dual_axis.svg",
           "png": "cases/07_classical_te_transport_and_spb_suite/figures/03_hall_composition_dual_axis.png"
         },

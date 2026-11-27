@@ -3,7 +3,7 @@
 A practical guide for publishing `tedex` to GitHub and cutting versioned releases. Version numbers live in **four** manifest files that must stay in sync — `VERSION`, `pyproject.toml`, `te_analysis/__init__.py`, and `plugin/tedex/plugin.json` — alongside the release notes in `CHANGELOG.md`.
 
 > Replace `<your-username>` with your GitHub username throughout.
-> The current version is **1.5.0**; examples below use **1.6.0** as a future minor release.
+> The current version is **1.5.1**; examples below use **1.6.0** as a future minor release.
 
 ---
 

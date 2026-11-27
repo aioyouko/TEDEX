@@ -41,18 +41,15 @@
     "ylabel": "$n_{\\mathrm{H}}$ ($10^{19}$ cm$^{-3}$)",
     "right_ylabel": "$\\mu_{\\mathrm{H}}$ (cm$^2$ V$^{-1}$ s$^{-1}$)",
     "yscale": "log",
-    "right_yscale": "log",
     "ylim": [
-      0.1,
-      100.0
+      1.0,
+      10.0
     ],
-    "right_ylim": [
-      100.0,
-      10000.0
-    ],
+    "right_y_major": 100,
+    "right_y_minor": 50,
     "y_tick_format": "plain",
     "legend": "inside",
-    "legend_loc": "upper right",
+    "legend_loc": "best",
     "x_margin": 0.06,
     "y_margin": 0.12
   },

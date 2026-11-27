@@ -13,7 +13,7 @@
 ## 2. Agent Execution Highlights (Agent 核心推理与防呆亮点)
 
 - 直接调用 `plot-te --plot-mode combined` 与 `--zt --legend` 自动识别目录中的 `legend.txt` 样品标签，生成标准 2×3 六联图与单属性大图，共享图例自动置于首面板图内空白处并智能抬升纵轴上限以避免遮挡数据点。
-- 通过 `sciplot` 双纵轴（`dual_line`）与多源分组配置，统一展示室温载流子浓度/迁移率随掺杂量的反向演化以及 300–800 K 声学声子散射主导的迁移率衰减规律。
+- 通过 `sciplot` 双纵轴（`dual_line`）与多源分组配置，统一展示室温载流子浓度/迁移率随掺杂量的演化以及 300–800 K 声学声子散射主导的迁移率衰减规律。
 - 同时覆盖**有霍尔数据**（`spb performance`：$\mathrm{Cu_2Se}$ 300 K / 750 K 跨温区 $zT(n_{\mathrm{H}})$ 曲线簇）与**高温无霍尔数据**（`spb conductivity`：900 K 下直接以电导率 $\sigma$ 为横轴反推加权本征迁移率 $\mu_0 = 27.4\ \mathrm{cm^2\ V^{-1}\ s^{-1}}$ 并预测最佳电导窗口）两大经典 SPB 建模范式。
 
 ## 3. Reproducible CLI Commands (可复现命令)
@@ -32,7 +32,7 @@ python main.py spb conductivity showcase/cases/07_classical_te_transport_and_spb
 | Metric | Value |
 | --- | --- |
 | Conduction Transition ($x = 0 \to 0.007$) | `p-type (+337 µV K⁻¹) → n-type (-315 µV K⁻¹), Peak zT = 1.08 / 1.00` |
-| RT Hall Mobility $\mu_{\mathrm{H}}$ ($x = 0 \to 0.007$) | `2545 → 1051 cm² V⁻¹ s⁻¹ (n_H = 0.30–0.48 × 10¹⁹ cm⁻³)` |
+| RT Hall Mobility $\mu_{\mathrm{H}}$ ($x = 0 \to 0.007$) | `140 → 623 → 418 cm² V⁻¹ s⁻¹ (n_H = 1.64–6.04 × 10¹⁹ cm⁻³)` |
 | $\mathrm{Cu_2Se}$ SPB Parameters (300 / 750 K) | `m* = 2.3 / 3.2 m_e, μ_0 = 35 / 6 cm² V⁻¹ s⁻¹, Peak zT = 1.22` |
 | 900 K Hall-Free $\sigma$-SPB ($\mathrm{Cu_2(S,Se,Te)}$) | `Weighted μ_0 = 27.4 cm² V⁻¹ s⁻¹ (κ_L = 0.45 W m⁻¹ K⁻¹)` |
 
@@ -44,7 +44,7 @@ python main.py spb conductivity showcase/cases/07_classical_te_transport_and_spb
 ### 单幅变温热电优值 $ZT(T)$ 掺杂演化对比图（图内自适应图例）
 ![单幅变温热电优值 ZT(T) 掺杂演化对比图](./figures/02_te_zt_doping_series.svg)
 
-### 室温成分依赖霍尔载流子浓度 $n_{\mathrm{H}}$ 与迁移率 $\mu_{\mathrm{H}}$ 双对数双纵轴图
+### 室温成分依赖霍尔载流子浓度 $n_{\mathrm{H}}$ 与迁移率 $\mu_{\mathrm{H}}$ 双纵轴图
 ![室温成分依赖霍尔载流子浓度与迁移率双纵轴图](./figures/03_hall_composition_dual_axis.svg)
 
 ### 300–800 K 变温霍尔迁移率 $\mu_{\mathrm{H}}(T)$ 声学声子散射衰减曲线簇
